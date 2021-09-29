@@ -1,35 +1,71 @@
 package fr.becpg.api.model;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import fr.becpg.api.helper.DateExtractorHelper;
+
 public class RemoteNodeInfo {
-	
+
 	@JsonProperty("parent")
 	private String parent;
 
 	@JsonProperty("id")
 	private String id;
-	
+
 	@JsonProperty("cm:name")
 	private String name;
 
+	@JsonProperty("bcpg:code")
+	String code;
+
+	@JsonProperty("bcpg:erpCode")
+	String erpCode;
+
 	@JsonProperty("site")
 	private RemoteSiteInfo site;
-	
+
 	@JsonProperty("path")
 	String path;
-	
+
 	@JsonProperty("attributes")
-	private Map<String,Object> attributes;
-	
-	
+	private Map<String, Object> attributes;
+
 	private Map<String, Object> optionalIdentifiers;
+
+	public RemoteNodeInfo() {
+
+	}
+
+	public RemoteNodeInfo(Map<String, Object> fields) {
+		this.optionalIdentifiers = fields;
+		this.id = (String) fields.get("id");
+		this.name = (String) fields.get("cm:name");
+		if (this.name == null) {
+			this.name = (String) fields.get("bcpg:lkvValue");
+		}
+		if (this.name == null) {
+			this.name = (String) fields.get("bcpg:lvValue");
+		}
+		if (this.name == null) {
+			this.name = (String) fields.get("bcpg:charactName");
+		}
+		this.code = (String) fields.get("bcpg:code");
+		this.erpCode = (String) fields.get("bcpg:erpCode");
+		this.parent = (String) fields.get("parent");
+		this.path = (String) fields.get("path");
+		this.attributes = (Map<String, Object>) fields.get("attributes");
+	}
 
 	public String getParent() {
 		return parent;
@@ -55,6 +91,22 @@ public class RemoteNodeInfo {
 		this.name = name;
 	}
 
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public String getErpCode() {
+		return erpCode;
+	}
+
+	public void setErpCode(String erpCode) {
+		this.erpCode = erpCode;
+	}
+
 	public RemoteSiteInfo getSite() {
 		return site;
 	}
@@ -71,6 +123,7 @@ public class RemoteNodeInfo {
 		this.path = path;
 	}
 
+	@Nullable
 	public Map<String, Object> getAttributes() {
 		return attributes;
 	}
@@ -78,7 +131,22 @@ public class RemoteNodeInfo {
 	public void setAttributes(Map<String, Object> attributes) {
 		this.attributes = attributes;
 	}
-	
+
+	@Nullable
+	public Boolean getBooleanProp(String propName) {
+		return attributes != null ? (Boolean) attributes.get(propName) : null;
+	}
+
+	@Nullable
+	public String getStringProp(String propName) {
+		return attributes != null ? (String) attributes.get(propName) : null;
+	}
+
+	@Nullable
+	public Date getDateProp(String propName) {
+		return attributes != null ? DateExtractorHelper.parse((String) attributes.get(propName)) : null;
+	}
+
 	@JsonAnyGetter
 	public Map<String, Object> getOptionalIdentifiers() {
 		return optionalIdentifiers;
@@ -88,19 +156,32 @@ public class RemoteNodeInfo {
 	public void setOptionalIdentifiers(Map<String, Object> identifiers) {
 		this.optionalIdentifiers = identifiers;
 	}
-	
-	 public List<Object> getAssociations(String assocName) {
-		return (List<Object>) attributes.get(assocName);
+
+	@NonNull
+	public List<RemoteNodeInfo> getAssociations(String assocName) {
+		List<RemoteNodeInfo> ret = new ArrayList<>();
+		List<Map<String, Object>> assocs = attributes != null ? (List<Map<String, Object>>) attributes.get(assocName) : null;
+		if (assocs != null) {
+			for (Map<String, Object> assoc : assocs) {
+				ret.add(new RemoteNodeInfo(assoc));
+			}
+
+		}
+		return ret;
 	}
-	 
-	 
-	 public Object getAssociation(String assocName) {
-		return attributes.get(assocName);
+
+	@Nullable
+	public RemoteNodeInfo getAssociation(String assocName) {
+		Map<String, Object> ret = attributes != null ? (Map<String, Object>) attributes.get(assocName) : null;
+		if (ret != null) {
+			return new RemoteNodeInfo(ret);
+		}
+		return null;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(attributes, id, optionalIdentifiers, name, parent, path, site);
+		return Objects.hash(attributes, code, erpCode, id, name, optionalIdentifiers, parent, path, site);
 	}
 
 	@Override
@@ -112,17 +193,15 @@ public class RemoteNodeInfo {
 		if (getClass() != obj.getClass())
 			return false;
 		RemoteNodeInfo other = (RemoteNodeInfo) obj;
-		return Objects.equals(attributes, other.attributes) && Objects.equals(id, other.id) && Objects.equals(optionalIdentifiers, other.optionalIdentifiers)
-				&& Objects.equals(name, other.name) && Objects.equals(parent, other.parent) && Objects.equals(path, other.path)
-				&& Objects.equals(site, other.site);
+		return Objects.equals(attributes, other.attributes) && Objects.equals(code, other.code) && Objects.equals(erpCode, other.erpCode)
+				&& Objects.equals(id, other.id) && Objects.equals(name, other.name) && Objects.equals(optionalIdentifiers, other.optionalIdentifiers)
+				&& Objects.equals(parent, other.parent) && Objects.equals(path, other.path) && Objects.equals(site, other.site);
 	}
 
 	@Override
 	public String toString() {
-		return "RemoteNodeInfo [parent=" + parent + ", id=" + id + ", name=" + name + ", site=" + site + ", path=" + path + ", attributes="
-				+ attributes + ", identifiers=" + optionalIdentifiers + "]";
+		return "RemoteNodeInfo [parent=" + parent + ", id=" + id + ", name=" + name + ", code=" + code + ", erpCode=" + erpCode + ", site=" + site
+				+ ", path=" + path + ", attributes=" + attributes + ", optionalIdentifiers=" + optionalIdentifiers + "]";
 	}
 
-	
-	
 }

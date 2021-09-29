@@ -52,6 +52,9 @@ public class EntityAPIClient implements EntityApi {
 		factory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.URI_COMPONENT);
 
 		this.webClient = WebClient.builder()
+				.codecs(configurer -> configurer
+					      .defaultCodecs()
+					      .maxInMemorySize(16 * 1024 * 1024))
 				.defaultHeaders(header -> header.setBasicAuth(apiConfiguration.getBasicAuthUsername(), apiConfiguration.getBasicAuthPassword()))
 				.baseUrl(baseUrl).build();
 

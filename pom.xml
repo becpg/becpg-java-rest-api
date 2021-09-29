@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>fr.becpg</groupId>
 	<artifactId>becpg-java-rest-api</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>becpg-java-rest-api</name>
 	<description>beCPG Java Rest API</description>
 	<properties>
@@ -32,25 +32,15 @@
 		<dependency>
 		    <groupId>com.squareup.okhttp3</groupId>
 		    <artifactId>okhttp</artifactId>
-		    <version>4.0.1</version>
 		    <scope>test</scope>
 		</dependency>
 		<dependency>
 		    <groupId>com.squareup.okhttp3</groupId>
 		    <artifactId>mockwebserver</artifactId>
-		    <version>4.0.1</version>
 		    <scope>test</scope>
 		</dependency>
 		
 	</dependencies>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
 
 </project>

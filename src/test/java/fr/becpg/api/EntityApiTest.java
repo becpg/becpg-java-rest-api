@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import fr.becpg.api.handler.EntityApi;
 import fr.becpg.api.model.RemoteEntity;
 import fr.becpg.api.model.RemoteEntityRef;
+import fr.becpg.api.model.RemoteNodeInfo;
 
 @SpringBootTest
 public class EntityApiTest {
@@ -40,12 +41,16 @@ public class EntityApiTest {
 			
 			logger.info(entity.getAttributes().get("bcpg:entityTplRef").toString());
 			
-			List<Object> geoOrigins = entity.getAssociations("bcpg:productGeoOrigin");
+			List<RemoteNodeInfo> geoOrigins = entity.getAssociations("bcpg:productGeoOrigin");
 			Assert.assertNotNull(geoOrigins);
 			Assert.assertEquals(1,geoOrigins.size());
 			
-			Object entityTpl =  entity.getAssociation("bcpg:entityTplRef");
+			RemoteNodeInfo entityTpl =  entity.getAssociation("bcpg:entityTplRef");
 			Assert.assertNotNull(entityTpl);
+			Assert.assertNotNull(entityTpl.getName());
+			
+			Assert.assertEquals("Produit fini", entityTpl.getName());
+			logger.info(entityTpl.getName());
 			
 			break;
 		}
