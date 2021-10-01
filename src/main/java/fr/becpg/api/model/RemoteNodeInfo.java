@@ -11,10 +11,13 @@ import org.springframework.lang.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import fr.becpg.api.helper.DateExtractorHelper;
 
+@JsonInclude(Include.NON_NULL)
 public class RemoteNodeInfo {
 
 	@JsonProperty("parent")
@@ -141,11 +144,27 @@ public class RemoteNodeInfo {
 	public String getStringProp(String propName) {
 		return attributes != null ? (String) attributes.get(propName) : null;
 	}
+	
+	@Nullable
+	public List<String> getStringArrayProp(String propName) {
+		return attributes != null ? (List<String>) attributes.get(propName) : null;
+	}
 
 	@Nullable
 	public Date getDateProp(String propName) {
 		return attributes != null ? DateExtractorHelper.parse((String) attributes.get(propName)) : null;
 	}
+	
+	@Nullable
+	public Integer getIntValue(String propName) {
+		 return attributes != null ? (Integer) attributes.get(propName) : null;
+	}
+	
+	@Nullable
+	public Integer getDoubleValue(String propName) {
+		 return attributes != null ? (Integer) attributes.get(propName) : null;
+	}
+	
 
 	@JsonAnyGetter
 	public Map<String, Object> getOptionalIdentifiers() {
@@ -179,6 +198,20 @@ public class RemoteNodeInfo {
 		return null;
 	}
 
+	
+	@NonNull
+	public List<RemoteNodeInfo> getDocuments() {
+		List<RemoteNodeInfo> ret = new ArrayList<>();
+		List<Map<String, Object>> assocs = attributes != null ? (List<Map<String, Object>>) attributes.get("cm:contains") : null;
+		if (assocs != null) {
+			for (Map<String, Object> assoc : assocs) {
+				ret.add(new RemoteNodeInfo(assoc));
+			}
+
+		}
+		return ret;
+	}
+	
 	@Override
 	public int hashCode() {
 		return Objects.hash(attributes, code, erpCode, id, name, optionalIdentifiers, parent, path, site);
@@ -203,5 +236,6 @@ public class RemoteNodeInfo {
 		return "RemoteNodeInfo [parent=" + parent + ", id=" + id + ", name=" + name + ", code=" + code + ", erpCode=" + erpCode + ", site=" + site
 				+ ", path=" + path + ", attributes=" + attributes + ", optionalIdentifiers=" + optionalIdentifiers + "]";
 	}
+
 
 }

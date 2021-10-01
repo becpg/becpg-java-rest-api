@@ -134,6 +134,7 @@ public class EntityAPIClient implements EntityApi {
 			try {
 				return objectMapper.writeValueAsString(params);
 			} catch (JsonProcessingException e) {
+				//TODO remove that
 				e.printStackTrace();
 			}
 		}
