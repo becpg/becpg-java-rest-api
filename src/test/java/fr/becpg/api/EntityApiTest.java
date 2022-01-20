@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import fr.becpg.api.handler.EntityApi;
+import fr.becpg.api.handler.EntityAPI;
 import fr.becpg.api.model.RemoteEntity;
 import fr.becpg.api.model.RemoteEntityRef;
 import fr.becpg.api.model.RemoteNodeInfo;
@@ -18,7 +18,7 @@ import fr.becpg.api.model.RemoteNodeInfo;
 public class EntityApiTest {
 
 	@Autowired
-	private EntityApi entityApi;
+	private EntityAPI entityApi;
 
 	 Logger logger = LoggerFactory.getLogger(EntityApiTest.class);
    

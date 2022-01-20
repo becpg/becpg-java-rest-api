@@ -3,19 +3,10 @@ package fr.becpg.api.handler;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.util.DefaultUriBuilderFactory;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import fr.becpg.api.BecpgRestApiConfiguration;
 import fr.becpg.api.model.RemoteEntity;
 import fr.becpg.api.model.RemoteEntityList;
 import fr.becpg.api.model.RemoteEntityRef;
@@ -29,36 +20,7 @@ import fr.becpg.api.model.RemoteEntityRef;
  *  <url>/becpg/remote/entity?nodRef={nodeRef}&lists={lists}&fields={fields}</url>
  */
 @Component
-public class EntityAPIClient implements EntityApi {
-
-	private static final String FORMAT_JSON = "json";
-	private static final String PARAM_FORMAT = "format";
-	private static final String PARAM_QUERY = "query";
-	private static final String PARAM_MAX_RESULTS = "maxResults";
-	private static final String PARAM_FIELDS = "fields";
-	private static final String PARAM_NODEREF = "nodeRef";
-	private static final String PARAM_LISTS = "lists";
-	private static final String PARAM_PARAMS = "params";
-
-	@Autowired
-	private BecpgRestApiConfiguration apiConfiguration;
-	private WebClient webClient;
-
-	@PostConstruct
-	private void postConstruct() {
-
-		String baseUrl = apiConfiguration.getContentServiceUrl() + "/alfresco/service/becpg/remote";
-		DefaultUriBuilderFactory factory = new DefaultUriBuilderFactory(baseUrl);
-		factory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.URI_COMPONENT);
-
-		this.webClient = WebClient.builder()
-				.codecs(configurer -> configurer
-					      .defaultCodecs()
-					      .maxInMemorySize(16 * 1024 * 1024))
-				.defaultHeaders(header -> header.setBasicAuth(apiConfiguration.getBasicAuthUsername(), apiConfiguration.getBasicAuthPassword()))
-				.baseUrl(baseUrl).build();
-
-	}
+public class EntityAPIClient extends AbstractAPIClient implements EntityAPI  {
 
 	@Override
 	public List<RemoteEntityRef> list(@NonNull String query) {
@@ -113,32 +75,5 @@ public class EntityAPIClient implements EntityApi {
 
 	}
 
-	private String buildFieldsParam(List<String> fields) {
-		if (fields != null) {
-			return String.join(",", fields);
-		}
-		return null;
-	}
-
-	private String buildNodeRefParam(String id) {
-		if ((id != null) && !id.contains(":/")) {
-			return String.format("workspace://SpacesStore/%s", id);
-		}
-
-		return id;
-	}
-
-	private String buildJsonParams(Map<String, Boolean> params) {
-		if (params != null) {
-			ObjectMapper objectMapper = new ObjectMapper();
-			try {
-				return objectMapper.writeValueAsString(params);
-			} catch (JsonProcessingException e) {
-				//TODO remove that
-				e.printStackTrace();
-			}
-		}
-		return null;
-	}
 
 }

@@ -50,6 +50,7 @@ public class RemoteNodeInfo {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	public RemoteNodeInfo(Map<String, Object> fields) {
 		this.optionalIdentifiers = fields;
 		this.id = (String) fields.get("id");
@@ -145,6 +146,8 @@ public class RemoteNodeInfo {
 		return attributes != null ? (String) attributes.get(propName) : null;
 	}
 	
+	
+	@SuppressWarnings("unchecked")
 	@Nullable
 	public List<String> getStringArrayProp(String propName) {
 		return attributes != null ? (List<String>) attributes.get(propName) : null;
@@ -161,8 +164,17 @@ public class RemoteNodeInfo {
 	}
 	
 	@Nullable
-	public Integer getDoubleValue(String propName) {
-		 return attributes != null ? (Integer) attributes.get(propName) : null;
+	public Double getDoubleValue(String propName) {
+		if(attributes!=null) {
+			if(attributes.get(propName) instanceof Double) {
+				return  (Double) attributes.get(propName);
+			}
+			
+			if(attributes.get(propName) instanceof Number) {
+				return ((Integer)attributes.get(propName)).doubleValue();
+			}
+		}
+		 return null;
 	}
 	
 
@@ -176,9 +188,11 @@ public class RemoteNodeInfo {
 		this.optionalIdentifiers = identifiers;
 	}
 
+	
 	@NonNull
 	public List<RemoteNodeInfo> getAssociations(String assocName) {
 		List<RemoteNodeInfo> ret = new ArrayList<>();
+		@SuppressWarnings("unchecked")
 		List<Map<String, Object>> assocs = attributes != null ? (List<Map<String, Object>>) attributes.get(assocName) : null;
 		if (assocs != null) {
 			for (Map<String, Object> assoc : assocs) {
@@ -191,6 +205,7 @@ public class RemoteNodeInfo {
 
 	@Nullable
 	public RemoteNodeInfo getAssociation(String assocName) {
+		@SuppressWarnings("unchecked")
 		Map<String, Object> ret = attributes != null ? (Map<String, Object>) attributes.get(assocName) : null;
 		if (ret != null) {
 			return new RemoteNodeInfo(ret);
@@ -202,6 +217,7 @@ public class RemoteNodeInfo {
 	@NonNull
 	public List<RemoteNodeInfo> getDocuments() {
 		List<RemoteNodeInfo> ret = new ArrayList<>();
+		@SuppressWarnings("unchecked")
 		List<Map<String, Object>> assocs = attributes != null ? (List<Map<String, Object>>) attributes.get("cm:contains") : null;
 		if (assocs != null) {
 			for (Map<String, Object> assoc : assocs) {

@@ -6,7 +6,7 @@ import java.util.Map;
 import fr.becpg.api.model.RemoteEntity;
 import fr.becpg.api.model.RemoteEntityRef;
 
-public interface EntityApi {
+public interface EntityAPI {
 	
 //	
 //	Le paramètre format permet de modifier le format XML de la réponse :
