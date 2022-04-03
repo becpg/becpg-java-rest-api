@@ -159,6 +159,12 @@ public class RemoteNodeInfo {
 	}
 	
 	@Nullable
+	public Object getProp(String propName) {
+		return attributes != null ?attributes.get(propName) : null;
+	}
+	
+	
+	@Nullable
 	public Integer getIntValue(String propName) {
 		 return attributes != null ? (Integer) attributes.get(propName) : null;
 	}
