@@ -6,6 +6,16 @@ public class RemoteEntityRef {
 
 	@JsonProperty(value = "entity")
 	private RemoteEntity entity;
+	
+	public RemoteEntityRef() {
+		super();
+	}
+
+	public RemoteEntityRef(String id) {
+		super();
+		entity = new RemoteEntity();
+		entity.setId(id);
+	}
 
 	public RemoteEntity getEntity() {
 		return entity;

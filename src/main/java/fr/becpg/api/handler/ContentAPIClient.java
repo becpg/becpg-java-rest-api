@@ -1,21 +1,20 @@
 package fr.becpg.api.handler;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.stream.Collectors;
 
 import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.stereotype.Component;
 
 import fr.becpg.api.model.RemoteNodeInfo;
+import reactor.core.publisher.Flux;
 
 /**
 *
@@ -48,19 +47,17 @@ public class ContentAPIClient extends AbstractAPIClient implements ContentAPI {
 	}
 
 	@Override
-	public void writeContent(RemoteNodeInfo remoteNodeInfo, File destFile) throws IOException {
+	public void writeContent(RemoteNodeInfo remoteNodeInfo, Path filePath) throws IOException {
 
-		DataBuffer dataBuffer = webClient.get()
+		Flux<DataBuffer> dataBuffer = webClient.get()
 				.uri(uriBuilder -> uriBuilder.path("/entity/content").queryParam(PARAM_NODEREF, buildNodeRefParam(remoteNodeInfo.getId())).build())
-				.retrieve().bodyToMono(DataBuffer.class).block();
+				.retrieve().bodyToFlux(DataBuffer.class);
 
-		if (dataBuffer != null) {
-			try (InputStream in = dataBuffer.asInputStream()) {
-				 java.nio.file.Files.copy(in, destFile.toPath() ,StandardCopyOption.REPLACE_EXISTING);
-				
-
-			}
-		}
+		
+		DataBufferUtils.write(dataBuffer, filePath, StandardOpenOption.CREATE).block();
+		
+		
 
 	}
+	
 }

@@ -30,16 +30,19 @@ public class RemoteNodeInfo {
 	private String name;
 
 	@JsonProperty("bcpg:code")
-	String code;
+	private String code;
 
 	@JsonProperty("bcpg:erpCode")
-	String erpCode;
+	private String erpCode;
 
 	@JsonProperty("site")
 	private RemoteSiteInfo site;
 
 	@JsonProperty("path")
-	String path;
+	private String path;
+	
+	@JsonProperty("type")
+	private String type;
 
 	@JsonProperty("attributes")
 	private Map<String, Object> attributes;
@@ -65,6 +68,7 @@ public class RemoteNodeInfo {
 			this.name = (String) fields.get("bcpg:charactName");
 		}
 		this.code = (String) fields.get("bcpg:code");
+		this.type = (String) fields.get("type");
 		this.erpCode = (String) fields.get("bcpg:erpCode");
 		this.parent = (String) fields.get("parent");
 		this.path = (String) fields.get("path");
@@ -127,6 +131,14 @@ public class RemoteNodeInfo {
 		this.path = path;
 	}
 
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
 	@Nullable
 	public Map<String, Object> getAttributes() {
 		return attributes;
@@ -184,6 +196,11 @@ public class RemoteNodeInfo {
 	}
 	
 
+	@Nullable
+	public Integer getSort() {
+		return getIntValue("bcpg:sort");
+	}
+	
 	@JsonAnyGetter
 	public Map<String, Object> getOptionalIdentifiers() {
 		return optionalIdentifiers;
@@ -236,7 +253,7 @@ public class RemoteNodeInfo {
 	
 	@Override
 	public int hashCode() {
-		return Objects.hash(attributes, code, erpCode, id, name, optionalIdentifiers, parent, path, site);
+		return Objects.hash(attributes, code, erpCode, id, name, optionalIdentifiers, parent, path, site, type);
 	}
 
 	@Override
@@ -250,13 +267,14 @@ public class RemoteNodeInfo {
 		RemoteNodeInfo other = (RemoteNodeInfo) obj;
 		return Objects.equals(attributes, other.attributes) && Objects.equals(code, other.code) && Objects.equals(erpCode, other.erpCode)
 				&& Objects.equals(id, other.id) && Objects.equals(name, other.name) && Objects.equals(optionalIdentifiers, other.optionalIdentifiers)
-				&& Objects.equals(parent, other.parent) && Objects.equals(path, other.path) && Objects.equals(site, other.site);
+				&& Objects.equals(parent, other.parent) && Objects.equals(path, other.path) && Objects.equals(site, other.site)
+				&& Objects.equals(type, other.type);
 	}
 
 	@Override
 	public String toString() {
 		return "RemoteNodeInfo [parent=" + parent + ", id=" + id + ", name=" + name + ", code=" + code + ", erpCode=" + erpCode + ", site=" + site
-				+ ", path=" + path + ", attributes=" + attributes + ", optionalIdentifiers=" + optionalIdentifiers + "]";
+				+ ", path=" + path + ", type=" + type + ", attributes=" + attributes + ", optionalIdentifiers=" + optionalIdentifiers + "]";
 	}
 
 
