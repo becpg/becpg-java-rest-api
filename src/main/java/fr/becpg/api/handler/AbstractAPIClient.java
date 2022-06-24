@@ -67,8 +67,7 @@ public abstract class AbstractAPIClient {
 			try {
 				return objectMapper.writeValueAsString(params);
 			} catch (JsonProcessingException e) {
-				//TODO remove that
-				e.printStackTrace();
+				//Do Nothing here
 			}
 		}
 		return null;

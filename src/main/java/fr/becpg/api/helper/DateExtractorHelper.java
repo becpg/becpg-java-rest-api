@@ -18,27 +18,29 @@ import java.util.TimeZone;
  */
 public class DateExtractorHelper {
 
-	private static final ThreadLocal<Map<String, TimeZone>> timezones;
-	static {
-		timezones = new ThreadLocal<>();
-	}
+	private static final ThreadLocal<Map<String, TimeZone>> timezones = new ThreadLocal<>();
 
 	private DateExtractorHelper() {
 		super();
 	}
-	
+
+	@Override
+	protected void finalize() {
+		timezones.remove();
+	}
+
 	public static Date parseWithSpace(String isoDate) throws ParseException {
 		SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", new Locale("us"));
 		return sdf.parse(isoDate);
 	}
-	
+
 	public static String format(String isoDate, String dateFormat) {
 		Date date = parse(isoDate);
-		
+
 		SimpleDateFormat formater = new SimpleDateFormat(dateFormat);
 		return formater.format(date);
 	}
-	
+
 	/**
 	 * Parse date from ISO formatted string
 	 *
@@ -48,10 +50,10 @@ public class DateExtractorHelper {
 	 */
 	public static Date parse(String isoDate) {
 
-		if(isoDate ==null) {
+		if (isoDate == null) {
 			return null;
 		}
-		
+
 		// parse toString date
 		if (isoDate.contains(" ")) {
 			try {
@@ -120,10 +122,7 @@ public class DateExtractorHelper {
 			timezone = TimeZone.getTimeZone(timezoneId);
 			timezoneMap.put(timezoneId, timezone);
 		}
-		if (!timezone.getID().equals(timezoneId)) {
-			throw new IndexOutOfBoundsException();
-		}
-		if (!timezone.getID().equals(timezoneId)) {
+		if (!timezone.getID().equals(timezoneId) || !timezone.getID().equals(timezoneId)) {
 			throw new IndexOutOfBoundsException();
 		}
 
@@ -144,7 +143,6 @@ public class DateExtractorHelper {
 
 		return parsed;
 	}
-
 
 	public static String formatISODate(Date date) {
 		Calendar calendar = new GregorianCalendar();
@@ -188,5 +186,5 @@ public class DateExtractorHelper {
 		}
 		buffer.append(strValue);
 	}
-	
+
 }

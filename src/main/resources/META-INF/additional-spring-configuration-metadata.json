@@ -1,0 +1,18 @@
+{"properties": [
+  {
+    "name": "content.service.url",
+    "type": "java.lang.String",
+    "description": "beCPG service content url"
+  },
+  {
+    "name": "content.service.security.basicAuth.username",
+    "type": "java.lang.String",
+    "description": "Username"
+  },
+  {
+    "name": "content.service.security.basicAuth.password",
+    "type": "java.lang.String",
+    "description": "Password"
+  }
+]}
+
