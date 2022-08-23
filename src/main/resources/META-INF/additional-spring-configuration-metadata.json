@@ -13,6 +13,11 @@
     "name": "content.service.security.basicAuth.password",
     "type": "java.lang.String",
     "description": "Password"
+  },
+  {
+    "name": "content.service.headers",
+    "type": "java.util.String",
+    "description": "Map of custom headers"
   }
 ]}
 

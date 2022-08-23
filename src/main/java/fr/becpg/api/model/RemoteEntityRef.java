@@ -16,6 +16,11 @@ public class RemoteEntityRef {
 		entity = new RemoteEntity();
 		entity.setId(id);
 	}
+	
+	public RemoteEntityRef(RemoteEntity entity) {
+		super();
+		this.entity = entity;
+	}
 
 	public RemoteEntity getEntity() {
 		return entity;

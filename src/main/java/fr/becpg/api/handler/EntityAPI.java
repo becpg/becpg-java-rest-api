@@ -45,7 +45,7 @@ public interface EntityAPI {
 	RemoteEntity get(String id, List<String> attributes, List<String> datalists , Map<String, Boolean> params);
 	
 	
-	void update(RemoteEntity entity);
-	void update(RemoteEntity entity, boolean createversion, boolean majorVersion, String versionDescription );
+	RemoteEntity update(RemoteEntity entity);
+	RemoteEntity update(RemoteEntity entity, boolean createversion, boolean majorVersion, String versionDescription );
 	
 }

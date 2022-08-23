@@ -40,7 +40,7 @@ public class RemoteNodeInfo {
 
 	@JsonProperty("path")
 	private String path;
-	
+
 	@JsonProperty("type")
 	private String type;
 
@@ -157,8 +157,7 @@ public class RemoteNodeInfo {
 	public String getStringProp(String propName) {
 		return attributes != null ? (String) attributes.get(propName) : null;
 	}
-	
-	
+
 	@SuppressWarnings("unchecked")
 	@Nullable
 	public List<String> getStringArrayProp(String propName) {
@@ -169,38 +168,36 @@ public class RemoteNodeInfo {
 	public Date getDateProp(String propName) {
 		return attributes != null ? DateExtractorHelper.parse((String) attributes.get(propName)) : null;
 	}
-	
+
 	@Nullable
 	public Object getProp(String propName) {
-		return attributes != null ?attributes.get(propName) : null;
+		return attributes != null ? attributes.get(propName) : null;
 	}
-	
-	
+
 	@Nullable
 	public Integer getIntValue(String propName) {
-		 return attributes != null ? (Integer) attributes.get(propName) : null;
+		return attributes != null ? (Integer) attributes.get(propName) : null;
 	}
-	
+
 	@Nullable
 	public Double getDoubleValue(String propName) {
-		if(attributes!=null) {
-			if(attributes.get(propName) instanceof Double) {
-				return  (Double) attributes.get(propName);
+		if (attributes != null) {
+			if (attributes.get(propName) instanceof Double) {
+				return (Double) attributes.get(propName);
 			}
-			
-			if(attributes.get(propName) instanceof Number) {
-				return ((Integer)attributes.get(propName)).doubleValue();
+
+			if (attributes.get(propName) instanceof Number) {
+				return ((Integer) attributes.get(propName)).doubleValue();
 			}
 		}
-		 return null;
+		return null;
 	}
-	
 
 	@Nullable
 	public Integer getSort() {
 		return getIntValue("bcpg:sort");
 	}
-	
+
 	@JsonAnyGetter
 	public Map<String, Object> getOptionalIdentifiers() {
 		return optionalIdentifiers;
@@ -211,7 +208,6 @@ public class RemoteNodeInfo {
 		this.optionalIdentifiers = identifiers;
 	}
 
-	
 	@NonNull
 	public List<RemoteNodeInfo> getAssociations(String assocName) {
 		List<RemoteNodeInfo> ret = new ArrayList<>();
@@ -228,15 +224,22 @@ public class RemoteNodeInfo {
 
 	@Nullable
 	public RemoteNodeInfo getAssociation(String assocName) {
-		@SuppressWarnings("unchecked")
-		Map<String, Object> ret = attributes != null ? (Map<String, Object>) attributes.get(assocName) : null;
-		if (ret != null) {
-			return new RemoteNodeInfo(ret);
+		if (attributes != null && attributes.get(assocName) instanceof List) {
+			List<RemoteNodeInfo> ret = getAssociations(assocName);
+			if (!ret.isEmpty()) {
+				return ret.get(0);
+			}
+		} else {
+
+			@SuppressWarnings("unchecked")
+			Map<String, Object> ret = attributes != null ? (Map<String, Object>) attributes.get(assocName) : null;
+			if (ret != null) {
+				return new RemoteNodeInfo(ret);
+			}
 		}
 		return null;
 	}
 
-	
 	@NonNull
 	public List<RemoteNodeInfo> getDocuments() {
 		List<RemoteNodeInfo> ret = new ArrayList<>();
@@ -250,7 +253,7 @@ public class RemoteNodeInfo {
 		}
 		return ret;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(attributes, code, erpCode, id, name, optionalIdentifiers, parent, path, site, type);
@@ -276,6 +279,5 @@ public class RemoteNodeInfo {
 		return "RemoteNodeInfo [parent=" + parent + ", id=" + id + ", name=" + name + ", code=" + code + ", erpCode=" + erpCode + ", site=" + site
 				+ ", path=" + path + ", type=" + type + ", attributes=" + attributes + ", optionalIdentifiers=" + optionalIdentifiers + "]";
 	}
-
 
 }

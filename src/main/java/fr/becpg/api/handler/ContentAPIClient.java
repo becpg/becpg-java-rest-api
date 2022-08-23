@@ -11,10 +11,14 @@ import java.util.stream.Collectors;
 
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import fr.becpg.api.model.RemoteAPIError;
+import fr.becpg.api.model.RemoteAPIException;
 import fr.becpg.api.model.RemoteNodeInfo;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 /**
 *
@@ -31,8 +35,12 @@ public class ContentAPIClient extends AbstractAPIClient implements ContentAPI {
 		String sharedId = remoteNodeInfo.getStringProp("qshare:sharedId");
 
 		if (sharedId == null) {
-			DataBuffer dataBuffer = webClient.get().uri(uriBuilder -> uriBuilder.path("/entity/content")
-					.queryParam(PARAM_NODEREF, buildNodeRefParam(remoteNodeInfo.getId())).queryParam(PARAM_SHARE, true).build()).retrieve()
+			DataBuffer dataBuffer = webClient.get()
+					.uri(uriBuilder -> uriBuilder.path("/entity/content").queryParam(PARAM_NODEREF, buildNodeRefParam(remoteNodeInfo.getId()))
+							.queryParam(PARAM_SHARE, true).build())
+					.retrieve()
+					.onStatus(HttpStatus::isError,
+							response -> response.bodyToMono(RemoteAPIError.class).flatMap(error -> Mono.error(new RemoteAPIException(error))))
 					.bodyToMono(DataBuffer.class).block();
 
 			if (dataBuffer != null) {
@@ -51,13 +59,13 @@ public class ContentAPIClient extends AbstractAPIClient implements ContentAPI {
 
 		Flux<DataBuffer> dataBuffer = webClient.get()
 				.uri(uriBuilder -> uriBuilder.path("/entity/content").queryParam(PARAM_NODEREF, buildNodeRefParam(remoteNodeInfo.getId())).build())
-				.retrieve().bodyToFlux(DataBuffer.class);
+				.retrieve()
+				.onStatus(HttpStatus::isError,
+						response -> response.bodyToMono(RemoteAPIError.class).flatMap(error -> Mono.error(new RemoteAPIException(error))))
+				.bodyToFlux(DataBuffer.class);
 
-		
 		DataBufferUtils.write(dataBuffer, filePath, StandardOpenOption.CREATE).block();
-		
-		
 
 	}
-	
+
 }

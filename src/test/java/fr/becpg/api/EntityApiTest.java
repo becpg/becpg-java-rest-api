@@ -15,7 +15,7 @@ import fr.becpg.api.model.RemoteEntityRef;
 import fr.becpg.api.model.RemoteNodeInfo;
 
 @SpringBootTest
-public class EntityApiTest {
+class EntityApiTest {
 
 	@Autowired
 	private EntityAPI entityApi;

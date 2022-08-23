@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
@@ -13,6 +14,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fr.becpg.api.BecpgRestApiConfiguration;
+import io.netty.handler.logging.LogLevel;
+import reactor.netty.http.client.HttpClient;
+import reactor.netty.transport.logging.AdvancedByteBufFormat;
 
 public abstract class AbstractAPIClient {
 
@@ -24,6 +28,9 @@ public abstract class AbstractAPIClient {
 	protected static final String PARAM_NODEREF = "nodeRef";
 	protected static final String PARAM_LISTS = "lists";
 	protected static final String PARAM_PARAMS = "params";
+	protected static final String PARAM_CREATE_VERSION = "createVersion";
+	protected static final String PARAM_MAJOR_VERSION = "majorVersion";
+	protected static final String PARAM_VERSION_DESCRIPTION = "versionDescription";
 
 	@Autowired
 	protected BecpgRestApiConfiguration apiConfiguration;
@@ -36,15 +43,20 @@ public abstract class AbstractAPIClient {
 		DefaultUriBuilderFactory factory = new DefaultUriBuilderFactory(baseUrl);
 		factory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.URI_COMPONENT);
 
-		this.webClient = WebClient.builder()
-				.codecs(configurer -> configurer
-					      .defaultCodecs()
-					      .maxInMemorySize(16 * 1024 * 1024))
-				.defaultHeaders(header -> header.setBasicAuth(apiConfiguration.getBasicAuthUsername(), apiConfiguration.getBasicAuthPassword()))
-				.baseUrl(baseUrl).build();
+		HttpClient httpClient = HttpClient.create().wiretap("reactor.netty.http.client.HttpClient", LogLevel.DEBUG, AdvancedByteBufFormat.TEXTUAL);
+
+		this.webClient = WebClient.builder().codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(16 * 1024 * 1024))
+				.clientConnector(new ReactorClientHttpConnector(httpClient)).defaultHeaders(header -> {
+					header.setBasicAuth(apiConfiguration.getBasicAuthUsername(), apiConfiguration.getBasicAuthPassword());
+					if (apiConfiguration.getCustomHeaders() != null) {
+						for (Map.Entry<String, String> customHeader : apiConfiguration.getCustomHeaders().entrySet()) {
+							header.set(customHeader.getKey(), customHeader.getValue());
+						}
+
+					}
+				}).baseUrl(baseUrl).build();
 
 	}
-	
 
 	protected String buildFieldsParam(List<String> fields) {
 		if (fields != null) {

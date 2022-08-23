@@ -1,5 +1,7 @@
 package fr.becpg.api;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
@@ -14,6 +16,9 @@ public class BecpgRestApiConfiguration {
 
 	@Value("${content.service.url}")
 	private String contentServiceUrl;
+	
+	@Value("#{${content.service.headers:{}}}")
+	private Map<String,String> customHeaders;
 
 	public String getBasicAuthUsername() {
 		return basicAuthUsername;
@@ -27,4 +32,9 @@ public class BecpgRestApiConfiguration {
 		return contentServiceUrl;
 	}
 
+	public Map<String, String> getCustomHeaders() {
+		return customHeaders;
+	}
+
+	
 }
