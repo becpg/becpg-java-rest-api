@@ -44,6 +44,9 @@ public interface EntityAPI {
 	RemoteEntity get(String id);
 	RemoteEntity get(String id, List<String> attributes, List<String> datalists , Map<String, Boolean> params);
 	
+	//return OK/KO if entity exists
+	String check(String id);
+	
 	
 	RemoteEntity update(RemoteEntity entity);
 	RemoteEntity update(RemoteEntity entity, boolean createversion, boolean majorVersion, String versionDescription );

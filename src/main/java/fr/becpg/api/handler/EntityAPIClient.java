@@ -109,4 +109,15 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 
 	}
 
+	@Override
+	public String check(String id) {
+		return webClient
+				.get().uri(uriBuilder -> uriBuilder.path("/check")
+						.queryParam(PARAM_NODEREF, buildNodeRefParam(id)).build())
+				.retrieve().onStatus(HttpStatus::isError, response -> response.bodyToMono(RemoteAPIError.class) 
+                        .flatMap(error -> Mono.error(new RemoteAPIException(error)))).bodyToMono(String.class).block();
+
+	
+	}
+
 }
