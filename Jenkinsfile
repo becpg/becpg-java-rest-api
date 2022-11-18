@@ -14,7 +14,8 @@ pipeline {
         stage('sonar') {
  	 		steps {
 			    withSonarQubeEnv('beCPG Sonar') {
-			      sh 'mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.7.0.1746:sonar'
+			      sh 'mvn dependency-check:aggregate'
+			      sh 'mvn sonar:sonar'
 			    }
 		    }
 		  }
