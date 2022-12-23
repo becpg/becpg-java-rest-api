@@ -40,7 +40,6 @@
 	</repositories>
 	<dependencies>
 
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webflux</artifactId>
@@ -66,29 +65,6 @@
 	</dependencies>
 
 	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.owasp</groupId>
-				<artifactId>dependency-check-maven</artifactId>
-				<version>7.2.1</version>
-				<configuration>
-					<skipProvidedScope>false</skipProvidedScope>
-					<skipRuntimeScope>true</skipRuntimeScope>
-					<skipSystemScope>true</skipSystemScope>
-					<skipTestScope>true</skipTestScope>
-					<archiveAnalyzerEnabled>false</archiveAnalyzerEnabled>
-					<failOnError>false</failOnError>
-					<formats>HTML,JSON,XML</formats>
-				</configuration>
-			</plugin>
-
-
-			<plugin>
-				<groupId>org.sonarsource.scanner.maven</groupId>
-				<artifactId>sonar-maven-plugin</artifactId>
-				<version>3.9.1.2184</version>
-			</plugin>
-		</plugins>
 		<extensions>
 			<extension>
 				<groupId>com.google.cloud.artifactregistry</groupId>
@@ -96,8 +72,6 @@
 				<version>2.2.0</version>
 			</extension>
 		</extensions>
-
 	</build>
-
 
 </project>
