@@ -1,0 +1,7 @@
+steps:
+  - name: maven:3-jdk-11
+    entrypoint: mvn
+    args: ["test"]
+  - name: maven:3-jdk-11
+    entrypoint: mvn
+    args: ["deploy", "-Dmaven.test.skip=true"]

@@ -37,10 +37,10 @@ First, add to the repositories the beCPG public repository containing the artifa
 
 <repositories>
 
-  <repository>
-    <id>becpg-public</id>
-    <url>TODO</url>
-  </repository>
+ 	<repository>
+		<id>becpg-registry</id>
+		<url>artifactregistry://europe-west1-maven.pkg.dev/becpg-314807/becpg-mvn</url>
+	</repository>
 
 </repositories>
 ```
