@@ -9,20 +9,22 @@ import org.springframework.stereotype.Component;
 
 import fr.becpg.api.model.RemoteAPIError;
 import fr.becpg.api.model.RemoteAPIException;
+import fr.becpg.api.model.RemoteEntity;
 import fr.becpg.api.model.RemoteEntityList;
 import fr.becpg.api.model.RemoteEntityRef;
 import reactor.core.publisher.Mono;
 
 /**
+ * <p>ChannelAPIClient class.</p>
  *
- *  @author matthieu
- *  <url>/becpg/remote/channel/list?channelId={id}</url>
+ * @version $Id: $Id
  */
 @Component
 public class ChannelAPIClient extends AbstractAPIClient implements ChannelAPI  {
 
 	private static final String PARAM_CHANNELID = "channelId";
 
+	/** {@inheritDoc} */
 	@Override
 	public List<RemoteEntityRef> list(@NonNull String channelId) {
 	  RemoteEntityList entityList = webClient
@@ -35,6 +37,7 @@ public class ChannelAPIClient extends AbstractAPIClient implements ChannelAPI  {
 
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public List<RemoteEntityRef> list(@NonNull String channelId, List<String> attributes, int maxResults) {
 		RemoteEntityList entityList = webClient.get()
@@ -44,6 +47,23 @@ public class ChannelAPIClient extends AbstractAPIClient implements ChannelAPI  {
                         .flatMap(error -> Mono.error(new RemoteAPIException(error)))) .bodyToMono(RemoteEntityList.class).block();
 		
 		return entityList !=null ? entityList.getEntities() : null;
+	}
+
+	
+	/** {@inheritDoc} */
+	@Override
+	public RemoteEntity get(String channelId) {
+		RemoteEntityRef entityRef = webClient
+				.get().uri(uriBuilder -> uriBuilder.path("/entity").queryParam(PARAM_FORMAT, FORMAT_JSON)
+						.queryParam(PARAM_QUERY, buildQuery(channelId)).build())
+				.accept(MediaType.APPLICATION_JSON).retrieve().onStatus(HttpStatus::isError, response -> response.bodyToMono(RemoteAPIError.class) 
+                        .flatMap(error -> Mono.error(new RemoteAPIException(error)))) .bodyToMono(RemoteEntityRef.class).block();
+
+		return entityRef != null ?  entityRef.getEntity() : null;
+	}
+
+	private String buildQuery(String channelId) {
+		return String.format("+TYPE:\"bp:pubChannel\" AND =bp\\:pubChannelId:\"%s\" ", channelId);
 	}
 
 

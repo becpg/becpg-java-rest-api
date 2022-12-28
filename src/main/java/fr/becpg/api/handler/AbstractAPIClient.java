@@ -18,18 +18,35 @@ import io.netty.handler.logging.LogLevel;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.transport.logging.AdvancedByteBufFormat;
 
+/**
+ * <p>Abstract AbstractAPIClient class.</p>
+ *
+ * @author matthieu
+ * @version $Id: $Id
+ */
 public abstract class AbstractAPIClient {
 
+	/** Constant <code>FORMAT_JSON="json"</code> */
 	protected static final String FORMAT_JSON = "json";
+	/** Constant <code>PARAM_FORMAT="format"</code> */
 	protected static final String PARAM_FORMAT = "format";
+	/** Constant <code>PARAM_QUERY="query"</code> */
 	protected static final String PARAM_QUERY = "query";
+	/** Constant <code>PARAM_MAX_RESULTS="maxResults"</code> */
 	protected static final String PARAM_MAX_RESULTS = "maxResults";
+	/** Constant <code>PARAM_FIELDS="fields"</code> */
 	protected static final String PARAM_FIELDS = "fields";
+	/** Constant <code>PARAM_NODEREF="nodeRef"</code> */
 	protected static final String PARAM_NODEREF = "nodeRef";
+	/** Constant <code>PARAM_LISTS="lists"</code> */
 	protected static final String PARAM_LISTS = "lists";
+	/** Constant <code>PARAM_PARAMS="params"</code> */
 	protected static final String PARAM_PARAMS = "params";
+	/** Constant <code>PARAM_CREATE_VERSION="createVersion"</code> */
 	protected static final String PARAM_CREATE_VERSION = "createVersion";
+	/** Constant <code>PARAM_MAJOR_VERSION="majorVersion"</code> */
 	protected static final String PARAM_MAJOR_VERSION = "majorVersion";
+	/** Constant <code>PARAM_VERSION_DESCRIPTION="versionDescription"</code> */
 	protected static final String PARAM_VERSION_DESCRIPTION = "versionDescription";
 
 	@Autowired
@@ -58,6 +75,12 @@ public abstract class AbstractAPIClient {
 
 	}
 
+	/**
+	 * <p>buildFieldsParam.</p>
+	 *
+	 * @param fields a {@link java.util.List} object
+	 * @return a {@link java.lang.String} object
+	 */
 	protected String buildFieldsParam(List<String> fields) {
 		if (fields != null) {
 			return String.join(",", fields);
@@ -65,6 +88,12 @@ public abstract class AbstractAPIClient {
 		return null;
 	}
 
+	/**
+	 * <p>buildNodeRefParam.</p>
+	 *
+	 * @param id a {@link java.lang.String} object
+	 * @return a {@link java.lang.String} object
+	 */
 	protected String buildNodeRefParam(String id) {
 		if ((id != null) && !id.contains(":/")) {
 			return String.format("workspace://SpacesStore/%s", id);
@@ -73,6 +102,12 @@ public abstract class AbstractAPIClient {
 		return id;
 	}
 
+	/**
+	 * <p>buildJsonParams.</p>
+	 *
+	 * @param params a {@link java.util.Map} object
+	 * @return a {@link java.lang.String} object
+	 */
 	protected String buildJsonParams(Map<String, Boolean> params) {
 		if (params != null) {
 			ObjectMapper objectMapper = new ObjectMapper();

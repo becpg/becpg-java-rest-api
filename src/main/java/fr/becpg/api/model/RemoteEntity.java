@@ -12,6 +12,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * <p>RemoteEntity class.</p>
+ *
+ * @author matthieu
+ * @version $Id: $Id
+ */
 @JsonInclude(Include.NON_NULL)
 public class RemoteEntity extends RemoteNodeInfo {
 
@@ -20,23 +26,49 @@ public class RemoteEntity extends RemoteNodeInfo {
 	@JsonProperty("params")
 	Map<String,Object> params;
 
+	/**
+	 * <p>Getter for the field <code>datalists</code>.</p>
+	 *
+	 * @return a {@link java.util.Map} object
+	 */
 	@Nullable
 	public Map<String, List<RemoteNodeInfo>> getDatalists() {
 		return datalists;
 	}
 	
+	/**
+	 * <p>Setter for the field <code>datalists</code>.</p>
+	 *
+	 * @param datalists a {@link java.util.Map} object
+	 */
 	public void setDatalists(Map<String, List<RemoteNodeInfo>> datalists) {
 		this.datalists = datalists;
 	}
 	
+	/**
+	 * <p>Getter for the field <code>params</code>.</p>
+	 *
+	 * @return a {@link java.util.Map} object
+	 */
 	@Nullable
 	public Map<String, Object> getParams() {
 		return params;
 	}
+	/**
+	 * <p>Setter for the field <code>params</code>.</p>
+	 *
+	 * @param params a {@link java.util.Map} object
+	 */
 	public void setParams(Map<String, Object> params) {
 		this.params = params;
 	}
 	
+	/**
+	 * <p>getDatalistItems.</p>
+	 *
+	 * @param datalistName a {@link java.lang.String} object
+	 * @return a {@link java.util.List} object
+	 */
 	@NonNull
 	public  List<RemoteNodeInfo> getDatalistItems(String datalistName){
 		if(this.datalists!=null) {
@@ -46,6 +78,7 @@ public class RemoteEntity extends RemoteNodeInfo {
 	}
 	
 	
+	/** {@inheritDoc} */
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -54,6 +87,7 @@ public class RemoteEntity extends RemoteNodeInfo {
 		return result;
 	}
 	
+	/** {@inheritDoc} */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -67,6 +101,7 @@ public class RemoteEntity extends RemoteNodeInfo {
 	}
 	
 	
+	/** {@inheritDoc} */
 	@Override
 	public String toString() {
 		return "RemoteEntity [datalists=" + datalists + ", params=" + params + "]";

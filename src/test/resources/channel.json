@@ -1,0 +1,29 @@
+{
+	"entity": {
+		"path": "/app:company_home/cm:System/cm:Characts/bcpg:entityLists/cm:PubChannels",
+		"parent": "31a298de-5fd1-4295-9b05-49023c613d97",
+		"datalists": {
+			
+		},
+		"cm:name": "Sample channel",
+		"attributes": {
+			"cm:creator": "admin",
+			"cm:modifier": "admin",
+			"bcpg:isDeleted": false,
+			"cm:created": "2022-12-27T11:38:03.902Z",
+			"cm:name": "Sample channel",
+			"bp:pubChannelId": "sample-channel",
+			"bp:pubChannelConfigFile": {
+				"path": "/app:company_home/app:dictionary/cm:configs",
+				"cm:name": "extCustomForm.xml",
+				"id": "8c71f8b7-b25b-45ed-8b9e-e4624a624b1a",
+				"type": "cm:content"
+			},
+			"bcpg:sort": 100,
+			"bp:pubChannelConfig": "{\n \"query\":\"=bcpg\\\\:erpCode:\\\"PERF-PF1\\\"\",\n \"properties\" : {\n\t\"connector.notify.enabled\": true,\n\t\"connector.notify.from\":\"support@becpg.fr\",\n\t\"connector.notify.to\": \"support@becpg.fr\",\n\t\"remote.extra.fields\": \"cm:titled,cm:description\",\n\t\"remote.extra.lists\": \"bcpg:compoList\"\n }\n}",
+			"cm:modified": "2022-12-27T16:00:27.846Z"
+		},
+		"id": "dee1dcec-ec81-45f1-91cf-767fcf064e39",
+		"type": "bp:pubChannel"
+	}
+}

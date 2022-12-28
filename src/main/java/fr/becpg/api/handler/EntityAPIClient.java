@@ -17,16 +17,14 @@ import fr.becpg.api.model.RemoteEntityRef;
 import reactor.core.publisher.Mono;
 
 /**
+ * <p>EntityAPIClient class.</p>
  *
- *  @author matthieu
- *  <url>/becpg/remote/entity/list?path={path}</url>
- *  <url>/becpg/remote/entity/list?query={query}&maxResults={maxResults}</url>
- *  <url>/becpg/remote/entity/list?query={query}&maxResults={maxResults}&fields={fields}</url>
- *  <url>/becpg/remote/entity?nodRef={nodeRef}&lists={lists}&fields={fields}</url>
+ * @version $Id: $Id
  */
 @Component
 public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 
+	/** {@inheritDoc} */
 	@Override
 	public List<RemoteEntityRef> list(@NonNull String query) {
 		RemoteEntityList entityList = webClient.get()
@@ -38,6 +36,7 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public List<RemoteEntityRef> list(@NonNull String query, List<String> attributes, int maxResults) {
 		RemoteEntityList entityList = webClient.get()
@@ -49,6 +48,7 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 		return entityList != null ? entityList.getEntities() : null;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public RemoteEntity get(String id) {
 		RemoteEntityRef entityRef = webClient
@@ -60,6 +60,7 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 		return entityRef != null ? entityRef.getEntity() : null;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public RemoteEntity get(String id, List<String> attributes, List<String> datalists, Map<String, Boolean> params) {
 		RemoteEntityRef entityRef = webClient.get()
@@ -73,11 +74,13 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 		return entityRef != null ? entityRef.getEntity() : null;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public RemoteEntity update(RemoteEntity entity) {
 		return update(entity, false, false, "");
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public RemoteEntity update(RemoteEntity entity, boolean createversion, boolean majorVersion, String versionDescription) {
 
@@ -109,6 +112,7 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public String check(String id) {
 		return webClient

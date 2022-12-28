@@ -24,16 +24,31 @@ public class DateExtractorHelper {
 		super();
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	protected void finalize() {
 		timezones.remove();
 	}
 
+	/**
+	 * <p>parseWithSpace.</p>
+	 *
+	 * @param isoDate a {@link java.lang.String} object
+	 * @return a {@link java.util.Date} object
+	 * @throws java.text.ParseException if any.
+	 */
 	public static Date parseWithSpace(String isoDate) throws ParseException {
 		SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", new Locale("us"));
 		return sdf.parse(isoDate);
 	}
 
+	/**
+	 * <p>format.</p>
+	 *
+	 * @param isoDate a {@link java.lang.String} object
+	 * @param dateFormat a {@link java.lang.String} object
+	 * @return a {@link java.lang.String} object
+	 */
 	public static String format(String isoDate, String dateFormat) {
 		Date date = parse(isoDate);
 
@@ -144,6 +159,12 @@ public class DateExtractorHelper {
 		return parsed;
 	}
 
+	/**
+	 * <p>formatISODate.</p>
+	 *
+	 * @param date a {@link java.util.Date} object
+	 * @return a {@link java.lang.String} object
+	 */
 	public static String formatISODate(Date date) {
 		Calendar calendar = new GregorianCalendar();
 		calendar.setTime(date);

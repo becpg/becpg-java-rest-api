@@ -21,15 +21,16 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
-*
-*  @author matthieu
-*  <url>/becpg/remote/entity/content?nodeRef={nodeRef}&share={share}</url>
-*  */
+ * <p>ContentAPIClient class.</p>
+ *
+ * @version $Id: $Id
+ */
 @Component
 public class ContentAPIClient extends AbstractAPIClient implements ContentAPI {
 
 	private static final String PARAM_SHARE = "share";
 
+	/** {@inheritDoc} */
 	@Override
 	public String getOrCreateSharedUrl(RemoteNodeInfo remoteNodeInfo) throws IOException {
 		String sharedId = remoteNodeInfo.getStringProp("qshare:sharedId");
@@ -54,6 +55,7 @@ public class ContentAPIClient extends AbstractAPIClient implements ContentAPI {
 		return apiConfiguration.getContentServiceUrl() + "/alfresco/service/api/internal/shared/node/" + sharedId + "/content";
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public void writeContent(RemoteNodeInfo remoteNodeInfo, Path filePath) throws IOException {
 
