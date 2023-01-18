@@ -88,7 +88,7 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 		if (entity.getId() != null && ! entity.getId().isBlank()) {
 			entityRef = webClient.post()
 					.uri(uriBuilder -> uriBuilder.path("/entity").queryParam(PARAM_FORMAT, FORMAT_JSON)
-							.queryParam(PARAM_NODEREF, buildNodeRefParam((entity.getId()))).queryParam(PARAM_FORMAT, FORMAT_JSON)
+							.queryParam(PARAM_NODEREF, buildNodeRefParam((entity.getId())))
 							.queryParam(PARAM_CREATE_VERSION, createversion).queryParam(PARAM_MAJOR_VERSION, majorVersion)
 							.queryParam(PARAM_VERSION_DESCRIPTION, versionDescription).build())
 					        
@@ -100,7 +100,7 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 
 		} else {
 			entityRef = webClient.put()
-					.uri(uriBuilder -> uriBuilder.path("/entity").queryParam(PARAM_FORMAT, FORMAT_JSON).queryParam(PARAM_FORMAT, FORMAT_JSON).build())
+					.uri(uriBuilder -> uriBuilder.path("/entity").queryParam(PARAM_FORMAT, FORMAT_JSON).build())
 					.contentType(MediaType.APPLICATION_JSON).body(BodyInserters.fromValue(new RemoteEntityRef(entity)))
 					.accept(MediaType.APPLICATION_JSON).retrieve()
 					.onStatus(HttpStatus::isError, response -> response.bodyToMono(RemoteAPIError.class) 

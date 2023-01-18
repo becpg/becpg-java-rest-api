@@ -28,9 +28,11 @@ public class ChannelAPIModel {
 	public static final String PROP_CHANNELLIST_MODIFIED_DATE = "bp:pubChannelListModifiedDate";
 	/** Constant <code>PROP_CHANNEL_ID="bp:pubChannelId"</code> */
 	public static final String PROP_CHANNEL_ID = "bp:pubChannelId";
-	/** Constant <code>PROP_PUBCHANNEL_ACTION="bp:pubChannelAction"</code> */
-	public static final String PROP_PUBCHANNEL_ACTION = "bp:pubChannelAction";
-
+	/** Constant <code>PROP_CHANNEL_ACTION="bp:pubChannelAction"</code> */
+	public static final String PROP_CHANNEL_ACTION = "bp:pubChannelAction";
+	/** Constant <code>PROP_CHANNEL_ACTION="bp:pubChannelAction"</code> */
+	public static final String PROP_CHANNEL_LASTDATE = "bp:pubChannelLastDate";
+	
 	/** Constant <code>PROP_CHANNELLIST_BATCHID="bp:pubChannelListBatchId"</code> */
 	public static final String PROP_CHANNELLIST_BATCHID = "bp:pubChannelListBatchId";
 	/** Constant <code>PROP_CHANNELLIST_PUBLISHEDDATE="bp:pubChannellListPublishedDate"</code> */
@@ -81,6 +83,14 @@ public class ChannelAPIModel {
 	public static final String STATUS_ABANDONED = "ABANDONED";
 	/** Constant <code>STATUS_UNKNOWN="UNKNOWN"</code> */
 	public static final String STATUS_UNKNOWN = "UNKNOWN";
+	
+	
+	public static final String ACTION_RETRY = "RETRY";
+	public static final String ACTION_RESET = "RESET";
+	public static final String ACTION_STOP = "STOP";
+	
+	
+	public static final String FIELDS = "bp:pubChannelId,bp:pubChannelAction,bp:pubChannelLastDate,bp:pubChannelConfig,bp:pubChannelConfigFile";
 
 	/**
 	 * <p>createChannelEntity.</p>

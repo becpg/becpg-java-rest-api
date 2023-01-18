@@ -11,6 +11,7 @@ import org.springframework.lang.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -259,6 +260,7 @@ public class RemoteNodeInfo {
 	 * @return a {@link java.lang.Boolean} object
 	 */
 	@Nullable
+	@JsonIgnore
 	public Boolean getBooleanProp(String propName) {
 		return attributes != null ? (Boolean) attributes.get(propName) : null;
 	}
@@ -270,6 +272,7 @@ public class RemoteNodeInfo {
 	 * @return a {@link java.lang.String} object
 	 */
 	@Nullable
+	@JsonIgnore
 	public String getStringProp(String propName) {
 		return attributes != null ? (String) attributes.get(propName) : null;
 	}
@@ -282,6 +285,7 @@ public class RemoteNodeInfo {
 	 */
 	@SuppressWarnings("unchecked")
 	@Nullable
+	@JsonIgnore
 	public List<String> getStringArrayProp(String propName) {
 		return attributes != null ? (List<String>) attributes.get(propName) : null;
 	}
@@ -293,6 +297,7 @@ public class RemoteNodeInfo {
 	 * @return a {@link java.util.Date} object
 	 */
 	@Nullable
+	@JsonIgnore
 	public Date getDateProp(String propName) {
 		return attributes != null ? DateExtractorHelper.parse((String) attributes.get(propName)) : null;
 	}
@@ -304,6 +309,7 @@ public class RemoteNodeInfo {
 	 * @return a {@link java.lang.Object} object
 	 */
 	@Nullable
+	@JsonIgnore
 	public Object getProp(String propName) {
 		return attributes != null ? attributes.get(propName) : null;
 	}
@@ -315,6 +321,7 @@ public class RemoteNodeInfo {
 	 * @return a {@link java.lang.Integer} object
 	 */
 	@Nullable
+	@JsonIgnore
 	public Integer getIntValue(String propName) {
 		return attributes != null ? (Integer) attributes.get(propName) : null;
 	}
@@ -326,6 +333,7 @@ public class RemoteNodeInfo {
 	 * @return a {@link java.lang.Double} object
 	 */
 	@Nullable
+	@JsonIgnore
 	public Double getDoubleValue(String propName) {
 		if (attributes != null) {
 			if (attributes.get(propName) instanceof Double) {
@@ -376,6 +384,7 @@ public class RemoteNodeInfo {
 	 * @return a {@link java.util.List} object
 	 */
 	@NonNull
+	@JsonIgnore
 	public List<RemoteNodeInfo> getAssociations(String assocName) {
 		List<RemoteNodeInfo> ret = new ArrayList<>();
 		@SuppressWarnings("unchecked")
@@ -396,6 +405,7 @@ public class RemoteNodeInfo {
 	 * @return a {@link fr.becpg.api.model.RemoteNodeInfo} object
 	 */
 	@Nullable
+	@JsonIgnore
 	public RemoteNodeInfo getAssociation(String assocName) {
 		if (attributes != null && attributes.get(assocName) instanceof List) {
 			List<RemoteNodeInfo> ret = getAssociations(assocName);
@@ -419,6 +429,7 @@ public class RemoteNodeInfo {
 	 * @return a {@link java.util.List} object
 	 */
 	@NonNull
+	@JsonIgnore
 	public List<RemoteNodeInfo> getDocuments() {
 		List<RemoteNodeInfo> ret = new ArrayList<>();
 		@SuppressWarnings("unchecked")
