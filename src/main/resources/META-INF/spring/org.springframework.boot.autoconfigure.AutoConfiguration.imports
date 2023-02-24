@@ -1,0 +1,4 @@
+fr.becpg.api.BecpgRestApiConfiguration
+fr.becpg.api.handler.EntityAPIClient
+fr.becpg.api.handler.ContentAPIClient
+fr.becpg.api.handler.ChannelAPIClient
