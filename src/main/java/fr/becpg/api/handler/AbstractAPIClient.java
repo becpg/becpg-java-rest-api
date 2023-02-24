@@ -3,8 +3,7 @@ package fr.becpg.api.handler;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -24,7 +23,7 @@ import reactor.netty.transport.logging.AdvancedByteBufFormat;
  * @author matthieu
  * @version $Id: $Id
  */
-public abstract class AbstractAPIClient {
+public abstract class AbstractAPIClient implements InitializingBean{
 
 	/** Constant <code>FORMAT_JSON="json"</code> */
 	protected static final String FORMAT_JSON = "json";
@@ -53,8 +52,7 @@ public abstract class AbstractAPIClient {
 	protected BecpgRestApiConfiguration apiConfiguration;
 	protected WebClient webClient;
 
-	@PostConstruct
-	private void postConstruct() {
+	public void afterPropertiesSet() throws Exception {
 
 		String baseUrl = apiConfiguration.getContentServiceUrl() + "/alfresco/service/becpg/remote";
 		DefaultUriBuilderFactory factory = new DefaultUriBuilderFactory(baseUrl);
