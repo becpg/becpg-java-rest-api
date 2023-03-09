@@ -85,11 +85,15 @@ public class ChannelAPIModel {
 	public static final String STATUS_UNKNOWN = "UNKNOWN";
 	
 	
+	/** Constant <code>ACTION_RETRY="RETRY"</code> */
 	public static final String ACTION_RETRY = "RETRY";
+	/** Constant <code>ACTION_RESET="RESET"</code> */
 	public static final String ACTION_RESET = "RESET";
+	/** Constant <code>ACTION_STOP="STOP"</code> */
 	public static final String ACTION_STOP = "STOP";
 	
 	
+	/** Constant <code>FIELDS="bp:pubChannelId,bp:pubChannelAction,bp:"{trunked}</code> */
 	public static final String FIELDS = "bp:pubChannelId,bp:pubChannelAction,bp:pubChannelLastDate,bp:pubChannelConfig,bp:pubChannelConfigFile";
 
 	/**

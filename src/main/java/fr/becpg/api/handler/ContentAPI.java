@@ -1,6 +1,7 @@
 package fr.becpg.api.handler;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 
 import fr.becpg.api.model.RemoteNodeInfo;
@@ -30,6 +31,15 @@ public interface ContentAPI {
 	 * @throws java.io.IOException if any.
 	 */
 	void writeContent(RemoteNodeInfo remoteNodeInfo, Path destFile) throws IOException;
+
+	/**
+	 * <p>getContent.</p>
+	 *
+	 * @param remoteNodeInfo a {@link fr.becpg.api.model.RemoteNodeInfo} object
+	 * @return a {@link java.io.InputStream} object
+	 * @throws java.io.IOException if any.
+	 */
+	InputStream getContent(RemoteNodeInfo remoteNodeInfo) throws IOException;
 
 	
 }

@@ -20,9 +20,7 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.util.FileCopyUtils;
 
-import fr.becpg.api.handler.ChannelAPI;
 import fr.becpg.api.handler.EntityAPI;
-import fr.becpg.api.model.ChannelAPIModel;
 import fr.becpg.api.model.RemoteEntity;
 import fr.becpg.api.model.RemoteEntityRef;
 import fr.becpg.api.model.RemoteNodeInfo;

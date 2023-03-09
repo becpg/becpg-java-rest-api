@@ -18,6 +18,7 @@ import reactor.core.publisher.Mono;
  * <p>ChannelAPIClient class.</p>
  *
  * @version $Id: $Id
+ * @author matthieu
  */
 @Component
 public class ChannelAPIClient extends AbstractAPIClient implements ChannelAPI  {

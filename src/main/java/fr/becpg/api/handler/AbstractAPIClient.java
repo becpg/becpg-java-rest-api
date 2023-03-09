@@ -25,6 +25,8 @@ import reactor.netty.transport.logging.AdvancedByteBufFormat;
  */
 public abstract class AbstractAPIClient implements InitializingBean{
 
+	/** Constant <code>FORMAT_JSON_SCHEMA="json_schema"</code> */
+	protected static final String FORMAT_JSON_SCHEMA = "json_schema";
 	/** Constant <code>FORMAT_JSON="json"</code> */
 	protected static final String FORMAT_JSON = "json";
 	/** Constant <code>PARAM_FORMAT="format"</code> */
@@ -52,6 +54,11 @@ public abstract class AbstractAPIClient implements InitializingBean{
 	protected BecpgRestApiConfiguration apiConfiguration;
 	protected WebClient webClient;
 
+	/**
+	 * <p>afterPropertiesSet.</p>
+	 *
+	 * @throws java.lang.Exception if any.
+	 */
 	public void afterPropertiesSet() throws Exception {
 
 		String baseUrl = apiConfiguration.getContentServiceUrl() + "/alfresco/service/becpg/remote";

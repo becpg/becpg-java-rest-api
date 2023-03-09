@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -24,6 +26,7 @@ import reactor.core.publisher.Mono;
  * <p>ContentAPIClient class.</p>
  *
  * @version $Id: $Id
+ * @author matthieu
  */
 @Component
 public class ContentAPIClient extends AbstractAPIClient implements ContentAPI {
@@ -68,6 +71,26 @@ public class ContentAPIClient extends AbstractAPIClient implements ContentAPI {
 
 		DataBufferUtils.write(dataBuffer, filePath, StandardOpenOption.CREATE).block();
 
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public InputStream getContent(RemoteNodeInfo remoteNodeInfo) throws IOException {
+			PipedOutputStream outputStream = new PipedOutputStream();
+			PipedInputStream inputStream = new PipedInputStream(1024 * 10);
+			inputStream.connect(outputStream);
+
+			Flux<DataBuffer> dataBuffer = webClient.get().uri(
+					uriBuilder -> uriBuilder.path("/entity/content").queryParam(PARAM_NODEREF, buildNodeRefParam(remoteNodeInfo.getId())).build())
+					.retrieve()
+					.onStatus(HttpStatus::isError,
+							response -> response.bodyToMono(RemoteAPIError.class).flatMap(error -> Mono.error(new RemoteAPIException(error))))
+					.bodyToFlux(DataBuffer.class);
+
+			DataBufferUtils.write(dataBuffer, outputStream)
+            .subscribe();
+
+			return inputStream;
 	}
 
 }

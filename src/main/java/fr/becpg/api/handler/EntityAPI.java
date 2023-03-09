@@ -5,7 +5,9 @@ import java.util.Map;
 
 import fr.becpg.api.model.RemoteEntity;
 import fr.becpg.api.model.RemoteEntityRef;
+import fr.becpg.api.model.RemoteEntitySchema;
 /**
+ * <p>EntityAPI interface.</p>
  *
  * @author matthieu
  * @version $Id: $Id
@@ -71,8 +73,50 @@ public interface EntityAPI {
 	RemoteEntity get(String id, List<String> attributes, List<String> datalists , Map<String, Boolean> params);
 	
 	/**
+	 * <p>get the entity schema</p>
+	 *
+	 * @param id a {@link java.lang.String} object
+	 * @return a {@link fr.becpg.api.model.RemoteEntitySchema} object
+	 */
+	RemoteEntitySchema getSchema(String id);
+	/**
+	 * Retrieves the specified entity schema.
+	 *
+	 * The "attributes" and "datalists" parameters can be used to filter the response and reduce its size. There are three types of filtering available:
+	 *
+	 * - Property filtering: only includes the listed properties (e.g. "fields=bcpg:legalName")
+	 * - Association filtering: only includes the listed associations (e.g. "fields=bcpg:clients")
+	 * - List filtering: only includes the listed lists (e.g. "lists=bcpg:compoList")
+	 *
+	 * You can also extract properties of an association by specifying the association name and its properties in the "fields"
+	 * parameter, using the following format: "ASSOC_Name1|PROP_Name1,ASSOC_Name1|PROP_Name2".
+	 *
+	 * The negative form is also supported (available in version 3.1 and above):
+	 *
+	 * - "lists=!bcpg:activityList"
+	 * - "fields=!cm:created,!bcpg:nutListRoundedValue,!cm:modifier,!cm:creator,!cm:modifier,!cm:modified,!bcpg:entityScore,!bcpg:formulatedDate,!bcpg:illLogValue"
+	 *
+	 * The "params" parameter allows you to pass certain parameters to the API (available in version 3.1 and above):
+	 *
+	 * - "appendCode" (true): disables the addition of the beCPG code
+	 * - "appendErpCode" (true): disables the addition of the ERP code
+	 * - "appendMlTextConstraint" (true): disables the addition of multilingual constraints
+	 * - "appendNodeRef" (true): disables the addition of the node ID
+	 * - "appendDataListNodeRef" (true): disables the addition of the node ID for data list nodes
+	 * - "appendContent" (false): enables the inclusion of file content in the JSON response
+	 *
+	 * @param id a string representing the ID of the entity
+	 * @param attributes a list of strings representing the attributes to include in the response
+	 * @param datalists a list of strings representing the data lists to include in the
+	 * @param params a map of strings to booleans representing the parameters to pass to the API
+	 * @return a {@link fr.becpg.api.model.RemoteEntitySchema} object
+	 */
+	RemoteEntitySchema getSchema(String id, List<String> attributes, List<String> datalists , Map<String, Boolean> params);
+	
+	/**
 	 * <p>check.</p>
 	 * return OK/KO if entity exists
+	 *
 	 * @param id a {@link java.lang.String} object
 	 * @return a {@link java.lang.String} object
 	 */

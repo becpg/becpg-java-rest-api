@@ -14,12 +14,14 @@ import fr.becpg.api.model.RemoteAPIException;
 import fr.becpg.api.model.RemoteEntity;
 import fr.becpg.api.model.RemoteEntityList;
 import fr.becpg.api.model.RemoteEntityRef;
+import fr.becpg.api.model.RemoteEntitySchema;
 import reactor.core.publisher.Mono;
 
 /**
  * <p>EntityAPIClient class.</p>
  *
  * @version $Id: $Id
+ * @author matthieu
  */
 @Component
 public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
@@ -122,6 +124,29 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
                         .flatMap(error -> Mono.error(new RemoteAPIException(error)))).bodyToMono(String.class).block();
 
 	
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public RemoteEntitySchema getSchema(String id) {
+		return webClient
+				.get().uri(uriBuilder -> uriBuilder.path("/entity").queryParam(PARAM_FORMAT, FORMAT_JSON_SCHEMA)
+						.queryParam(PARAM_NODEREF, buildNodeRefParam(id)).build())
+				.accept(MediaType.APPLICATION_JSON).retrieve().onStatus(HttpStatus::isError, response -> response.bodyToMono(RemoteAPIError.class) 
+                        .flatMap(error -> Mono.error(new RemoteAPIException(error)))) .bodyToMono(RemoteEntitySchema.class).block();
+
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public RemoteEntitySchema getSchema(String id, List<String> attributes, List<String> datalists, Map<String, Boolean> params) {
+		return webClient.get()
+		.uri(uriBuilder -> uriBuilder.path("/entity").queryParam(PARAM_FORMAT, FORMAT_JSON_SCHEMA).queryParam(PARAM_NODEREF, buildNodeRefParam(id))
+				.queryParam(PARAM_FIELDS, buildFieldsParam(attributes)).queryParam(PARAM_LISTS, buildFieldsParam(datalists))
+				.queryParam(PARAM_PARAMS, buildJsonParams(params)).build())
+		.accept(MediaType.APPLICATION_JSON)
+		.retrieve().onStatus(HttpStatus::isError, response -> response.bodyToMono(RemoteAPIError.class) 
+                .flatMap(error -> Mono.error(new RemoteAPIException(error)))) .bodyToMono(RemoteEntitySchema.class).block();
 	}
 
 }
