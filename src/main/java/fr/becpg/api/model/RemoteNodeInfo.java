@@ -50,6 +50,9 @@ public class RemoteNodeInfo {
 
 	@JsonProperty("type")
 	private String type;
+	
+	@JsonProperty("content")
+	private String content;
 
 	@JsonProperty("attributes")
 	private Map<String, Object> attributes;
@@ -251,6 +254,26 @@ public class RemoteNodeInfo {
 	 */
 	public void setAttributes(Map<String, Object> attributes) {
 		this.attributes = attributes;
+	}
+	
+	
+	/**
+	 * <p>Getter for the field <code>content</code>.</p>
+	 *
+	 * @return a {@link java.lang.String} object
+	 */
+	@Nullable
+	public String getContent() {
+		return content;
+	}
+
+	/**
+	 * <p>Setter for the field <code>content</code>.</p>
+	 *
+	 * @param attributes a {@link java.lang.String} object
+	 */
+	public void setContent(String content) {
+		this.content = content;
 	}
 
 	/**
