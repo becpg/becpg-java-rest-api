@@ -36,7 +36,7 @@ public class ChannelAPIModel {
 	/** Constant <code>PROP_CHANNELLIST_BATCHID="bp:pubChannelListBatchId"</code> */
 	public static final String PROP_CHANNELLIST_BATCHID = "bp:pubChannelListBatchId";
 	/** Constant <code>PROP_CHANNELLIST_PUBLISHEDDATE="bp:pubChannellListPublishedDate"</code> */
-	public static final String PROP_CHANNELLIST_PUBLISHEDDATE = "bp:pubChannellListPublishedDate";
+	public static final String PROP_CHANNELLIST_PUBLISHEDDATE = "bp:pubChannelListPublishedDate";
 	/** Constant <code>PROP_CHANNELLIST_STATUS="bp:pubChannellListStatus"</code> */
 	public static final String PROP_CHANNELLIST_STATUS = "bp:pubChannellListStatus";
 	/** Constant <code>PROP_CHANNELLIST_ERROR="bp:pubChannellListError"</code> */

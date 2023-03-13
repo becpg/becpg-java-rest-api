@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.regex.Pattern;
 
 /**
  * <p>DateExtractorHelper class.</p>
@@ -19,6 +20,9 @@ import java.util.TimeZone;
 public class DateExtractorHelper {
 
 	private static final ThreadLocal<Map<String, TimeZone>> timezones = new ThreadLocal<>();
+	
+	private static Pattern ISO_DATE_PATTERN = Pattern.compile("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$");
+
 
 	private DateExtractorHelper() {
 		super();
@@ -137,7 +141,7 @@ public class DateExtractorHelper {
 			timezone = TimeZone.getTimeZone(timezoneId);
 			timezoneMap.put(timezoneId, timezone);
 		}
-		if (!timezone.getID().equals(timezoneId) || !timezone.getID().equals(timezoneId)) {
+		if (!timezone.getID().equals(timezoneId)) {
 			throw new IndexOutOfBoundsException();
 		}
 
@@ -206,6 +210,10 @@ public class DateExtractorHelper {
 			buffer.append('0');
 		}
 		buffer.append(strValue);
+	}
+
+	public static boolean isDate(String isoDate) {
+		return ISO_DATE_PATTERN.matcher(isoDate).matches();
 	}
 
 }
