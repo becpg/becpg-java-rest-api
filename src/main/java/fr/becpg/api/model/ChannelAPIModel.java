@@ -38,9 +38,9 @@ public class ChannelAPIModel {
 	/** Constant <code>PROP_CHANNELLIST_PUBLISHEDDATE="bp:pubChannellListPublishedDate"</code> */
 	public static final String PROP_CHANNELLIST_PUBLISHEDDATE = "bp:pubChannelListPublishedDate";
 	/** Constant <code>PROP_CHANNELLIST_STATUS="bp:pubChannellListStatus"</code> */
-	public static final String PROP_CHANNELLIST_STATUS = "bp:pubChannellListStatus";
+	public static final String PROP_CHANNELLIST_STATUS = "bp:pubChannelListStatus";
 	/** Constant <code>PROP_CHANNELLIST_ERROR="bp:pubChannellListError"</code> */
-	public static final String PROP_CHANNELLIST_ERROR = "bp:pubChannellListError";
+	public static final String PROP_CHANNELLIST_ERROR = "bp:pubChannelListError";
 	/** Constant <code>PROP_CHANNELLIST_FORCEPUBLIVCATION="bp:pubChannelListForcePublication"</code> */
 	public static final String PROP_CHANNELLIST_FORCEPUBLIVCATION = "bp:pubChannelListForcePublication";
 	/** Constant <code>PROP_CHANNEL_CONFIG="bp:pubChannelConfig"</code> */
