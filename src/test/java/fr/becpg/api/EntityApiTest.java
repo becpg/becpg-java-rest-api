@@ -4,8 +4,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UncheckedIOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -66,7 +72,7 @@ class EntityApiTest {
 	
 
 	@Test
-	void testEntityApi() {
+	void testEntityApi() throws JSONException {
 
 		mockBackEnd.enqueue(new MockResponse().setBody(asString(entities)).addHeader("Content-Type", "application/json"));
 
@@ -80,8 +86,19 @@ class EntityApiTest {
 			logger.info("Entity ref: " + entityRef.getEntity().toString());
 			
 			mockBackEnd.enqueue(new MockResponse().setBody(asString(entity)).addHeader("Content-Type", "application/json"));
+			
+			 Map<String,Boolean> params = new HashMap<>();
+			JSONObject jsonObject = new JSONObject("{\"appendCode\":false,\"appendErpCode\":false,\"appendNodeRef\":false,\"appendMlTextConstraint\":false,\"appendDataListNodeRef\":false}");
+			@SuppressWarnings("unchecked")
+			Iterator<String> keys = jsonObject.keys();
+			while ( keys.hasNext()) {
+			    String key = keys.next();
+			    Boolean value = jsonObject.getBoolean(key);
+			    params.put(key, value);
+			}
+			
 
-			RemoteEntity entity = entityApi.get(entityRef.getEntity().getId());
+			RemoteEntity entity = entityApi.get(entityRef.getEntity().getId(),new ArrayList<>(), new ArrayList<>(), params);
 
 			Assert.assertNotNull(entity);
 			Assert.assertNotNull(entity.getName());

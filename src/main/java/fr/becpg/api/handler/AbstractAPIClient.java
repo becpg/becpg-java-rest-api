@@ -117,7 +117,7 @@ public abstract class AbstractAPIClient implements InitializingBean{
 		if (params != null) {
 			ObjectMapper objectMapper = new ObjectMapper();
 			try {
-				return objectMapper.writeValueAsString(params);
+				return objectMapper.writeValueAsString(params).replace("{", "%7B").replace("}", "%7D");
 			} catch (JsonProcessingException e) {
 				//Do Nothing here
 			}
