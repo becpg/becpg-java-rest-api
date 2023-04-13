@@ -102,7 +102,7 @@ public interface EntityAPI {
 	 * - "appendErpCode" (true): disables the addition of the ERP code
 	 * - "appendMlTextConstraint" (true): disables the addition of multilingual constraints
 	 * - "appendNodeRef" (true): disables the addition of the node ID
-	 * - "appendDataListNodeRef" (true): disables the addition of the node ID for data list nodes
+	 * - "appendMlText" (true): disables the addition of the node ID for data list nodes
 	 * - "appendContent" (false): enables the inclusion of file content in the JSON response
 	 *
 	 * @param id a string representing the ID of the entity

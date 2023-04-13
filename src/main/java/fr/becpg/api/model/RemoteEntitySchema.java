@@ -32,7 +32,16 @@ public class RemoteEntitySchema {
 
 	@JsonProperty("type")
 	private String type;
+	
+	@JsonProperty("format")
+	private String format;
 
+	@JsonProperty("$supportedLocales")
+	private String supportedLocales;
+	
+	@JsonProperty("$locale")
+	private String locale;
+	
 	@JsonProperty("properties")
 	private Map<String, RemoteEntitySchema> properties;
 	
@@ -201,15 +210,37 @@ public class RemoteEntitySchema {
 		this.items = items;
 	}
 
+	
+	public String getFormat() {
+		return format;
+	}
 
-	/** {@inheritDoc} */
+	public void setFormat(String format) {
+		this.format = format;
+	}
+
+	public String getSupportedLocales() {
+		return supportedLocales;
+	}
+
+	public void setSupportedLocales(String supportedLocales) {
+		this.supportedLocales = supportedLocales;
+	}
+
+	public String getLocale() {
+		return locale;
+	}
+
+	public void setLocale(String locale) {
+		this.locale = locale;
+	}
+
 	@Override
 	public int hashCode() {
-		return Objects.hash(description, items, properties, required, schemaId, schemaVersion, title, type);
+		return Objects.hash(description, format, items, locale, properties, required, schemaId, schemaVersion, supportedLocales, title, type);
 	}
 
 
-	/** {@inheritDoc} */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -219,9 +250,10 @@ public class RemoteEntitySchema {
 		if (getClass() != obj.getClass())
 			return false;
 		RemoteEntitySchema other = (RemoteEntitySchema) obj;
-		return Objects.equals(description, other.description) && Objects.equals(items, other.items) && Objects.equals(properties, other.properties)
-				&& Objects.equals(required, other.required) && Objects.equals(schemaId, other.schemaId)
-				&& Objects.equals(schemaVersion, other.schemaVersion) && Objects.equals(title, other.title) && Objects.equals(type, other.type);
+		return Objects.equals(description, other.description) && Objects.equals(format, other.format) && Objects.equals(items, other.items)
+				&& Objects.equals(locale, other.locale) && Objects.equals(properties, other.properties) && Objects.equals(required, other.required)
+				&& Objects.equals(schemaId, other.schemaId) && Objects.equals(schemaVersion, other.schemaVersion)
+				&& Objects.equals(supportedLocales, other.supportedLocales) && Objects.equals(title, other.title) && Objects.equals(type, other.type);
 	}
 
 	
