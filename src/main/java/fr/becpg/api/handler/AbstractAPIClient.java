@@ -114,7 +114,7 @@ public abstract class AbstractAPIClient implements InitializingBean{
 	 * @return a {@link java.lang.String} object
 	 */
 	protected String buildJsonParams(Map<String, Boolean> params) {
-		if (params != null) {
+		if (params != null && !params.isEmpty()) {
 			ObjectMapper objectMapper = new ObjectMapper();
 			try {
 				return objectMapper.writeValueAsString(params).replace("{", "%7B").replace("}", "%7D");
