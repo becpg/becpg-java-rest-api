@@ -49,6 +49,19 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 
 		return entityList != null ? entityList.getEntities() : null;
 	}
+	
+	
+	/** {@inheritDoc} */
+	@Override
+	public List<RemoteEntityRef> listByPath(@NonNull String query, @NonNull String path, List<String> attributes, int maxResults) {
+		RemoteEntityList entityList = webClient.get()
+				.uri(uriBuilder -> uriBuilder.path("/entity/list").queryParam(PARAM_FORMAT, FORMAT_JSON).queryParam(PARAM_QUERY, query).queryParam(PARAM_PATH, path)
+						.queryParam(PARAM_MAX_RESULTS, maxResults).queryParam(PARAM_FIELDS, buildFieldsParam(attributes)).build())
+				.accept(MediaType.APPLICATION_JSON).retrieve().onStatus(HttpStatus::isError, response -> response.bodyToMono(RemoteAPIError.class) 
+                        .flatMap(error -> Mono.error(new RemoteAPIException(error)))) .bodyToMono(RemoteEntityList.class).block();
+
+		return entityList != null ? entityList.getEntities() : null;
+	}
 
 	/** {@inheritDoc} */
 	@Override

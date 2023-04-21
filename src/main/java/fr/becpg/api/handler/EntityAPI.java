@@ -32,6 +32,16 @@ public interface EntityAPI {
 	List<RemoteEntityRef> list(String query, List<String> attributes,  int maxResults);
 	
 	/**
+	 * <p>list.</p>
+	 *
+	 * @param query a {@link java.lang.String} object
+	 * @param path a {@link java.lang.String} object
+	 * @param attributes a {@link java.util.List} object
+	 * @param maxResults a int
+	 * @return a {@link java.util.List} object
+	 */
+	List<RemoteEntityRef> listByPath(String query, String path, List<String> attributes, int maxResults);
+	/**
 	 * <p>get.</p>
 	 *
 	 * @param id a {@link java.lang.String} object
@@ -140,5 +150,7 @@ public interface EntityAPI {
 	 * @return a {@link fr.becpg.api.model.RemoteEntity} object
 	 */
 	RemoteEntity update(RemoteEntity entity, boolean createversion, boolean majorVersion, String versionDescription );
+	
+	
 	
 }

@@ -33,6 +33,8 @@ public abstract class AbstractAPIClient implements InitializingBean{
 	protected static final String PARAM_FORMAT = "format";
 	/** Constant <code>PARAM_QUERY="query"</code> */
 	protected static final String PARAM_QUERY = "query";
+	/** Constant <code>PARAM_PATH="path"</code> */
+	protected static final String PARAM_PATH = "path";
 	/** Constant <code>PARAM_MAX_RESULTS="maxResults"</code> */
 	protected static final String PARAM_MAX_RESULTS = "maxResults";
 	/** Constant <code>PARAM_FIELDS="fields"</code> */
