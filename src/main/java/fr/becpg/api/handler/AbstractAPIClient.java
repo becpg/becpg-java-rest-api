@@ -2,15 +2,15 @@ package fr.becpg.api.handler;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.DefaultUriBuilderFactory;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fr.becpg.api.BecpgRestApiConfiguration;
 import io.netty.handler.logging.LogLevel;
@@ -25,6 +25,7 @@ import reactor.netty.transport.logging.AdvancedByteBufFormat;
  */
 public abstract class AbstractAPIClient implements InitializingBean{
 
+	private static final String JSON_PARAM = "jsonParam";
 	/** Constant <code>FORMAT_JSON_SCHEMA="json_schema"</code> */
 	protected static final String FORMAT_JSON_SCHEMA = "json_schema";
 	/** Constant <code>FORMAT_JSON="json"</code> */
@@ -115,16 +116,17 @@ public abstract class AbstractAPIClient implements InitializingBean{
 	 * @param params a {@link java.util.Map} object
 	 * @return a {@link java.lang.String} object
 	 */
-	protected String buildJsonParams(Map<String, Boolean> params) {
+	protected <T> MultiValueMap<String, String> buildJsonParams(Map<String, T> params) {
+		
+		MultiValueMap<String, String> paramsMap = new LinkedMultiValueMap<>(); 
+		
 		if (params != null && !params.isEmpty()) {
-			ObjectMapper objectMapper = new ObjectMapper();
-			try {
-				return objectMapper.writeValueAsString(params).replace("{", "%7B").replace("}", "%7D");
-			} catch (JsonProcessingException e) {
-				//Do Nothing here
+			for (Entry<String, T> entry : params.entrySet()) {
+				paramsMap.put(JSON_PARAM + entry.getKey(), List.of(entry.getValue() == null ? null : entry.getValue().toString()));
 			}
 		}
-		return null;
+		
+		return paramsMap;
 	}
 
 }

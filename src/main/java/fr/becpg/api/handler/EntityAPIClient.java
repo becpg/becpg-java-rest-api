@@ -81,7 +81,7 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 		RemoteEntityRef entityRef = webClient.get()
 				.uri(uriBuilder -> uriBuilder.path("/entity").queryParam(PARAM_FORMAT, FORMAT_JSON).queryParam(PARAM_NODEREF, buildNodeRefParam(id))
 						.queryParam(PARAM_FIELDS, buildFieldsParam(attributes)).queryParam(PARAM_LISTS, buildFieldsParam(datalists))
-						.queryParam(PARAM_PARAMS, buildJsonParams(params)).build())
+						.queryParams(buildJsonParams(params)).build())
 				.accept(MediaType.APPLICATION_JSON)
 				.retrieve().onStatus(HttpStatus::isError, response -> response.bodyToMono(RemoteAPIError.class) 
                         .flatMap(error -> Mono.error(new RemoteAPIException(error)))) .bodyToMono(RemoteEntityRef.class).block();
@@ -156,7 +156,7 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 		return webClient.get()
 		.uri(uriBuilder -> uriBuilder.path("/entity").queryParam(PARAM_FORMAT, FORMAT_JSON_SCHEMA).queryParam(PARAM_NODEREF, buildNodeRefParam(id))
 				.queryParam(PARAM_FIELDS, buildFieldsParam(attributes)).queryParam(PARAM_LISTS, buildFieldsParam(datalists))
-				.queryParam(PARAM_PARAMS, buildJsonParams(params)).build())
+				.queryParams(buildJsonParams(params)).build())
 		.accept(MediaType.APPLICATION_JSON)
 		.retrieve().onStatus(HttpStatus::isError, response -> response.bodyToMono(RemoteAPIError.class) 
                 .flatMap(error -> Mono.error(new RemoteAPIException(error)))) .bodyToMono(RemoteEntitySchema.class).block();
