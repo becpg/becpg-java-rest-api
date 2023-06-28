@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 
 import fr.becpg.api.model.RemoteAPIError;
@@ -43,7 +43,7 @@ public class ContentAPIClient extends AbstractAPIClient implements ContentAPI {
 					.uri(uriBuilder -> uriBuilder.path("/entity/content").queryParam(PARAM_NODEREF, buildNodeRefParam(remoteNodeInfo.getId()))
 							.queryParam(PARAM_SHARE, true).build())
 					.retrieve()
-					.onStatus(HttpStatus::isError,
+					.onStatus(HttpStatusCode::isError,
 							response -> response.bodyToMono(RemoteAPIError.class).flatMap(error -> Mono.error(new RemoteAPIException(error))))
 					.bodyToMono(DataBuffer.class).block();
 
@@ -65,7 +65,7 @@ public class ContentAPIClient extends AbstractAPIClient implements ContentAPI {
 		Flux<DataBuffer> dataBuffer = webClient.get()
 				.uri(uriBuilder -> uriBuilder.path("/entity/content").queryParam(PARAM_NODEREF, buildNodeRefParam(remoteNodeInfo.getId())).build())
 				.retrieve()
-				.onStatus(HttpStatus::isError,
+				.onStatus(HttpStatusCode::isError,
 						response -> response.bodyToMono(RemoteAPIError.class).flatMap(error -> Mono.error(new RemoteAPIException(error))))
 				.bodyToFlux(DataBuffer.class);
 
@@ -83,7 +83,7 @@ public class ContentAPIClient extends AbstractAPIClient implements ContentAPI {
 			Flux<DataBuffer> dataBuffer = webClient.get().uri(
 					uriBuilder -> uriBuilder.path("/entity/content").queryParam(PARAM_NODEREF, buildNodeRefParam(remoteNodeInfo.getId())).build())
 					.retrieve()
-					.onStatus(HttpStatus::isError,
+					.onStatus(HttpStatusCode::isError,
 							response -> response.bodyToMono(RemoteAPIError.class).flatMap(error -> Mono.error(new RemoteAPIException(error))))
 					.bodyToFlux(DataBuffer.class);
 

@@ -2,7 +2,7 @@ package fr.becpg.api.handler;
 
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
@@ -31,7 +31,7 @@ public class ChannelAPIClient extends AbstractAPIClient implements ChannelAPI  {
 	  RemoteEntityList entityList = webClient
 				.get().uri(uriBuilder -> uriBuilder.path("/channel/list").queryParam(PARAM_FORMAT, FORMAT_JSON)
 						.queryParam(PARAM_CHANNELID, channelId).build())
-				.accept(MediaType.APPLICATION_JSON).retrieve().onStatus(HttpStatus::isError, response -> response.bodyToMono(RemoteAPIError.class) 
+				.accept(MediaType.APPLICATION_JSON).retrieve().onStatus(HttpStatusCode::isError, response -> response.bodyToMono(RemoteAPIError.class) 
                         .flatMap(error -> Mono.error(new RemoteAPIException(error)))) .bodyToMono(RemoteEntityList.class).block();
 
 		return entityList !=null ? entityList.getEntities() : null;
@@ -44,7 +44,7 @@ public class ChannelAPIClient extends AbstractAPIClient implements ChannelAPI  {
 		RemoteEntityList entityList = webClient.get()
 				.uri(uriBuilder -> uriBuilder.path("/channel/list").queryParam(PARAM_FORMAT, FORMAT_JSON).queryParam(PARAM_CHANNELID, channelId)
 						.queryParam(PARAM_MAX_RESULTS, maxResults).queryParam(PARAM_FIELDS, buildFieldsParam(attributes)).build())
-				.accept(MediaType.APPLICATION_JSON).retrieve().onStatus(HttpStatus::isError, response -> response.bodyToMono(RemoteAPIError.class) 
+				.accept(MediaType.APPLICATION_JSON).retrieve().onStatus(HttpStatusCode::isError, response -> response.bodyToMono(RemoteAPIError.class) 
                         .flatMap(error -> Mono.error(new RemoteAPIException(error)))) .bodyToMono(RemoteEntityList.class).block();
 		
 		return entityList !=null ? entityList.getEntities() : null;
@@ -57,7 +57,7 @@ public class ChannelAPIClient extends AbstractAPIClient implements ChannelAPI  {
 		RemoteEntityRef entityRef = webClient
 				.get().uri(uriBuilder -> uriBuilder.path("/entity").queryParam(PARAM_FORMAT, FORMAT_JSON)
 						.queryParam(PARAM_QUERY, buildQuery(channelId)).build())
-				.accept(MediaType.APPLICATION_JSON).retrieve().onStatus(HttpStatus::isError, response -> response.bodyToMono(RemoteAPIError.class) 
+				.accept(MediaType.APPLICATION_JSON).retrieve().onStatus(HttpStatusCode::isError, response -> response.bodyToMono(RemoteAPIError.class) 
                         .flatMap(error -> Mono.error(new RemoteAPIException(error)))) .bodyToMono(RemoteEntityRef.class).block();
 
 		return entityRef != null ?  entityRef.getEntity() : null;

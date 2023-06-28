@@ -6,9 +6,11 @@ import java.util.Map.Entry;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
@@ -55,6 +57,11 @@ public abstract class AbstractAPIClient implements InitializingBean{
 
 	@Autowired
 	protected BecpgRestApiConfiguration apiConfiguration;
+	
+	@Autowired
+	@Qualifier("authenticationFilter")
+	protected ExchangeFilterFunction authenticationFilter;
+	
 	protected WebClient webClient;
 
 	/**
@@ -72,14 +79,13 @@ public abstract class AbstractAPIClient implements InitializingBean{
 
 		this.webClient = WebClient.builder().codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(16 * 1024 * 1024))
 				.clientConnector(new ReactorClientHttpConnector(httpClient)).defaultHeaders(header -> {
-					header.setBasicAuth(apiConfiguration.getBasicAuthUsername(), apiConfiguration.getBasicAuthPassword());
 					if (apiConfiguration.getCustomHeaders() != null) {
 						for (Map.Entry<String, String> customHeader : apiConfiguration.getCustomHeaders().entrySet()) {
 							header.set(customHeader.getKey(), customHeader.getValue());
 						}
 
 					}
-				}).baseUrl(baseUrl).build();
+				}).filter(authenticationFilter).baseUrl(baseUrl).build();
 
 	}
 

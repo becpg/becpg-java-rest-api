@@ -14,35 +14,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class BecpgRestApiConfiguration {
 
-	@Value("${content.service.security.basicAuth.username}")
-	private String basicAuthUsername;
-
-	@Value("${content.service.security.basicAuth.password}")
-	private String basicAuthPassword;
-
 	@Value("${content.service.url}")
 	private String contentServiceUrl;
 	
 	@Value("#{${content.service.headers:{}}}")
 	private Map<String,String> customHeaders;
-
-	/**
-	 * <p>Getter for the field <code>basicAuthUsername</code>.</p>
-	 *
-	 * @return a {@link java.lang.String} object
-	 */
-	public String getBasicAuthUsername() {
-		return basicAuthUsername;
-	}
-
-	/**
-	 * <p>Getter for the field <code>basicAuthPassword</code>.</p>
-	 *
-	 * @return a {@link java.lang.String} object
-	 */
-	public String getBasicAuthPassword() {
-		return basicAuthPassword;
-	}
 
 	/**
 	 * <p>Getter for the field <code>contentServiceUrl</code>.</p>
