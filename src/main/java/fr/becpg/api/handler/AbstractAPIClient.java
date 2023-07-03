@@ -15,6 +15,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import fr.becpg.api.BecpgRestApiConfiguration;
+import fr.becpg.api.security.WebClientAuthenticationProvider;
 import io.netty.handler.logging.LogLevel;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.transport.logging.AdvancedByteBufFormat;
@@ -58,9 +59,8 @@ public abstract class AbstractAPIClient implements InitializingBean{
 	@Autowired
 	protected BecpgRestApiConfiguration apiConfiguration;
 	
-	@Autowired
-	@Qualifier("authenticationFilter")
-	protected ExchangeFilterFunction authenticationFilter;
+	@Autowired(required = false)
+	protected WebClientAuthenticationProvider authenticationProvider;
 	
 	protected WebClient webClient;
 
@@ -77,7 +77,7 @@ public abstract class AbstractAPIClient implements InitializingBean{
 
 		HttpClient httpClient = HttpClient.create().wiretap("reactor.netty.http.client.HttpClient", LogLevel.DEBUG, AdvancedByteBufFormat.TEXTUAL);
 
-		this.webClient = WebClient.builder().codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(16 * 1024 * 1024))
+		WebClient.Builder builder =	 WebClient.builder().codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(16 * 1024 * 1024))
 				.clientConnector(new ReactorClientHttpConnector(httpClient)).defaultHeaders(header -> {
 					if (apiConfiguration.getCustomHeaders() != null) {
 						for (Map.Entry<String, String> customHeader : apiConfiguration.getCustomHeaders().entrySet()) {
@@ -85,8 +85,13 @@ public abstract class AbstractAPIClient implements InitializingBean{
 						}
 
 					}
-				}).filter(authenticationFilter).baseUrl(baseUrl).build();
-
+				});
+		
+		if(authenticationProvider!=null) {
+			builder= builder.filter(authenticationProvider.authenticationFilter());
+		}
+		
+		 this.webClient = builder.baseUrl(baseUrl).build();
 	}
 
 	/**

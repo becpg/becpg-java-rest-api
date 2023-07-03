@@ -18,7 +18,7 @@ import reactor.core.publisher.Mono;
 public class DelegatedAuthenticationConfiguration {
 
 	@Bean("authenticationFilter")
-    ExchangeFilterFunction authenticationFilter(DelegatedAuthenticationProvider    delegatedAuthenticationProvider) {
-       return ExchangeFilterFunction.ofRequestProcessor(clientRequest -> Mono.just(delegatedAuthenticationProvider.setAuthentication(clientRequest)));
+	WebClientAuthenticationProvider authenticationFilter(DelegatedAuthenticationProvider    delegatedAuthenticationProvider) {
+       return () -> ExchangeFilterFunction.ofRequestProcessor(clientRequest -> Mono.just(delegatedAuthenticationProvider.setAuthentication(clientRequest)));
     }
 }

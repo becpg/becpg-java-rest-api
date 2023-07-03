@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunctions;
 
 /**
@@ -24,7 +23,7 @@ public class BasicAuthConfiguration {
 
     @Bean("authenticationFilter")
     @ConditionalOnProperty("content.service.security.basicAuth.username")
-    ExchangeFilterFunction authenticationFilter (){
-        return ExchangeFilterFunctions.basicAuthentication(this.basicAuthUsername, this.basicAuthPassword);
+    WebClientAuthenticationProvider authenticationFilter (){
+        return () -> ExchangeFilterFunctions.basicAuthentication(this.basicAuthUsername, this.basicAuthPassword);
     }
 }

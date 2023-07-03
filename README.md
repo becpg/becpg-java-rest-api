@@ -77,30 +77,38 @@ content.service.security.basicAuth.password=admin
 If you are using OAuth2, you can use client-credential based authentication:
 
 ```
-spring.security.oauth2.client.registration.becpg-rest-api.provider=alfresco-identity-service
-spring.security.oauth2.client.registration.becpg-rest-api.client-id=clientId
-spring.security.oauth2.client.registration.becpg-rest-api.client-secret=clientSecret
-spring.security.oauth2.client.registration.becpg-rest-api.authorization-grant-type=client_credentials
-spring.security.oauth2.client.provider.alfresco-identity-service.token-uri=${keycloak.auth-server-url}/auth/realms/${keycloak.realm}/protocol/openid-connect/token
+spring.security.oauth2.client.registration.becpg-java-rest-api.provider=becpg-ids
+spring.security.oauth2.client.registration.becpg-java-rest-api.client-id=clientId
+spring.security.oauth2.client.registration.becpg-java-rest-api.client-secret=clientSecret
+spring.security.oauth2.client.registration.becpg-java-rest-api.authorization-grant-type=client_credentials
+spring.security.oauth2.client.provider.becpg-ids.token-uri=${keycloak.auth-server-url}/auth/realms/${keycloak.realm}/protocol/openid-connect/token
 ```
 
 Or OAuth2 password based authentication:
 
 ```
-spring.security.oauth2.client.registration.becpg-rest-api.provider=alfresco-identity-service
-spring.security.oauth2.client.registration.becpg-rest-api.client-id=clientId
-spring.security.oauth2.client.registration.becpg-rest-api.client-secret=clientSecret
-spring.security.oauth2.client.registration.becpg-rest-api.username=username
-spring.security.oauth2.client.registration.becpg-rest-api.password=pwd
-spring.security.oauth2.client.registration.becpg-rest-api.authorization-grant-type=password
-spring.security.oauth2.client.provider.alfresco-identity-service.token-uri=${keycloak.auth-server-url}/auth/realms/${keycloak.realm}/protocol/openid-connect/token
+spring.security.oauth2.client.registration.becpg-java-rest-api.provider=becpg-ids
+spring.security.oauth2.client.registration.becpg-java-rest-api.client-id=clientId
+spring.security.oauth2.client.registration.becpg-java-rest-api.client-secret=clientSecret
+spring.security.oauth2.client.registration.becpg-java-rest-api.username=username
+spring.security.oauth2.client.registration.becpg-java-rest-api.password=pwd
+spring.security.oauth2.client.registration.becpg-java-rest-api.authorization-grant-type=password
+spring.security.oauth2.client.provider.becpg-ids.token-uri=${keycloak.auth-server-url}/auth/realms/${keycloak.realm}/protocol/openid-connect/token
+```
+
+You can also use or combine with custom header authentication
+
+```
+content.service.headers={'x-restricted-custom':'XXXXXX'}
 ```
 
 Finally, if you want to provide a custom authentication mechanism, you can enable the delegated external authentication:
 
+```
 content.service.security.delegated=true
+```
 
-And provide a bean that implements the interface DelegatedAuthenticationProvider.
+And provide a bean that implements the interface **DelegatedAuthenticationProvider**.
 
 #### 5. Consume the REST API
 
