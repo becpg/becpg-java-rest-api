@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -15,47 +17,49 @@
 	<properties>
 		<java.version>17</java.version>
 	</properties>
-	
+
 	<organization>
 		<name>BeCPG</name>
 		<url>http://www.becpg.fr</url>
 	</organization>
-	
-    <prerequisites>
-        <maven>3.3.0</maven>
-    </prerequisites>
-    
+
+	<prerequisites>
+		<maven>3.3.0</maven>
+	</prerequisites>
+
 	<mailingLists>
 		<mailingList>
 			<name>becpg</name>
 			<post>support@becpg.fr</post>
 		</mailingList>
 	</mailingLists>
-	
+
 	<issueManagement>
 		<system>RedMine</system>
 		<url>https://support.becpg.fr</url>
 	</issueManagement>
-	
+
 	<licenses>
 		<license>
 			<name>GNU LESSER GENERAL PUBLIC LICENSE</name>
 			<url>http://www.gnu.org/licenses/lgpl-3.0.en.html</url>
-			<comments>Copyright (C) 2010-2023 beCPG. 
-  
-			  beCPG is free software: you can redistribute it and/or modify 
-			  it under the terms of the GNU Lesser General Public License as published by 
-			  the Free Software Foundation, either version 3 of the License, or 
-			  (at your option) any later version. 
-			   
-			  beCPG is distributed in the hope that it will be useful, 
-			  but WITHOUT ANY WARRANTY; without even the implied warranty of 
-			  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
-			  GNU Lesser General Public License for more details. 
-			 </comments>
+			<comments>Copyright (C) 2010-2023 beCPG.
+
+				beCPG is free software: you can redistribute it and/or modify
+				it under the terms of the GNU Lesser General Public License as
+				published by
+				the Free Software Foundation, either version 3 of the License,
+				or
+				(at your option) any later version.
+
+				beCPG is distributed in the hope that it will be useful,
+				but WITHOUT ANY WARRANTY; without even the implied warranty of
+				MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+				GNU Lesser General Public License for more details.
+			</comments>
 		</license>
 	</licenses>
-	
+
 	<developers>
 		<developer>
 			<id>matthieu.laborie</id>
@@ -65,7 +69,7 @@
 			<organization>beCPG</organization>
 			<organizationUrl>http://www.becpg.fr</organizationUrl>
 		</developer>
-	</developers>	
+	</developers>
 
 	<dependencies>
 
@@ -79,16 +83,17 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-oauth2-client</artifactId>
+		</dependency>
 		
 		<dependency>
-      		<groupId>org.springframework.security</groupId>
-      		<artifactId>spring-security-oauth2-client</artifactId>
-  	 </dependency>
-    <dependency>
-      <groupId>org.springframework.security</groupId>
-      <artifactId>spring-security-config</artifactId>
-    </dependency>
-		
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+		</dependency>
+
 		<dependency>
 			<groupId>com.squareup.okhttp3</groupId>
 			<artifactId>okhttp</artifactId>
