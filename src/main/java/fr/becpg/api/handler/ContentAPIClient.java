@@ -75,25 +75,16 @@ public class ContentAPIClient extends AbstractAPIClient implements ContentAPI {
 	@Override
 	public InputStream getContent(RemoteNodeInfo remoteNodeInfo) throws IOException {
 
-<<<<<<< HEAD
-			Flux<DataBuffer> dataBuffer = webClient.get().uri(
-					uriBuilder -> uriBuilder.path("/entity/content").queryParam(PARAM_NODEREF, buildNodeRefParam(remoteNodeInfo.getId())).build())
-					.retrieve()
-					.onStatus(HttpStatusCode::isError,
-							response -> response.bodyToMono(RemoteAPIError.class).flatMap(error -> Mono.error(new RemoteAPIException(error))))
-					.bodyToFlux(DataBuffer.class);
-=======
 		DataBuffer dataBuffer = webClient.get()
 				.uri(uriBuilder -> uriBuilder.path("/entity/content").queryParam(PARAM_NODEREF, buildNodeRefParam(remoteNodeInfo.getId())).build())
 				.retrieve()
-				.onStatus(HttpStatus::isError,
+				.onStatus(HttpStatusCode::isError,
 						response -> response.bodyToMono(RemoteAPIError.class).flatMap(error -> Mono.error(new RemoteAPIException(error))))
 				.bodyToMono(DataBuffer.class).block();
 		if (dataBuffer != null) {
 			return dataBuffer.asInputStream(true);
 		}
 		return null;
->>>>>>> refs/heads/1.0.0
 
 	}
 
