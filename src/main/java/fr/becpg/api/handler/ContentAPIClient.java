@@ -4,8 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -48,7 +46,7 @@ public class ContentAPIClient extends AbstractAPIClient implements ContentAPI {
 					.bodyToMono(DataBuffer.class).block();
 
 			if (dataBuffer != null) {
-				try (InputStream in = dataBuffer.asInputStream()) {
+				try (InputStream in = dataBuffer.asInputStream(true)) {
 					sharedId = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8)).lines().collect(Collectors.joining("\n"));
 
 				}
@@ -76,21 +74,18 @@ public class ContentAPIClient extends AbstractAPIClient implements ContentAPI {
 	/** {@inheritDoc} */
 	@Override
 	public InputStream getContent(RemoteNodeInfo remoteNodeInfo) throws IOException {
-			PipedOutputStream outputStream = new PipedOutputStream();
-			PipedInputStream inputStream = new PipedInputStream(1024 * 10);
-			inputStream.connect(outputStream);
 
-			Flux<DataBuffer> dataBuffer = webClient.get().uri(
-					uriBuilder -> uriBuilder.path("/entity/content").queryParam(PARAM_NODEREF, buildNodeRefParam(remoteNodeInfo.getId())).build())
-					.retrieve()
-					.onStatus(HttpStatus::isError,
-							response -> response.bodyToMono(RemoteAPIError.class).flatMap(error -> Mono.error(new RemoteAPIException(error))))
-					.bodyToFlux(DataBuffer.class);
+		DataBuffer dataBuffer = webClient.get()
+				.uri(uriBuilder -> uriBuilder.path("/entity/content").queryParam(PARAM_NODEREF, buildNodeRefParam(remoteNodeInfo.getId())).build())
+				.retrieve()
+				.onStatus(HttpStatus::isError,
+						response -> response.bodyToMono(RemoteAPIError.class).flatMap(error -> Mono.error(new RemoteAPIException(error))))
+				.bodyToMono(DataBuffer.class).block();
+		if (dataBuffer != null) {
+			return dataBuffer.asInputStream(true);
+		}
+		return null;
 
-			DataBufferUtils.write(dataBuffer, outputStream)
-            .subscribe();
-
-			return inputStream;
 	}
 
 }
