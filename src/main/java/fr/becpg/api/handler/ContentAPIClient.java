@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import fr.becpg.api.model.RemoteAPIError;
 import fr.becpg.api.model.RemoteAPIException;
 import fr.becpg.api.model.RemoteNodeInfo;
+import fr.becpg.api.security.EnableAuthConfiguration;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -27,6 +28,7 @@ import reactor.core.publisher.Mono;
  * @author matthieu
  */
 @Component
+@EnableAuthConfiguration
 public class ContentAPIClient extends AbstractAPIClient implements ContentAPI {
 
 	private static final String PARAM_SHARE = "share";

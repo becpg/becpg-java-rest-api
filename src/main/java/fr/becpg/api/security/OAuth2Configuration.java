@@ -17,32 +17,7 @@ import org.springframework.security.oauth2.client.web.reactive.function.client.S
 public class OAuth2Configuration {
 
     private static final String OAUTH2_CLIENT_REGISTRATION_ID = "becpg-java-rest-api";
-//
-//    @Value("${spring.security.oauth2.client.registration.becpg-java-rest-api.username:#{null}}")
-//    private String oAuth2Username;
-//    @Value("${spring.security.oauth2.client.registration.becpg-java-rest-api.password:#{null}}")
-//    private String oAuth2Password;
 
-    
-//    @Bean
-//    ReactiveClientRegistrationRepository getRegistration(
-//            @Value("${spring.security.oauth2.client.provider.becpg-java-rest-api.token-uri}") String tokenUri,
-//            @Value("${spring.security.oauth2.client.registration.becpg-java-rest-api.client-id}") String clientId,
-//            @Value("${spring.security.oauth2.client.registration.becpg-java-rest-api.client-secret}") String clientSecret
-//    ) {
-//        ClientRegistration registration = ClientRegistration
-//                .withRegistrationId(OAUTH2_CLIENT_REGISTRATION_ID)
-//                .tokenUri(tokenUri)
-//                .clientId(clientId)
-//                .clientSecret(clientSecret)
-//                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-//                .build();
-//        
-//        
-//        
-//        
-//        return new InMemoryReactiveClientRegistrationRepository(registration);
-//    }
 
     @Bean("authenticationFilter")
     WebClientAuthenticationProvider authenticationFilter(ReactiveClientRegistrationRepository clientRegistrations) {

@@ -12,6 +12,7 @@ import fr.becpg.api.model.RemoteAPIException;
 import fr.becpg.api.model.RemoteEntity;
 import fr.becpg.api.model.RemoteEntityList;
 import fr.becpg.api.model.RemoteEntityRef;
+import fr.becpg.api.security.EnableAuthConfiguration;
 import reactor.core.publisher.Mono;
 
 /**
@@ -21,6 +22,7 @@ import reactor.core.publisher.Mono;
  * @author matthieu
  */
 @Component
+@EnableAuthConfiguration
 public class ChannelAPIClient extends AbstractAPIClient implements ChannelAPI  {
 
 	private static final String PARAM_CHANNELID = "channelId";
