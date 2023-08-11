@@ -15,6 +15,7 @@ This SDK provides functionality to consume beCPG REST Remote API.
 
 | Version | beCPG Version | Version API | Version JAVA | Changes |
 | --- | --- | --- | --- | -- |
+| 1.0.1 | >= 4.2.2 | >= 3.3 (Partial support on >=3.1) | JAVA 11 | Minor fix |
 | 1.0.0 | >= 4.2.2 | >= 3.3 (Partial support on >=3.1) | JAVA 11 | Remote API suport |
 
 ## How does it work?

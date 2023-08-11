@@ -22,6 +22,9 @@ public class ChannelAPIModel {
 
 	/** Constant <code>ASSOC_CHANNELLIST_CHANNEL="bp:pubChannelListChannel"</code> */
 	public static final String ASSOC_CHANNELLIST_CHANNEL = "bp:pubChannelListChannel";
+	
+	public static final String PROP_CHANNELLIST_ACTION = "bp:pubChannelListAction";
+	
 	/** Constant <code>PROP_CHANNEL_CATALOG_ID="bp:pubChannelCatalogId"</code> */
 	public static final String PROP_CHANNEL_CATALOG_ID = "bp:pubChannelCatalogId";
 	/** Constant <code>PROP_CHANNELLIST_MODIFIED_DATE="bp:pubChannelListModifiedDate"</code> */
@@ -95,6 +98,7 @@ public class ChannelAPIModel {
 	
 	/** Constant <code>FIELDS="bp:pubChannelId,bp:pubChannelAction,bp:"{trunked}</code> */
 	public static final String FIELDS = "bp:pubChannelId,bp:pubChannelAction,bp:pubChannelLastDate,bp:pubChannelConfig,bp:pubChannelConfigFile";
+
 
 	/**
 	 * <p>createChannelEntity.</p>
