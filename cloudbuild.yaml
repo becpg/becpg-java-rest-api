@@ -4,11 +4,4 @@ steps:
     args: ["test"]
   - name: maven:3-jdk-11
     entrypoint: mvn
-    args: ['package','-Dmaven.test.skip=true']            
-artifacts:
-  mavenArtifacts:
-  - repository: 'https://europe-west1-maven.pkg.dev/${PROJECT_ID}/becpg-mvn'
-    path : '/workspace/target/becpg-java-rest-api-1.0.0-SNAPSHOT.jar'
-    artifact_id: 'becpg-java-rest-api'
-    group_id: 'fr.becpg'
-    version: '1.0.0-SNAPSHOT'
+    args: ['deploy','-Dmaven.test.skip=true']
