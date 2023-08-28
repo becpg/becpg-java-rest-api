@@ -77,6 +77,15 @@ public class RemoteEntity extends RemoteNodeInfo {
 		return new ArrayList<>();
 	}
 	
+	/**
+	 * Allow to merge two entities
+	 * @param entity
+	 */
+	public void merge(RemoteEntity entity) {
+		super.merge(entity);
+		
+	}
+	
 	
 	/** {@inheritDoc} */
 	@Override
@@ -106,6 +115,7 @@ public class RemoteEntity extends RemoteNodeInfo {
 	public String toString() {
 		return "RemoteEntity [datalists=" + datalists + ", params=" + params + "]";
 	}
+
 
 	
 	
