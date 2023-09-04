@@ -15,8 +15,9 @@ This SDK provides functionality to consume beCPG REST Remote API.
 
 | Version | beCPG Version | Version API | Version JAVA | Changes |
 | --- | --- | --- | --- | -- |
+| 1.1.1 | >= 4.2.2 | >= 3.3 (Partial support on >=3.1) | JAVA 17 | Migrate To spring boot 3 and Java 17 |
 | 1.0.1 | >= 4.2.2 | >= 3.3 (Partial support on >=3.1) | JAVA 11 | Minor fix |
-| 1.0.0 | >= 4.2.2 | >= 3.3 (Partial support on >=3.1) | JAVA 11 | Remote API suport |
+| 1.0.0 | >= 4.2.2 | >= 3.3 (Partial support on >=3.1) | JAVA 11 | Remote API support |
 
 ## How does it work?
 
@@ -27,7 +28,7 @@ beCPG REST API SDK  consist of the following  libraries:
 
 ### Pre-Requisites
 
-* Java version 11 or higher
+* Java version 17 or higher
 * Maven version 3.3 or higher
 
 ### Quick start
@@ -62,7 +63,7 @@ Then, add the dependency on the desired starter(s)
    <dependency>
        <groupId>fr.becpg</groupId>
 	    <artifactId>becpg-java-rest-api</artifactId>
-		<version>1.0.0</version>
+		<version>1.1.0</version>
     </dependency>  
         
 </dependencies>
