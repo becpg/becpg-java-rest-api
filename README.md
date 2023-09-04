@@ -11,6 +11,13 @@ out-of-process Java applications that integrate with beCPG. <br/>
 
 This SDK provides functionality to consume beCPG REST Remote API.
 
+## Versions
+
+| Version | beCPG Version | Version API | Version JAVA | Changes |
+| --- | --- | --- | --- | -- |
+| 1.0.1 | >= 4.2.2 | >= 3.3 (Partial support on >=3.1) | JAVA 11 | Minor fix |
+| 1.0.0 | >= 4.2.2 | >= 3.3 (Partial support on >=3.1) | JAVA 11 | Remote API suport |
+
 ## How does it work?
 
 beCPG REST API SDK  consist of the following  libraries:

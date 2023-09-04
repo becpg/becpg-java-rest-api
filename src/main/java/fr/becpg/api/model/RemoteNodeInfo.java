@@ -2,6 +2,7 @@ package fr.becpg.api.model;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -465,6 +466,27 @@ public class RemoteNodeInfo {
 		}
 		return ret;
 	}
+	
+	/**
+	 * Allow to merge two entities
+	 * @param entity
+	 */
+	public void merge(RemoteEntity entity) {
+		if(entity.getAttributes()!=null) {
+			if(attributes == null) {
+				attributes = new HashMap<>();
+			}
+			attributes.putAll(entity.getAttributes());
+		}
+		
+		if(entity.getOptionalIdentifiers()!=null) {
+			if(optionalIdentifiers == null) {
+				optionalIdentifiers = new HashMap<>();
+			}
+			optionalIdentifiers.putAll(entity.getOptionalIdentifiers());
+		}
+	}
+
 
 	/** {@inheritDoc} */
 	@Override
@@ -495,4 +517,5 @@ public class RemoteNodeInfo {
 				+ ", path=" + path + ", type=" + type + ", attributes=" + attributes + ", optionalIdentifiers=" + optionalIdentifiers + "]";
 	}
 
+	
 }

@@ -18,6 +18,12 @@
 		<java.version>17</java.version>
 	</properties>
 
+	<scm>
+		<connection>scm:git:https://github.com/becpg/becpg-artworks.git</connection>
+		<url>https://github.com/becpg/becpg-artworks</url>
+ 	   <tag>HEAD</tag>
+  </scm>
+	
 	<organization>
 		<name>BeCPG</name>
 		<url>http://www.becpg.fr</url>
@@ -70,6 +76,17 @@
 			<organizationUrl>http://www.becpg.fr</organizationUrl>
 		</developer>
 	</developers>
+	
+	 <distributionManagement>
+     	<repository>
+			<id>becpg-registry</id>
+			<url>artifactregistry://europe-west1-maven.pkg.dev/becpg-314807/becpg-mvn</url>
+		</repository>
+		<snapshotRepository>
+			<id>becpg-registry</id>
+			<url>artifactregistry://europe-west1-maven.pkg.dev/becpg-314807/becpg-mvn</url>
+		</snapshotRepository>
+    </distributionManagement>
 
 	<dependencies>
 
@@ -106,6 +123,26 @@
 		</dependency>
 
 	</dependencies>
-
+	
+    <build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-release-plugin</artifactId>
+					<configuration>
+						<tagNameFormat>@{project.version}</tagNameFormat>
+						<scmCommentPrefix>[Release]</scmCommentPrefix>
+						<pushChanges>false</pushChanges>
+					</configuration>
+			    </plugin>
+		</plugins>
+		<extensions>
+			<extension>
+				<groupId>com.google.cloud.artifactregistry</groupId>
+				<artifactId>artifactregistry-maven-wagon</artifactId>
+				<version>2.2.0</version>
+			</extension>
+		</extensions>
+	</build>
 
 </project>
