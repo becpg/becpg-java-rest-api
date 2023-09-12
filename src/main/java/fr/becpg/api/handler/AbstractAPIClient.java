@@ -1,5 +1,6 @@
 package fr.becpg.api.handler;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -16,6 +17,7 @@ import fr.becpg.api.BecpgRestApiConfiguration;
 import fr.becpg.api.security.WebClientAuthenticationProvider;
 import io.netty.handler.logging.LogLevel;
 import reactor.netty.http.client.HttpClient;
+import reactor.netty.resources.ConnectionProvider;
 import reactor.netty.transport.logging.AdvancedByteBufFormat;
 
 /**
@@ -72,8 +74,16 @@ public abstract class AbstractAPIClient implements InitializingBean{
 		String baseUrl = apiConfiguration.getContentServiceUrl() + "/alfresco/service/becpg/remote";
 		DefaultUriBuilderFactory factory = new DefaultUriBuilderFactory(baseUrl);
 		factory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.URI_COMPONENT);
+		
+		ConnectionProvider provider = ConnectionProvider.builder("becpg-java-rest-api")
+				.maxConnections(
+						50)
+				.maxIdleTime(Duration.ofSeconds(20))
+				.maxLifeTime(Duration.ofSeconds(60))
+				.pendingAcquireTimeout(Duration.ofSeconds(60))
+				.evictInBackground(Duration.ofSeconds(120)).build();
 
-		HttpClient httpClient = HttpClient.create().wiretap("reactor.netty.http.client.HttpClient", LogLevel.DEBUG, AdvancedByteBufFormat.TEXTUAL);
+		HttpClient httpClient = HttpClient.create(provider).wiretap("reactor.netty.http.client.HttpClient", LogLevel.DEBUG, AdvancedByteBufFormat.TEXTUAL);
 
 		WebClient.Builder builder =	 WebClient.builder().codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(16 * 1024 * 1024))
 				.clientConnector(new ReactorClientHttpConnector(httpClient)).defaultHeaders(header -> {
