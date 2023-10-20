@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class BecpgRestApiConfiguration {
 
-	@Value("${content.service.url}")
+	@Value("${content.service.url:}")
 	private String contentServiceUrl;
 	
 	@Value("#{${content.service.headers:{}}}")
