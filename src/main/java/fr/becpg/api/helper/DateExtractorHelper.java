@@ -21,7 +21,7 @@ public class DateExtractorHelper {
 
 	private static final ThreadLocal<Map<String, TimeZone>> timezones = new ThreadLocal<>();
 	
-	private static Pattern ISO_DATE_PATTERN = Pattern.compile("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$");
+	private static final Pattern ISO_DATE_PATTERN = Pattern.compile("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$");
 
 
 	private DateExtractorHelper() {
