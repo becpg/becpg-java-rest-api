@@ -9,7 +9,7 @@
 	</parent>
 	<groupId>fr.becpg</groupId>
 	<artifactId>becpg-java-rest-api</artifactId>
-	<version>1.1.0</version>
+	<version>1.1.1-SNAPSHOT</version>
 	<name>becpg-java-rest-api</name>
 	<description>beCPG Java Rest API</description>
 	<properties>
@@ -19,7 +19,7 @@
 	<scm>
 		<connection>scm:git:https://github.com/becpg/becpg-artworks.git</connection>
 		<url>https://github.com/becpg/becpg-artworks</url>
- 	   <tag>1.1.0</tag>
+ 	   <tag>HEAD</tag>
   </scm>
 	
 	<organization>
