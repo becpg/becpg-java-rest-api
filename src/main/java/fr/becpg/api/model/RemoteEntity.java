@@ -78,6 +78,22 @@ public class RemoteEntity extends RemoteNodeInfo {
 	}
 	
 	/**
+	 * Get a nested list
+	 *
+	 *
+	 * @param datalistName a {@link java.lang.String} object
+	 * @param nestedDatalistName a {@link java.lang.String} object
+	 * @return a {@link java.util.List} object
+	 */
+	@NonNull
+	public  List<RemoteNodeInfo> getDatalistNestedItems(String datalistName, String nestedDatalistName){
+		if(this.datalists!=null) {
+			return this.datalists.computeIfAbsent(datalistName + "@" + nestedDatalistName, d -> new ArrayList<>());
+		}
+		return new ArrayList<>();
+	}
+	
+	/**
 	 * Allow to merge two entities
 	 * @param entity
 	 */
