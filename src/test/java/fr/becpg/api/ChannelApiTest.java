@@ -1,5 +1,7 @@
 package fr.becpg.api;
 
+import static fr.becpg.api.helper.ResourcesHelper.asString;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -42,51 +44,40 @@ class ChannelApiTest {
 
 	@Value("classpath:channel.json")
 	private Resource channel;
-	
+
 	@BeforeAll
 	static void setUp() throws IOException {
 		mockBackEnd = new MockWebServer();
 		mockBackEnd.start();
-	
+
 	}
 
 	@AfterAll
 	static void tearDown() throws IOException {
 		mockBackEnd.shutdown();
 	}
-	
-	 @DynamicPropertySource
-	    static void properties(DynamicPropertyRegistry r) throws IOException {
-	        r.add("content.service.url", () -> "http://localhost:" + mockBackEnd.getPort());
-	    }
 
+	@DynamicPropertySource
+	static void properties(DynamicPropertyRegistry r) throws IOException {
+		r.add("content.service.url", () -> "http://localhost:" + mockBackEnd.getPort());
+	}
 
 	@Test
-	void testChannelApi() {
-		
+	void testChannelApi() throws IOException {
+
 		mockBackEnd.enqueue(new MockResponse().setBody(asString(channel)).addHeader("Content-Type", "application/json"));
-		
+
 		RemoteEntity channel = channelAPI.get("sample-channel");
 		Assert.assertNotNull(channel.getStringProp(ChannelAPIModel.PROP_CHANNEL_CONFIG));
-				
 
 		mockBackEnd.enqueue(new MockResponse().setBody(asString(entities)).addHeader("Content-Type", "application/json"));
 
 		List<RemoteEntityRef> entities = channelAPI.list("sample-channel");
 		for (RemoteEntityRef entityRef : entities) {
-			
-			Assert.assertNotNull(entityRef.getEntity());
-		
-		}
-		
-		
-	}
 
-	public static String asString(Resource resource) {
-		try (Reader reader = new InputStreamReader(resource.getInputStream(), "UTF-8")) {
-			return FileCopyUtils.copyToString(reader);
-		} catch (IOException e) {
-			throw new UncheckedIOException(e);
+			Assert.assertNotNull(entityRef.getEntity());
+
 		}
+
 	}
 }

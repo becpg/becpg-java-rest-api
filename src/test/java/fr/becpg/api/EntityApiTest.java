@@ -40,65 +40,58 @@ class EntityApiTest {
 
 	public static MockWebServer mockBackEnd;
 
-
 	@Autowired
 	private EntityAPI entityApi;
-	
 
 	@Value("classpath:entities.json")
 	private Resource entities;
 
 	@Value("classpath:entity.json")
 	private Resource entity;
-	
+
 	@BeforeAll
 	static void setUp() throws IOException {
 		mockBackEnd = new MockWebServer();
 		mockBackEnd.start();
-	
+
 	}
 
 	@AfterAll
 	static void tearDown() throws IOException {
 		mockBackEnd.shutdown();
 	}
-	
-	 @DynamicPropertySource
-	    static void properties(DynamicPropertyRegistry r) throws IOException {
-	        r.add("content.service.url", () -> "http://localhost:" + mockBackEnd.getPort());
-	    }
 
-
-	
+	@DynamicPropertySource
+	static void properties(DynamicPropertyRegistry r) throws IOException {
+		r.add("content.service.url", () -> "http://localhost:" + mockBackEnd.getPort());
+	}
 
 	@Test
 	void testEntityApi() throws JSONException {
 
 		mockBackEnd.enqueue(new MockResponse().setBody(asString(entities)).addHeader("Content-Type", "application/json"));
 
-
 		List<RemoteEntityRef> entities = entityApi.list("+TYPE:\"bcpg:finishedProduct\" AND +bcpg\\:erpCode:\"PERF-PF1\"");
 		for (RemoteEntityRef entityRef : entities) {
-			
 
 			Assert.assertNotNull(entityRef.getEntity());
 
 			logger.info("Entity ref: " + entityRef.getEntity().toString());
-			
+
 			mockBackEnd.enqueue(new MockResponse().setBody(asString(entity)).addHeader("Content-Type", "application/json"));
-			
-			 Map<String,Boolean> params = new HashMap<>();
-			JSONObject jsonObject = new JSONObject("{\"appendCode\":false,\"appendErpCode\":false,\"appendNodeRef\":false,\"appendMlTextConstraint\":false,\"appendDataListNodeRef\":false}");
+
+			Map<String, Boolean> params = new HashMap<>();
+			JSONObject jsonObject = new JSONObject(
+					"{\"appendCode\":false,\"appendErpCode\":false,\"appendNodeRef\":false,\"appendMlTextConstraint\":false,\"appendDataListNodeRef\":false}");
 			@SuppressWarnings("unchecked")
 			Iterator<String> keys = jsonObject.keys();
-			while ( keys.hasNext()) {
-			    String key = keys.next();
-			    Boolean value = jsonObject.getBoolean(key);
-			    params.put(key, value);
+			while (keys.hasNext()) {
+				String key = keys.next();
+				Boolean value = jsonObject.getBoolean(key);
+				params.put(key, value);
 			}
-			
 
-			RemoteEntity entity = entityApi.get(entityRef.getEntity().getId(),new ArrayList<>(), new ArrayList<>(), params);
+			RemoteEntity entity = entityApi.get(entityRef.getEntity().getId(), new ArrayList<>(), new ArrayList<>(), params);
 
 			Assert.assertNotNull(entity);
 			Assert.assertNotNull(entity.getName());
@@ -123,7 +116,6 @@ class EntityApiTest {
 		}
 
 	}
-	
 
 	public static String asString(Resource resource) {
 		try (Reader reader = new InputStreamReader(resource.getInputStream(), "UTF-8")) {
