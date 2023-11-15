@@ -1,9 +1,6 @@
 package fr.becpg.api;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -19,12 +16,8 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.Resource;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.util.FileCopyUtils;
 
 import fr.becpg.api.handler.EntityAPI;
 import fr.becpg.api.model.RemoteEntity;
@@ -33,21 +26,14 @@ import fr.becpg.api.model.RemoteNodeInfo;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 
-@SpringBootTest
-class EntityApiTest {
+class EntityApiTest extends AbstractRemoteApiTest {
 
 	Logger logger = LoggerFactory.getLogger(EntityApiTest.class);
-
-	public static MockWebServer mockBackEnd;
 
 	@Autowired
 	private EntityAPI entityApi;
 
-	@Value("classpath:entities.json")
-	private Resource entities;
-
-	@Value("classpath:entity.json")
-	private Resource entity;
+	private static MockWebServer mockBackEnd;
 
 	@BeforeAll
 	static void setUp() throws IOException {
@@ -67,7 +53,7 @@ class EntityApiTest {
 	}
 
 	@Test
-	void testEntityApi() throws JSONException {
+	void testEntityApi() throws JSONException, IOException {
 
 		mockBackEnd.enqueue(new MockResponse().setBody(asString(entities)).addHeader("Content-Type", "application/json"));
 
@@ -117,11 +103,4 @@ class EntityApiTest {
 
 	}
 
-	public static String asString(Resource resource) {
-		try (Reader reader = new InputStreamReader(resource.getInputStream(), "UTF-8")) {
-			return FileCopyUtils.copyToString(reader);
-		} catch (IOException e) {
-			throw new UncheckedIOException(e);
-		}
-	}
 }
