@@ -1,6 +1,7 @@
 package fr.becpg.api.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -22,9 +23,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class RemoteEntity extends RemoteNodeInfo {
 
 	@JsonProperty("datalists")
-	Map<String,List<RemoteNodeInfo>> datalists;
+	Map<String, List<RemoteNodeInfo>> datalists;
 	@JsonProperty("params")
-	Map<String,Object> params;
+	Map<String, Object> params;
 
 	/**
 	 * <p>Getter for the field <code>datalists</code>.</p>
@@ -35,7 +36,7 @@ public class RemoteEntity extends RemoteNodeInfo {
 	public Map<String, List<RemoteNodeInfo>> getDatalists() {
 		return datalists;
 	}
-	
+
 	/**
 	 * <p>Setter for the field <code>datalists</code>.</p>
 	 *
@@ -44,7 +45,7 @@ public class RemoteEntity extends RemoteNodeInfo {
 	public void setDatalists(Map<String, List<RemoteNodeInfo>> datalists) {
 		this.datalists = datalists;
 	}
-	
+
 	/**
 	 * <p>Getter for the field <code>params</code>.</p>
 	 *
@@ -54,6 +55,7 @@ public class RemoteEntity extends RemoteNodeInfo {
 	public Map<String, Object> getParams() {
 		return params;
 	}
+
 	/**
 	 * <p>Setter for the field <code>params</code>.</p>
 	 *
@@ -62,7 +64,7 @@ public class RemoteEntity extends RemoteNodeInfo {
 	public void setParams(Map<String, Object> params) {
 		this.params = params;
 	}
-	
+
 	/**
 	 * <p>getDatalistItems.</p>
 	 *
@@ -70,13 +72,13 @@ public class RemoteEntity extends RemoteNodeInfo {
 	 * @return a {@link java.util.List} object
 	 */
 	@NonNull
-	public  List<RemoteNodeInfo> getDatalistItems(String datalistName){
-		if(this.datalists!=null) {
+	public List<RemoteNodeInfo> getDatalistItems(String datalistName) {
+		if (this.datalists != null) {
 			return this.datalists.computeIfAbsent(datalistName, d -> new ArrayList<>());
 		}
 		return new ArrayList<>();
 	}
-	
+
 	/**
 	 * Get a nested list
 	 *
@@ -86,23 +88,30 @@ public class RemoteEntity extends RemoteNodeInfo {
 	 * @return a {@link java.util.List} object
 	 */
 	@NonNull
-	public  List<RemoteNodeInfo> getDatalistNestedItems(String datalistName, String nestedDatalistName){
-		if(this.datalists!=null) {
+	public List<RemoteNodeInfo> getDatalistNestedItems(String datalistName, String nestedDatalistName) {
+		if (this.datalists != null) {
 			return this.datalists.computeIfAbsent(datalistName + "@" + nestedDatalistName, d -> new ArrayList<>());
 		}
 		return new ArrayList<>();
 	}
-	
+
 	/**
 	 * Allow to merge two entities
 	 * @param entity
 	 */
+	@Override
 	public void merge(RemoteEntity entity) {
 		super.merge(entity);
-		
+
+		if (entity.getDatalists() != null) {
+			if (datalists == null) {
+				datalists = new HashMap<>();
+			}
+			datalists.putAll(entity.getDatalists());
+		}
+
 	}
-	
-	
+
 	/** {@inheritDoc} */
 	@Override
 	public int hashCode() {
@@ -111,7 +120,7 @@ public class RemoteEntity extends RemoteNodeInfo {
 		result = prime * result + Objects.hash(datalists, params);
 		return result;
 	}
-	
+
 	/** {@inheritDoc} */
 	@Override
 	public boolean equals(Object obj) {
@@ -124,17 +133,11 @@ public class RemoteEntity extends RemoteNodeInfo {
 		RemoteEntity other = (RemoteEntity) obj;
 		return Objects.equals(datalists, other.datalists) && Objects.equals(params, other.params);
 	}
-	
-	
+
 	/** {@inheritDoc} */
 	@Override
 	public String toString() {
 		return "RemoteEntity [datalists=" + datalists + ", params=" + params + "]";
 	}
 
-
-	
-	
-	
-	
 }
