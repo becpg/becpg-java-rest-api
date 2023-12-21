@@ -119,6 +119,15 @@ content.service.security.delegated=true
 
 And provide a bean that implements the interface **DelegatedAuthenticationProvider**.
 
+#### SSL
+
+It is possible to disable SSL verification with the option (For testing only for security reasons):
+
+```
+ssl.trustAll=true
+```
+
+
 #### 5. Consume the REST API
 
 ```java
