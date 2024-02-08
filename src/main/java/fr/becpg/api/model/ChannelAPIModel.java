@@ -22,9 +22,9 @@ public class ChannelAPIModel {
 
 	/** Constant <code>ASSOC_CHANNELLIST_CHANNEL="bp:pubChannelListChannel"</code> */
 	public static final String ASSOC_CHANNELLIST_CHANNEL = "bp:pubChannelListChannel";
-	
+
 	public static final String PROP_CHANNELLIST_ACTION = "bp:pubChannelListAction";
-	
+
 	/** Constant <code>PROP_CHANNEL_CATALOG_ID="bp:pubChannelCatalogId"</code> */
 	public static final String PROP_CHANNEL_CATALOG_ID = "bp:pubChannelCatalogId";
 	/** Constant <code>PROP_CHANNELLIST_MODIFIED_DATE="bp:pubChannelListModifiedDate"</code> */
@@ -35,7 +35,7 @@ public class ChannelAPIModel {
 	public static final String PROP_CHANNEL_ACTION = "bp:pubChannelAction";
 	/** Constant <code>PROP_CHANNEL_ACTION="bp:pubChannelAction"</code> */
 	public static final String PROP_CHANNEL_LASTDATE = "bp:pubChannelLastDate";
-	
+
 	/** Constant <code>PROP_CHANNELLIST_BATCHID="bp:pubChannelListBatchId"</code> */
 	public static final String PROP_CHANNELLIST_BATCHID = "bp:pubChannelListBatchId";
 	/** Constant <code>PROP_CHANNELLIST_PUBLISHEDDATE="bp:pubChannellListPublishedDate"</code> */
@@ -86,19 +86,18 @@ public class ChannelAPIModel {
 	public static final String STATUS_ABANDONED = "ABANDONED";
 	/** Constant <code>STATUS_UNKNOWN="UNKNOWN"</code> */
 	public static final String STATUS_UNKNOWN = "UNKNOWN";
-	
-	
+
 	/** Constant <code>ACTION_RETRY="RETRY"</code> */
 	public static final String ACTION_RETRY = "RETRY";
 	/** Constant <code>ACTION_RESET="RESET"</code> */
 	public static final String ACTION_RESET = "RESET";
 	/** Constant <code>ACTION_STOP="STOP"</code> */
 	public static final String ACTION_STOP = "STOP";
-	
-	
+
 	/** Constant <code>FIELDS="bp:pubChannelId,bp:pubChannelAction,bp:"{trunked}</code> */
 	public static final String FIELDS = "bp:pubChannelId,bp:pubChannelAction,bp:pubChannelLastDate,bp:pubChannelConfig,bp:pubChannelConfigFile";
 
+	public static final String CHANNEL_API_PATH = "/app:company_home/cm:System/cm:Characts/bcpg:entityLists/cm:PubChannels";
 
 	/**
 	 * <p>createChannelEntity.</p>
@@ -109,7 +108,7 @@ public class ChannelAPIModel {
 	public static RemoteEntity createChannelEntity(String channelId) {
 		RemoteEntity channelEntity = new RemoteEntity();
 		channelEntity.setType(TYPE_CHANNEL);
-		channelEntity.setPath("/app:company_home/cm:System/cm:Characts/bcpg:entityLists/cm:PubChannels");
+		channelEntity.setPath(CHANNEL_API_PATH);
 		Map<String, Object> identifiers = new HashMap<>();
 		identifiers.put(PROP_CHANNEL_ID, channelId);
 		channelEntity.setOptionalIdentifiers(identifiers);
