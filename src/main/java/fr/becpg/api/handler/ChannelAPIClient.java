@@ -1,6 +1,5 @@
 package fr.becpg.api.handler;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.http.HttpStatusCode;
@@ -8,7 +7,6 @@ import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
-import fr.becpg.api.model.ChannelAPIModel;
 import fr.becpg.api.model.RemoteAPIError;
 import fr.becpg.api.model.RemoteAPIException;
 import fr.becpg.api.model.RemoteEntity;
@@ -56,19 +54,6 @@ public class ChannelAPIClient extends AbstractAPIClient implements ChannelAPI {
 				.bodyToMono(RemoteEntityList.class).block();
 
 		return entityList != null ? entityList.getEntities() : null;
-	}
-
-	/** {@inheritDoc} */
-	@Override
-	public List<RemoteEntityRef> list(List<String> attributes) {
-		RemoteEntityList entityList = webClient.get()
-				.uri(uriBuilder -> uriBuilder.path("/entity/list").queryParam(PARAM_FORMAT, FORMAT_JSON)
-						.queryParam(PARAM_PATH, ChannelAPIModel.CHANNEL_API_PATH).queryParam(PARAM_FIELDS, buildFieldsParam(attributes)).build())
-				.accept(MediaType.APPLICATION_JSON).retrieve()
-				.onStatus(HttpStatusCode::isError,
-						response -> response.bodyToMono(RemoteAPIError.class).flatMap(error -> Mono.error(new RemoteAPIException(error))))
-				.bodyToMono(RemoteEntityList.class).block();
-		return entityList == null ? Collections.emptyList() : entityList.getEntities();
 	}
 
 	/** {@inheritDoc} */

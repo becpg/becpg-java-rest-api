@@ -33,17 +33,6 @@ public interface ChannelAPI {
 	List<RemoteEntityRef> list(String channelId, List<String> attributes, int maxResults);
 
 	/**
-	 * Returns the list of the publication channel that are present in the PLM. The return values will be retrieved with the attributes filled
-	 * in parameter
-	 *
-	 * @param channelId a {@link java.lang.String} object
-	 * @param attributes a {@link java.util.List} object
-	 * @param maxResults a int
-	 * @return a {@link java.util.List} object
-	 */
-	List<RemoteEntityRef> list(List<String> attributes);
-
-	/**
 	 * Returns the channel with the id channelId
 	 *
 	 * @param channelId a {@link java.lang.String} object
