@@ -89,6 +89,14 @@ public interface EntityAPI {
 	 * @return a {@link fr.becpg.api.model.RemoteEntitySchema} object
 	 */
 	RemoteEntitySchema getSchema(String id);
+	
+	/**
+	 * <p>get the entity schema for a type</p>
+	 *
+	 * @param type a {@link java.lang.String} object
+	 * @return a {@link fr.becpg.api.model.RemoteEntitySchema} object
+	 */
+	RemoteEntitySchema getSchemaForType(String type);
 	/**
 	 * Retrieves the specified entity schema.
 	 *
@@ -108,13 +116,9 @@ public interface EntityAPI {
 	 *
 	 * The "params" parameter allows you to pass certain parameters to the API (available in version 3.1 and above):
 	 *
-	 * - "appendCode" (true): disables the addition of the beCPG code
-	 * - "appendErpCode" (true): disables the addition of the ERP code
-	 * - "appendMlTextConstraint" (true): disables the addition of multilingual constraints
-	 * - "appendNodeRef" (true): disables the addition of the node ID
-	 * - "appendMlText" (true): disables the addition of the node ID for data list nodes
 	 * - "appendContent" (false): enables the inclusion of file content in the JSON response
 	 *
+	 * @since 3.4
 	 * @param id a string representing the ID of the entity
 	 * @param attributes a list of strings representing the attributes to include in the response
 	 * @param datalists a list of strings representing the data lists to include in the
@@ -122,6 +126,27 @@ public interface EntityAPI {
 	 * @return a {@link fr.becpg.api.model.RemoteEntitySchema} object
 	 */
 	RemoteEntitySchema getSchema(String id, List<String> attributes, List<String> datalists , Map<String, Boolean> params);
+	
+	/**
+	 * Retrieves the  entity schema for specified type
+	 *
+	 * The "attributes" and "datalists" parameters can be used to filter the response and reduce its size. There are three types of filtering available:
+	 *
+	 * - Property filtering: only includes the listed properties (e.g. "fields=bcpg:legalName")
+	 * - Association filtering: only includes the listed associations (e.g. "fields=bcpg:clients")
+	 * - List filtering: only includes the listed lists (e.g. "lists=bcpg:compoList") (Not supported Yet)
+	 *
+	 * You can also extract properties of an association by specifying the association name and its properties in the "fields"
+	 * parameter, using the following format: "ASSOC_Name1|PROP_Name1,ASSOC_Name1|PROP_Name2".
+	 *
+	 * @since 3.4
+	 * @param type a string representing the qname type of th entity
+	 * @param attributes a list of strings representing the attributes to include in the response
+	 * @param datalists a list of strings representing the data lists to include in the (Not supported Yet)
+	 * @param params a map of strings to booleans representing the parameters to pass to the API  (Not supported Yet)
+	 * @return a {@link fr.becpg.api.model.RemoteEntitySchema} object
+	 */
+	RemoteEntitySchema getSchemaForType(String type, List<String> attributes, List<String> datalists , Map<String, Boolean> params);
 	
 	/**
 	 * <p>check.</p>

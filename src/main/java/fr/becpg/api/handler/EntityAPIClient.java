@@ -28,6 +28,8 @@ import reactor.core.publisher.Mono;
 @EnableAuthConfiguration
 public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 
+	private static final String PARAM_TYPE = "type";
+
 	/** {@inheritDoc} */
 	@Override
 	public List<RemoteEntityRef> list(@NonNull String query) {
@@ -162,6 +164,27 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 		.accept(MediaType.APPLICATION_JSON)
 		.retrieve().onStatus(HttpStatusCode::isError, response -> response.bodyToMono(RemoteAPIError.class) 
                 .flatMap(error -> Mono.error(new RemoteAPIException(error)))) .bodyToMono(RemoteEntitySchema.class).block();
+	}
+
+	@Override
+	public RemoteEntitySchema getSchemaForType(String type) {
+		return webClient
+				.get().uri(uriBuilder -> uriBuilder.path("/entity").queryParam(PARAM_FORMAT, FORMAT_JSON_SCHEMA)
+						.queryParam(PARAM_TYPE,type).build())
+				.accept(MediaType.APPLICATION_JSON).retrieve().onStatus(HttpStatusCode::isError, response -> response.bodyToMono(RemoteAPIError.class) 
+                        .flatMap(error -> Mono.error(new RemoteAPIException(error)))) .bodyToMono(RemoteEntitySchema.class).block();
+	}
+
+	@Override
+	public RemoteEntitySchema getSchemaForType(String type, List<String> attributes, List<String> datalists, Map<String, Boolean> params) {
+		return webClient.get()
+				.uri(uriBuilder -> uriBuilder.path("/entity").queryParam(PARAM_FORMAT, FORMAT_JSON_SCHEMA).queryParam(PARAM_TYPE, type)
+						.queryParam(PARAM_FIELDS, buildFieldsParam(attributes)).queryParam(PARAM_LISTS, buildFieldsParam(datalists))
+						.queryParams(buildJsonParams(params))
+						.build())
+				.accept(MediaType.APPLICATION_JSON)
+				.retrieve().onStatus(HttpStatusCode::isError, response -> response.bodyToMono(RemoteAPIError.class) 
+		                .flatMap(error -> Mono.error(new RemoteAPIException(error)))) .bodyToMono(RemoteEntitySchema.class).block();
 	}
 
 }
