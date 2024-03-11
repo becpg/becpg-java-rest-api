@@ -15,6 +15,7 @@ import fr.becpg.api.model.RemoteEntity;
 import fr.becpg.api.model.RemoteEntityList;
 import fr.becpg.api.model.RemoteEntityRef;
 import fr.becpg.api.model.RemoteEntitySchema;
+import fr.becpg.api.model.UpdateEntityStatus;
 import fr.becpg.api.security.EnableAuthConfiguration;
 import reactor.core.publisher.Mono;
 
@@ -103,9 +104,10 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 	@Override
 	public RemoteEntity update(RemoteEntity entity, boolean createversion, boolean majorVersion, String versionDescription) {
 
-		RemoteEntityRef entityRef;
+		RemoteEntityRef entityRef = null;
+		UpdateEntityStatus updateEntityStatus = null;
 		if (entity.getId() != null && ! entity.getId().isBlank()) {
-			entityRef = webClient.post()
+			updateEntityStatus = webClient.post()
 					.uri(uriBuilder -> uriBuilder.path("/entity").queryParam(PARAM_FORMAT, FORMAT_JSON)
 							.queryParam(PARAM_NODEREF, buildNodeRefParam((entity.getId())))
 							.queryParam(PARAM_CREATE_VERSION, createversion).queryParam(PARAM_MAJOR_VERSION, majorVersion)
@@ -115,16 +117,22 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 					.accept(MediaType.APPLICATION_JSON).retrieve()
 					.onStatus(HttpStatusCode::isError, response -> response.bodyToMono(RemoteAPIError.class) 
                             .flatMap(error -> Mono.error(new RemoteAPIException(error)))) 
-					.bodyToMono(RemoteEntityRef.class).block();
-
+					.bodyToMono(UpdateEntityStatus.class).block();
 		} else {
-			entityRef = webClient.put()
+			updateEntityStatus = webClient.put()
 					.uri(uriBuilder -> uriBuilder.path("/entity").queryParam(PARAM_FORMAT, FORMAT_JSON).build())
 					.contentType(MediaType.APPLICATION_JSON).body(BodyInserters.fromValue(new RemoteEntityRef(entity)))
 					.accept(MediaType.APPLICATION_JSON).retrieve()
 					.onStatus(HttpStatusCode::isError, response -> response.bodyToMono(RemoteAPIError.class) 
                             .flatMap(error -> Mono.error(new RemoteAPIException(error)))) 
-					.bodyToMono(RemoteEntityRef.class).block();
+					.bodyToMono(UpdateEntityStatus.class).block();
+		}
+		
+		if (updateEntityStatus != null) {
+			entityRef = new RemoteEntityRef();
+			RemoteEntity remoteEntity = new RemoteEntity();
+			remoteEntity.setId(updateEntityStatus.getNodeRef().replace("workspace://SpacesStore/", ""));
+			entityRef.setEntity(remoteEntity);
 		}
 
 		return entityRef != null ? entityRef.getEntity() : null;
