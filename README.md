@@ -124,7 +124,15 @@ And provide a bean that implements the interface **DelegatedAuthenticationProvid
 It is possible to disable SSL verification with the option (For testing only for security reasons):
 
 ```
-ssl.trustAll=true
+remote.ssl.trustAll=true
+```
+
+#### Compress params
+
+If fields param reach the connector max request size limit its possible to compress header:
+
+```
+remote.compress.param=true
 ```
 
 

@@ -10,12 +10,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import fr.becpg.api.BecpgRestApiConfiguration;
+import fr.becpg.api.helper.CompressParamHelper;
 import fr.becpg.api.security.WebClientAuthenticationProvider;
 import io.netty.handler.logging.LogLevel;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.resources.ConnectionProvider;
 import reactor.netty.transport.logging.AdvancedByteBufFormat;
@@ -26,7 +31,7 @@ import reactor.netty.transport.logging.AdvancedByteBufFormat;
  * @author matthieu
  * @version $Id: $Id
  */
-public abstract class AbstractAPIClient implements InitializingBean{
+public abstract class AbstractAPIClient implements InitializingBean {
 
 	private static final String JSON_PARAM = "jsonParam";
 	/** Constant <code>FORMAT_JSON_SCHEMA="json_schema"</code> */
@@ -58,10 +63,10 @@ public abstract class AbstractAPIClient implements InitializingBean{
 
 	@Autowired
 	protected BecpgRestApiConfiguration apiConfiguration;
-	
+
 	@Autowired(required = false)
 	protected WebClientAuthenticationProvider authenticationProvider;
-	
+
 	protected WebClient webClient;
 
 	/**
@@ -74,18 +79,19 @@ public abstract class AbstractAPIClient implements InitializingBean{
 		String baseUrl = apiConfiguration.getContentServiceUrl() + "/alfresco/service/becpg/remote";
 		DefaultUriBuilderFactory factory = new DefaultUriBuilderFactory(baseUrl);
 		factory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.URI_COMPONENT);
-		
-		ConnectionProvider provider = ConnectionProvider.builder("becpg-java-rest-api")
-				.maxConnections(
-						50)
-				.maxIdleTime(Duration.ofSeconds(20))
-				.maxLifeTime(Duration.ofSeconds(60))
-				.pendingAcquireTimeout(Duration.ofSeconds(60))
-				.evictInBackground(Duration.ofSeconds(120)).build();
 
-		HttpClient httpClient = HttpClient.create(provider).wiretap("reactor.netty.http.client.HttpClient", LogLevel.DEBUG, AdvancedByteBufFormat.TEXTUAL);
+		ConnectionProvider provider = ConnectionProvider.builder("becpg-java-rest-api").maxConnections(50).maxIdleTime(Duration.ofSeconds(20))
+				.maxLifeTime(Duration.ofSeconds(60)).pendingAcquireTimeout(Duration.ofSeconds(60)).evictInBackground(Duration.ofSeconds(120)).build();
 
-		WebClient.Builder builder =	 WebClient.builder().codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(16 * 1024 * 1024))
+		HttpClient httpClient = HttpClient.create(provider).wiretap("reactor.netty.http.client.HttpClient", LogLevel.DEBUG,
+				AdvancedByteBufFormat.TEXTUAL);
+
+		if (apiConfiguration.shouldDisableSSLVerification()) {
+			SslContext sslContext = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE).build();
+			httpClient.secure(t -> t.sslContext(sslContext));
+		}
+
+		WebClient.Builder builder = WebClient.builder().codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(16 * 1024 * 1024))
 				.clientConnector(new ReactorClientHttpConnector(httpClient)).defaultHeaders(header -> {
 					if (apiConfiguration.getCustomHeaders() != null) {
 						for (Map.Entry<String, String> customHeader : apiConfiguration.getCustomHeaders().entrySet()) {
@@ -94,12 +100,13 @@ public abstract class AbstractAPIClient implements InitializingBean{
 
 					}
 				});
-		
-		if(authenticationProvider!=null) {
-			builder= builder.filter(authenticationProvider.authenticationFilter());
+
+		if (authenticationProvider != null) {
+			builder = builder.filter(authenticationProvider.authenticationFilter());
 		}
-		
-		 this.webClient = builder.baseUrl(baseUrl).build();
+
+		this.webClient = builder.baseUrl(baseUrl).build();
+
 	}
 
 	/**
@@ -110,9 +117,17 @@ public abstract class AbstractAPIClient implements InitializingBean{
 	 */
 	protected String buildFieldsParam(List<String> fields) {
 		if (fields != null) {
-			return String.join(",", fields);
+			return compress(String.join(",", fields));
 		}
 		return null;
+	}
+
+	private String compress(String param) {
+		if (apiConfiguration.shouldCompressParam()) {
+			return CompressParamHelper.encodeParam(param);
+		}
+
+		return param;
 	}
 
 	/**
@@ -136,15 +151,15 @@ public abstract class AbstractAPIClient implements InitializingBean{
 	 * @return a {@link java.lang.String} object
 	 */
 	protected <T> MultiValueMap<String, String> buildJsonParams(Map<String, T> params) {
-		
-		MultiValueMap<String, String> paramsMap = new LinkedMultiValueMap<>(); 
-		
+
+		MultiValueMap<String, String> paramsMap = new LinkedMultiValueMap<>();
+
 		if (params != null && !params.isEmpty()) {
 			for (Entry<String, T> entry : params.entrySet()) {
 				paramsMap.put(JSON_PARAM + entry.getKey(), List.of(entry.getValue() == null ? null : entry.getValue().toString()));
 			}
 		}
-		
+
 		return paramsMap;
 	}
 

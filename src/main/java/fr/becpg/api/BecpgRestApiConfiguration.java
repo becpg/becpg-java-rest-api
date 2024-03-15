@@ -20,6 +20,14 @@ public class BecpgRestApiConfiguration {
 	@Value("#{${content.service.headers:{}}}")
 	private Map<String,String> customHeaders;
 
+	
+	@Value("${remote.compress.param:false}")
+	private Boolean compressParam;
+	
+	
+	@Value("${remote.ssl.trustAll:false}")
+	private Boolean sslTrustAll;
+	
 	/**
 	 * <p>Getter for the field <code>contentServiceUrl</code>.</p>
 	 *
@@ -38,5 +46,13 @@ public class BecpgRestApiConfiguration {
 		return customHeaders;
 	}
 
+	
+	public boolean shouldCompressParam() {
+		return Boolean.TRUE.equals(compressParam);
+	}
+
+	public boolean shouldDisableSSLVerification() {
+		return Boolean.TRUE.equals(sslTrustAll);
+	}
 	
 }
