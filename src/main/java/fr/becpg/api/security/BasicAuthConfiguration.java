@@ -21,7 +21,7 @@ public class BasicAuthConfiguration {
     private String basicAuthPassword;
 
 
-    @Bean("authenticationFilter")
+    @Bean("remoteAuthenticationFilter")
     @ConditionalOnProperty("content.service.security.basicAuth.username")
     WebClientAuthenticationProvider authenticationFilter (){
         return () -> ExchangeFilterFunctions.basicAuthentication(this.basicAuthUsername, this.basicAuthPassword);

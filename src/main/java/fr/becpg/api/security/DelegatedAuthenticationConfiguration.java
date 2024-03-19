@@ -17,7 +17,7 @@ import reactor.core.publisher.Mono;
 @ConditionalOnProperty("content.service.security.delegated")
 public class DelegatedAuthenticationConfiguration {
 
-	@Bean("authenticationFilter")
+	@Bean("remoteAuthenticationFilter")
 	WebClientAuthenticationProvider authenticationFilter(DelegatedAuthenticationProvider    delegatedAuthenticationProvider) {
        return () -> ExchangeFilterFunction.ofRequestProcessor(clientRequest -> Mono.just(delegatedAuthenticationProvider.setAuthentication(clientRequest)));
     }
