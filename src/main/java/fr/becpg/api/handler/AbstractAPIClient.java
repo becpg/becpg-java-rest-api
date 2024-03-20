@@ -5,8 +5,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.net.ssl.SSLException;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -30,7 +32,7 @@ import reactor.netty.transport.logging.AdvancedByteBufFormat;
  * @author matthieu
  * @version $Id: $Id
  */
-public abstract class AbstractAPIClient implements InitializingBean {
+public abstract class AbstractAPIClient {
 
 	private static final String JSON_PARAM = "jsonParam";
 	/** Constant <code>FORMAT_JSON_SCHEMA="json_schema"</code> */
@@ -66,15 +68,10 @@ public abstract class AbstractAPIClient implements InitializingBean {
 	@Autowired(required = false)
 	protected WebClientAuthenticationProvider authenticationProvider;
 
-	protected WebClient webClient;
-
-	/**
-	 * <p>afterPropertiesSet.</p>
-	 *
-	 * @throws java.lang.Exception if any.
-	 */
-	public void afterPropertiesSet() throws Exception {
-
+	
+	@Bean
+	public WebClient webClient() {
+		
 		String baseUrl = apiConfiguration.getContentServiceUrl() + "/alfresco/service/becpg/remote";
 		DefaultUriBuilderFactory factory = new DefaultUriBuilderFactory(baseUrl);
 		factory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.URI_COMPONENT);
@@ -86,8 +83,14 @@ public abstract class AbstractAPIClient implements InitializingBean {
 				AdvancedByteBufFormat.TEXTUAL);
 
 		if (apiConfiguration.shouldDisableSSLVerification()) {
-			SslContext sslContext = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE).build();
-			httpClient.secure(t -> t.sslContext(sslContext));
+			SslContext sslContext;
+			try {
+				sslContext = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE).build();
+				httpClient.secure(t -> t.sslContext(sslContext));
+			} catch (SSLException e) {
+			     e.printStackTrace();
+			}
+		
 		}
 
 		WebClient.Builder builder = WebClient.builder().codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(16 * 1024 * 1024))
@@ -104,9 +107,10 @@ public abstract class AbstractAPIClient implements InitializingBean {
 			builder = builder.filter(authenticationProvider.authenticationFilter());
 		}
 
-		this.webClient = builder.baseUrl(baseUrl).build();
-
+		return builder.baseUrl(baseUrl).build();
+		
 	}
+
 
 	/**
 	 * <p>buildFieldsParam.</p>

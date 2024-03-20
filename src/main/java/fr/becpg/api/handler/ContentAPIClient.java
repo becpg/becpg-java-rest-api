@@ -39,7 +39,7 @@ public class ContentAPIClient extends AbstractAPIClient implements ContentAPI {
 		String sharedId = remoteNodeInfo.getStringProp("qshare:sharedId");
 
 		if (sharedId == null) {
-			DataBuffer dataBuffer = webClient.get()
+			DataBuffer dataBuffer = webClient().get()
 					.uri(uriBuilder -> uriBuilder.path("/entity/content").queryParam(PARAM_NODEREF, buildNodeRefParam(remoteNodeInfo.getId()))
 							.queryParam(PARAM_SHARE, true).build())
 					.retrieve()
@@ -62,7 +62,7 @@ public class ContentAPIClient extends AbstractAPIClient implements ContentAPI {
 	@Override
 	public void writeContent(RemoteNodeInfo remoteNodeInfo, Path filePath) throws IOException {
 
-		Flux<DataBuffer> dataBuffer = webClient.get()
+		Flux<DataBuffer> dataBuffer = webClient().get()
 				.uri(uriBuilder -> uriBuilder.path("/entity/content").queryParam(PARAM_NODEREF, buildNodeRefParam(remoteNodeInfo.getId())).build())
 				.retrieve()
 				.onStatus(HttpStatusCode::isError,
@@ -77,7 +77,7 @@ public class ContentAPIClient extends AbstractAPIClient implements ContentAPI {
 	@Override
 	public InputStream getContent(RemoteNodeInfo remoteNodeInfo) throws IOException {
 
-		DataBuffer dataBuffer = webClient.get()
+		DataBuffer dataBuffer = webClient().get()
 				.uri(uriBuilder -> uriBuilder.path("/entity/content").queryParam(PARAM_NODEREF, buildNodeRefParam(remoteNodeInfo.getId())).build())
 				.retrieve()
 				.onStatus(HttpStatusCode::isError,

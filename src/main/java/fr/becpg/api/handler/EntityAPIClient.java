@@ -34,7 +34,7 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 	/** {@inheritDoc} */
 	@Override
 	public List<RemoteEntityRef> list(@NonNull String query) {
-		RemoteEntityList entityList = webClient.get()
+		RemoteEntityList entityList = webClient().get()
 				.uri(uriBuilder -> uriBuilder.path("/entity/list").queryParam(PARAM_FORMAT, FORMAT_JSON).queryParam(PARAM_QUERY, query).build())
 				.accept(MediaType.APPLICATION_JSON).retrieve()
 				.onStatus(HttpStatusCode::isError,
@@ -48,7 +48,7 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 	/** {@inheritDoc} */
 	@Override
 	public List<RemoteEntityRef> list(@NonNull String query, List<String> attributes, int maxResults) {
-		RemoteEntityList entityList = webClient.get()
+		RemoteEntityList entityList = webClient().get()
 				.uri(uriBuilder -> uriBuilder.path("/entity/list").queryParam(PARAM_FORMAT, FORMAT_JSON).queryParam(PARAM_QUERY, query)
 						.queryParam(PARAM_MAX_RESULTS, maxResults).queryParam(PARAM_FIELDS, buildFieldsParam(attributes)).build())
 				.accept(MediaType.APPLICATION_JSON).retrieve()
@@ -62,7 +62,7 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 	/** {@inheritDoc} */
 	@Override
 	public List<RemoteEntityRef> listByPath(@NonNull String query, @NonNull String path, List<String> attributes, int maxResults) {
-		RemoteEntityList entityList = webClient.get()
+		RemoteEntityList entityList = webClient().get()
 				.uri(uriBuilder -> uriBuilder
 						.path("/entity/list").queryParam(PARAM_FORMAT, FORMAT_JSON).queryParam(PARAM_QUERY, query).queryParam(PARAM_PATH, path)
 						.queryParam(PARAM_MAX_RESULTS, maxResults).queryParam(PARAM_FIELDS, buildFieldsParam(attributes)).build())
@@ -77,7 +77,7 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 	/** {@inheritDoc} */
 	@Override
 	public RemoteEntity get(String id) {
-		RemoteEntityRef entityRef = webClient.get()
+		RemoteEntityRef entityRef = webClient().get()
 				.uri(uriBuilder -> uriBuilder
 						.path("/entity").queryParam(PARAM_FORMAT, FORMAT_JSON).queryParam(PARAM_NODEREF, buildNodeRefParam(id)).build())
 				.accept(MediaType.APPLICATION_JSON).retrieve()
@@ -91,7 +91,7 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 	/** {@inheritDoc} */
 	@Override
 	public RemoteEntity get(String id, List<String> attributes, List<String> datalists, Map<String, Boolean> params) {
-		RemoteEntityRef entityRef = webClient.get()
+		RemoteEntityRef entityRef = webClient().get()
 				.uri(uriBuilder -> uriBuilder.path("/entity").queryParam(PARAM_FORMAT, FORMAT_JSON).queryParam(PARAM_NODEREF, buildNodeRefParam(id))
 						.queryParam(PARAM_FIELDS, buildFieldsParam(attributes)).queryParam(PARAM_LISTS, buildFieldsParam(datalists))
 						.queryParams(buildJsonParams(params)).build())
@@ -114,7 +114,7 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 	public RemoteEntity update(RemoteEntity entity, boolean createversion, boolean majorVersion, String versionDescription) {
 
 		if (entity.getId() != null && !entity.getId().isBlank()) {
-			webClient.post()
+			webClient().post()
 					.uri(uriBuilder -> uriBuilder.path("/entity").queryParam(PARAM_FORMAT, FORMAT_JSON)
 							.queryParam(PARAM_NODEREF, buildNodeRefParam((entity.getId()))).queryParam(PARAM_CREATE_VERSION, createversion)
 							.queryParam(PARAM_MAJOR_VERSION, majorVersion).queryParam(PARAM_VERSION_DESCRIPTION, versionDescription).build())
@@ -125,7 +125,7 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 							response -> response.bodyToMono(RemoteAPIError.class).flatMap(error -> Mono.error(new RemoteAPIException(error))))
 					.bodyToMono(RemoteAPIResponse.class).block();
 		} else {
-			entity.setId(webClient.put().uri(uriBuilder -> uriBuilder.path("/entity").queryParam(PARAM_FORMAT, FORMAT_JSON).build())
+			entity.setId(webClient().put().uri(uriBuilder -> uriBuilder.path("/entity").queryParam(PARAM_FORMAT, FORMAT_JSON).build())
 					.contentType(MediaType.APPLICATION_JSON).body(BodyInserters.fromValue(new RemoteEntityRef(entity)))
 					.accept(MediaType.APPLICATION_JSON).retrieve()
 					.onStatus(HttpStatusCode::isError,
@@ -140,7 +140,7 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 	/** {@inheritDoc} */
 	@Override
 	public String check(String id) {
-		return webClient.get().uri(uriBuilder -> uriBuilder.path("/check").queryParam(PARAM_NODEREF, buildNodeRefParam(id)).build()).retrieve()
+		return webClient().get().uri(uriBuilder -> uriBuilder.path("/check").queryParam(PARAM_NODEREF, buildNodeRefParam(id)).build()).retrieve()
 				.onStatus(HttpStatusCode::isError,
 						response -> response.bodyToMono(RemoteAPIError.class).flatMap(error -> Mono.error(new RemoteAPIException(error))))
 				.bodyToMono(String.class).block();
@@ -150,7 +150,7 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 	/** {@inheritDoc} */
 	@Override
 	public RemoteEntitySchema getSchema(String id) {
-		return webClient.get()
+		return webClient().get()
 				.uri(uriBuilder -> uriBuilder
 						.path("/entity").queryParam(PARAM_FORMAT, FORMAT_JSON_SCHEMA).queryParam(PARAM_NODEREF, buildNodeRefParam(id)).build())
 				.accept(MediaType.APPLICATION_JSON).retrieve()
@@ -163,7 +163,7 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 	/** {@inheritDoc} */
 	@Override
 	public RemoteEntitySchema getSchema(String id, List<String> attributes, List<String> datalists, Map<String, Boolean> params) {
-		return webClient.get()
+		return webClient().get()
 				.uri(uriBuilder -> uriBuilder.path("/entity").queryParam(PARAM_FORMAT, FORMAT_JSON_SCHEMA)
 						.queryParam(PARAM_NODEREF, buildNodeRefParam(id)).queryParam(PARAM_FIELDS, buildFieldsParam(attributes))
 						.queryParam(PARAM_LISTS, buildFieldsParam(datalists)).queryParams(buildJsonParams(params)).build())
@@ -175,7 +175,7 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 
 	@Override
 	public RemoteEntitySchema getSchemaForType(String type) {
-		return webClient.get()
+		return webClient().get()
 				.uri(uriBuilder -> uriBuilder.path("/dictionary").queryParam(PARAM_FORMAT, FORMAT_JSON_SCHEMA).queryParam(PARAM_TYPE, type).build())
 				.accept(MediaType.APPLICATION_JSON).retrieve()
 				.onStatus(HttpStatusCode::isError,
@@ -185,7 +185,7 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 
 	@Override
 	public RemoteEntitySchema getSchemaForType(String type, List<String> attributes, List<String> datalists, Map<String, Boolean> params) {
-		return webClient.get()
+		return webClient().get()
 				.uri(uriBuilder -> uriBuilder.path("/dictionary").queryParam(PARAM_FORMAT, FORMAT_JSON_SCHEMA).queryParam(PARAM_TYPE, type)
 						.queryParam(PARAM_FIELDS, buildFieldsParam(attributes)).queryParam(PARAM_LISTS, buildFieldsParam(datalists))
 						.queryParams(buildJsonParams(params)).build())

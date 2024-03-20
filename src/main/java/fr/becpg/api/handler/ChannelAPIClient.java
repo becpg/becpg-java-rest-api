@@ -30,7 +30,7 @@ public class ChannelAPIClient extends AbstractAPIClient implements ChannelAPI {
 	/** {@inheritDoc} */
 	@Override
 	public List<RemoteEntityRef> list(@NonNull String channelId) {
-		RemoteEntityList entityList = webClient.get()
+		RemoteEntityList entityList = webClient().get()
 				.uri(uriBuilder -> uriBuilder
 						.path("/channel/list").queryParam(PARAM_FORMAT, FORMAT_JSON).queryParam(PARAM_CHANNELID, channelId).build())
 				.accept(MediaType.APPLICATION_JSON).retrieve()
@@ -45,7 +45,7 @@ public class ChannelAPIClient extends AbstractAPIClient implements ChannelAPI {
 	/** {@inheritDoc} */
 	@Override
 	public List<RemoteEntityRef> list(@NonNull String channelId, List<String> attributes, int maxResults) {
-		RemoteEntityList entityList = webClient.get()
+		RemoteEntityList entityList = webClient().get()
 				.uri(uriBuilder -> uriBuilder.path("/channel/list").queryParam(PARAM_FORMAT, FORMAT_JSON).queryParam(PARAM_CHANNELID, channelId)
 						.queryParam(PARAM_MAX_RESULTS, maxResults).queryParam(PARAM_FIELDS, buildFieldsParam(attributes)).build())
 				.accept(MediaType.APPLICATION_JSON).retrieve()
@@ -59,7 +59,7 @@ public class ChannelAPIClient extends AbstractAPIClient implements ChannelAPI {
 	/** {@inheritDoc} */
 	@Override
 	public RemoteEntity get(String channelId) {
-		RemoteEntityRef entityRef = webClient.get()
+		RemoteEntityRef entityRef = webClient().get()
 				.uri(uriBuilder -> uriBuilder
 						.path("/entity").queryParam(PARAM_FORMAT, FORMAT_JSON).queryParam(PARAM_QUERY, buildQuery(channelId)).build())
 				.accept(MediaType.APPLICATION_JSON).retrieve()
