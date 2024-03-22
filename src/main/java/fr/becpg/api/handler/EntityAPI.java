@@ -3,9 +3,15 @@ package fr.becpg.api.handler;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.lang.NonNull;
+
+import fr.becpg.api.model.RemoteAPIResponse;
 import fr.becpg.api.model.RemoteEntity;
+import fr.becpg.api.model.RemoteEntityList;
 import fr.becpg.api.model.RemoteEntityRef;
 import fr.becpg.api.model.RemoteEntitySchema;
+import reactor.core.publisher.Mono;
+
 /**
  * <p>EntityAPI interface.</p>
  *
@@ -21,6 +27,7 @@ public interface EntityAPI {
 	 * @return a {@link java.util.List} object
 	 */
 	List<RemoteEntityRef> list(String query);
+
 	/**
 	 * <p>list.</p>
 	 *
@@ -29,8 +36,8 @@ public interface EntityAPI {
 	 * @param maxResults a int
 	 * @return a {@link java.util.List} object
 	 */
-	List<RemoteEntityRef> list(String query, List<String> attributes,  int maxResults);
-	
+	List<RemoteEntityRef> list(String query, List<String> attributes, int maxResults);
+
 	/**
 	 * <p>list.</p>
 	 *
@@ -41,6 +48,9 @@ public interface EntityAPI {
 	 * @return a {@link java.util.List} object
 	 */
 	List<RemoteEntityRef> listByPath(String query, String path, List<String> attributes, int maxResults);
+
+	Mono<RemoteEntityList> fetchEntityList(@NonNull String query, String path, List<String> attributes, Integer maxResults);
+
 	/**
 	 * <p>get.</p>
 	 *
@@ -48,6 +58,7 @@ public interface EntityAPI {
 	 * @return a {@link fr.becpg.api.model.RemoteEntity} object
 	 */
 	RemoteEntity get(String id);
+
 	/**
 	 * Retrieves the specified entity.
 	 *
@@ -80,8 +91,10 @@ public interface EntityAPI {
 	 * @param params a map of strings to booleans representing the parameters to pass to the API
 	 * @return a {@link fr.becpg.api.model.RemoteEntity} object
 	 */
-	RemoteEntity get(String id, List<String> attributes, List<String> datalists , Map<String, Boolean> params);
-	
+	RemoteEntity get(String id, List<String> attributes, List<String> datalists, Map<String, Boolean> params);
+
+	Mono<RemoteEntityRef> fetchEntity(String id, List<String> attributes, List<String> datalists, Map<String, Boolean> params);
+
 	/**
 	 * <p>get the entity schema</p>
 	 *
@@ -89,7 +102,7 @@ public interface EntityAPI {
 	 * @return a {@link fr.becpg.api.model.RemoteEntitySchema} object
 	 */
 	RemoteEntitySchema getSchema(String id);
-	
+
 	/**
 	 * <p>get the entity schema for a type</p>
 	 *
@@ -97,6 +110,7 @@ public interface EntityAPI {
 	 * @return a {@link fr.becpg.api.model.RemoteEntitySchema} object
 	 */
 	RemoteEntitySchema getSchemaForType(String type);
+
 	/**
 	 * Retrieves the specified entity schema.
 	 *
@@ -125,8 +139,8 @@ public interface EntityAPI {
 	 * @param params a map of strings to booleans representing the parameters to pass to the API
 	 * @return a {@link fr.becpg.api.model.RemoteEntitySchema} object
 	 */
-	RemoteEntitySchema getSchema(String id, List<String> attributes, List<String> datalists , Map<String, Boolean> params);
-	
+	RemoteEntitySchema getSchema(String id, List<String> attributes, List<String> datalists, Map<String, Boolean> params);
+
 	/**
 	 * Retrieves the  entity schema for specified type
 	 *
@@ -146,8 +160,8 @@ public interface EntityAPI {
 	 * @param params a map of strings to booleans representing the parameters to pass to the API  (Not supported Yet)
 	 * @return a {@link fr.becpg.api.model.RemoteEntitySchema} object
 	 */
-	RemoteEntitySchema getSchemaForType(String type, List<String> attributes, List<String> datalists , Map<String, Boolean> params);
-	
+	RemoteEntitySchema getSchemaForType(String type, List<String> attributes, List<String> datalists, Map<String, Boolean> params);
+
 	/**
 	 * <p>check.</p>
 	 * return OK/KO if entity exists
@@ -156,8 +170,7 @@ public interface EntityAPI {
 	 * @return a {@link java.lang.String} object
 	 */
 	String check(String id);
-	
-	
+
 	/**
 	 * <p>update.</p>
 	 *
@@ -165,6 +178,7 @@ public interface EntityAPI {
 	 * @return a {@link fr.becpg.api.model.RemoteEntity} object
 	 */
 	RemoteEntity update(RemoteEntity entity);
+
 	/**
 	 * <p>update.</p>
 	 *
@@ -174,8 +188,8 @@ public interface EntityAPI {
 	 * @param versionDescription a {@link java.lang.String} object
 	 * @return a {@link fr.becpg.api.model.RemoteEntity} object
 	 */
-	RemoteEntity update(RemoteEntity entity, boolean createversion, boolean majorVersion, String versionDescription );
-	
-	
-	
+	RemoteEntity update(RemoteEntity entity, boolean createversion, boolean majorVersion, String versionDescription);
+
+	Mono<RemoteAPIResponse> updateEntity(RemoteEntity entity, boolean createversion, boolean majorVersion, String versionDescription);
+
 }

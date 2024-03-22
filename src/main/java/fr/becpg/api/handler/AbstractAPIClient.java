@@ -12,16 +12,20 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import fr.becpg.api.BecpgRestApiConfiguration;
 import fr.becpg.api.helper.CompressParamHelper;
+import fr.becpg.api.model.RemoteAPIError;
+import fr.becpg.api.model.RemoteAPIException;
 import fr.becpg.api.security.WebClientAuthenticationProvider;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
+import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.resources.ConnectionProvider;
 import reactor.netty.transport.logging.AdvancedByteBufFormat;
@@ -68,8 +72,7 @@ public abstract class AbstractAPIClient {
 	@Autowired(required = false)
 	protected WebClientAuthenticationProvider authenticationProvider;
 
-	
-	@Bean
+	@Bean("remoteWebClient")
 	public WebClient webClient() {
 		
 		String baseUrl = apiConfiguration.getContentServiceUrl() + "/alfresco/service/becpg/remote";
@@ -111,6 +114,16 @@ public abstract class AbstractAPIClient {
 		
 	}
 
+	
+	/**
+	 * Handle remote errors
+	 * @param response
+	 * @return
+	 */
+    protected Mono<RemoteAPIException> handleErrorResponse(ClientResponse response) {
+        return response.bodyToMono(RemoteAPIError.class)
+                .flatMap(error -> Mono.error(new RemoteAPIException(error)));
+    }
 
 	/**
 	 * <p>buildFieldsParam.</p>
