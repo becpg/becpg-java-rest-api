@@ -7,6 +7,8 @@ import java.util.Map.Entry;
 
 import javax.net.ssl.SSLException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
@@ -66,6 +68,8 @@ public abstract class AbstractAPIClient {
 	/** Constant <code>PARAM_VERSION_DESCRIPTION="versionDescription"</code> */
 	protected static final String PARAM_VERSION_DESCRIPTION = "versionDescription";
 
+	private static Log logger = LogFactory.getLog(AbstractAPIClient.class);
+	
 	@Autowired
 	protected BecpgRestApiConfiguration apiConfiguration;
 
@@ -91,7 +95,7 @@ public abstract class AbstractAPIClient {
 				sslContext = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE).build();
 				httpClient.secure(t -> t.sslContext(sslContext));
 			} catch (SSLException e) {
-			     e.printStackTrace();
+				logger.error("Cannot disable SSL for connection",e);
 			}
 		
 		}

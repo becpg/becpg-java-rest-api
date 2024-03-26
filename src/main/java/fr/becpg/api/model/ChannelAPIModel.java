@@ -14,6 +14,12 @@ public class ChannelAPIModel {
 	private ChannelAPIModel() {
 		//Do nothing
 	}
+	
+	/** Constant <code>FIELDS="bp:pubChannelId,bp:pubChannelAction,bp:"{trunked}</code> */
+	public static final String FIELDS = "bp:pubChannelId,bp:pubChannelAction,bp:pubChannelLastDate,bp:pubChannelConfig,bp:pubChannelConfigFile";
+
+	public static final String CHANNEL_API_PATH = "/app:company_home/cm:System/cm:Characts/bcpg:entityLists/cm:PubChannels";
+
 
 	/** Constant <code>TYPE_CHANNEL="bp:pubChannel"</code> */
 	public static final String TYPE_CHANNEL = "bp:pubChannel";
@@ -94,11 +100,7 @@ public class ChannelAPIModel {
 	/** Constant <code>ACTION_STOP="STOP"</code> */
 	public static final String ACTION_STOP = "STOP";
 
-	/** Constant <code>FIELDS="bp:pubChannelId,bp:pubChannelAction,bp:"{trunked}</code> */
-	public static final String FIELDS = "bp:pubChannelId,bp:pubChannelAction,bp:pubChannelLastDate,bp:pubChannelConfig,bp:pubChannelConfigFile";
-
-	public static final String CHANNEL_API_PATH = "/app:company_home/cm:System/cm:Characts/bcpg:entityLists/cm:PubChannels";
-
+	
 	/**
 	 * <p>createChannelEntity.</p>
 	 *

@@ -26,7 +26,8 @@ public class CompressParamHelper {
 	private static final String BASE_64_PREFIX = "b64-";
 	
 	private static final Map<String,String> replacementMaps = new HashMap<>();
-	{
+	
+	static {
 		replacementMaps.put("bcpg:", "§");
 	}
 	

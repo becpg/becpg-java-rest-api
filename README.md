@@ -15,6 +15,7 @@ This SDK provides functionality to consume beCPG REST Remote API.
 
 | Version | beCPG Version | Version API | Version JAVA | Changes |
 | --- | --- | --- | --- | -- |
+| 1.1.2 | >= 4.2.3 | >= 3.5 (Partial support on >=3.3) | JAVA 17 | Add entity schema support |
 | 1.1.1 | >= 4.2.2 | >= 3.4 (Partial support on >=3.3) | JAVA 17 | Add nested datalist getter (API >=3.4) |
 | 1.1.0 | >= 4.2.2 | >= 3.3 (Partial support on >=3.1) | JAVA 17 | Migrate To spring boot 3 and Java 17 |
 | 1.0.1 | >= 4.2.2 | >= 3.3 (Partial support on >=3.1) | JAVA 11 | Minor fix |
