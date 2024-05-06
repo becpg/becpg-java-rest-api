@@ -47,7 +47,7 @@ public class ChannelAPIClient extends AbstractAPIClient implements ChannelAPI {
 	public List<RemoteEntityRef> list(@NonNull String channelId, List<String> attributes, int maxResults) {
 		RemoteEntityList entityList = webClient().get()
 				.uri(uriBuilder -> uriBuilder.path("/channel/list").queryParam(PARAM_FORMAT, FORMAT_JSON).queryParam(PARAM_CHANNELID, channelId)
-						.queryParam(PARAM_MAX_RESULTS, maxResults).queryParam(PARAM_FIELDS, buildFieldsParam(attributes)).build())
+						.queryParam(PARAM_MAX_RESULTS, maxResults).queryParam(PARAM_FIELDS,VAR_FIELDS).build( buildFieldsParam(attributes)))
 				.accept(MediaType.APPLICATION_JSON).retrieve()
 				.onStatus(HttpStatusCode::isError,
 						response -> response.bodyToMono(RemoteAPIError.class).flatMap(error -> Mono.error(new RemoteAPIException(error))))
@@ -61,7 +61,7 @@ public class ChannelAPIClient extends AbstractAPIClient implements ChannelAPI {
 	public RemoteEntity get(String channelId) {
 		RemoteEntityRef entityRef = webClient().get()
 				.uri(uriBuilder -> uriBuilder
-						.path("/entity").queryParam(PARAM_FORMAT, FORMAT_JSON).queryParam(PARAM_QUERY, buildQuery(channelId)).build())
+						.path("/entity").queryParam(PARAM_FORMAT, FORMAT_JSON).queryParam(PARAM_QUERY,VAR_QUERY).build( buildQuery(channelId)))
 				.accept(MediaType.APPLICATION_JSON).retrieve()
 				.onStatus(HttpStatusCode::isError,
 						response -> response.bodyToMono(RemoteAPIError.class).flatMap(error -> Mono.error(new RemoteAPIException(error))))

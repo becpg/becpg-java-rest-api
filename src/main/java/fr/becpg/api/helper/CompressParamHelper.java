@@ -27,6 +27,11 @@ public class CompressParamHelper {
 	
 	private static final Map<String,String> replacementMaps = new HashMap<>();
 	
+	
+	private CompressParamHelper() {
+		//Do Nothing
+	}
+	
 	static {
 		replacementMaps.put("bcpg:", "§");
 	}

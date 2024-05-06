@@ -16,7 +16,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import fr.becpg.api.BecpgRestApiConfiguration;
 import fr.becpg.api.helper.CompressParamHelper;
@@ -67,6 +66,14 @@ public abstract class AbstractAPIClient {
 	protected static final String PARAM_MAJOR_VERSION = "majorVersion";
 	/** Constant <code>PARAM_VERSION_DESCRIPTION="versionDescription"</code> */
 	protected static final String PARAM_VERSION_DESCRIPTION = "versionDescription";
+	
+	
+	protected static final String VAR_FIELDS = "{fields}";
+
+	protected static final String VAR_QUERY = "{query}";
+
+	protected static final String VAR_LISTS = "{lists}";
+
 
 	private static Log logger = LogFactory.getLog(AbstractAPIClient.class);
 	
@@ -80,9 +87,7 @@ public abstract class AbstractAPIClient {
 	public WebClient webClient() {
 		
 		String baseUrl = apiConfiguration.getContentServiceUrl() + "/alfresco/service/becpg/remote";
-		DefaultUriBuilderFactory factory = new DefaultUriBuilderFactory(baseUrl);
-		factory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.URI_COMPONENT);
-
+		
 		ConnectionProvider provider = ConnectionProvider.builder("becpg-java-rest-api").maxConnections(50).maxIdleTime(Duration.ofSeconds(20))
 				.maxLifeTime(Duration.ofSeconds(60)).pendingAcquireTimeout(Duration.ofSeconds(60)).evictInBackground(Duration.ofSeconds(120)).build();
 
