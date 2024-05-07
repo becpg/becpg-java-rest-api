@@ -100,7 +100,7 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 				.uri(uriBuilder -> uriBuilder.path(REMOTE_ENTITY_URL).queryParam(PARAM_FORMAT, FORMAT_JSON).queryParam(PARAM_NODEREF, buildNodeRefParam(id))
 						.queryParam(PARAM_FIELDS, VAR_FIELDS)
 						.queryParam(PARAM_LISTS,VAR_LISTS)
-						.queryParams(buildJsonParams(params)).build(Optional.ofNullable(buildFieldsParam(attributes)),Optional.ofNullable( buildFieldsParam(datalists))))
+						.queryParams(buildJsonParams(params)).build(Optional.ofNullable(buildFieldsParam(attributes)).orElse(""),Optional.ofNullable(buildFieldsParam(datalists)).orElse("")))
 				.accept(MediaType.APPLICATION_JSON).retrieve()
 				.onStatus(HttpStatusCode::isError, response -> handleErrorResponse(response))
 				.bodyToMono(RemoteEntityRef.class);
