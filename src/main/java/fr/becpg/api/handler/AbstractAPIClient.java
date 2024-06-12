@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLException;
 
 import org.apache.commons.logging.Log;
@@ -94,16 +95,19 @@ public abstract class AbstractAPIClient {
 		HttpClient httpClient = HttpClient.create(provider).wiretap("reactor.netty.http.client.HttpClient", LogLevel.DEBUG,
 				AdvancedByteBufFormat.TEXTUAL);
 
-		if (apiConfiguration.shouldDisableSSLVerification()) {
-			SslContext sslContext;
-			try {
-				sslContext = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE).build();
-				httpClient.secure(t -> t.sslContext(sslContext));
-			} catch (SSLException e) {
-				logger.error("Cannot disable SSL for connection",e);
+		 if (apiConfiguration.shouldDisableSSLVerification()) {
+	            SslContext sslContext;
+	            try {
+	                sslContext = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE).build();
+	                httpClient = httpClient.secure(t -> t.sslContext(sslContext));
+	  
+	                logger.debug("SSL verification disabled successfully");
+	            } catch (SSLException e) {
+	                logger.error("Cannot disable SSL for connection", e);
+	            }
+			} else {
+				logger.debug("SSL verification is enabled");
 			}
-		
-		}
 
 		WebClient.Builder builder = WebClient.builder().codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(16 * 1024 * 1024))
 				.clientConnector(new ReactorClientHttpConnector(httpClient)).defaultHeaders(header -> {
