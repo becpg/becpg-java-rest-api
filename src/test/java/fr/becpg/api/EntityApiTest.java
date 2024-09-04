@@ -108,7 +108,7 @@ class EntityApiTest extends AbstractRemoteApiTest {
         
         mockBackEnd.enqueue(new MockResponse().setBody(asString(entities)).addHeader("Content-Type", "application/json"));
 
-        List<RemoteEntityRef> entities = entityApi.list("+TYPE:\"bcpg:finishedProduct\" AND +bcpg\\:erpCode:\"PERF-PF1\"", List.of("cm:name","bcpg:legalName"), 10);
+        entityApi.list("+TYPE:\"bcpg:finishedProduct\" AND +bcpg\\:erpCode:\"PERF-PF1\"", List.of("cm:name","bcpg:legalName"), 10);
 
         Assert.assertEquals("http://localhost:" + mockBackEnd.getPort() + "/alfresco/service/becpg/remote/entity/list?format=json&query=%2BTYPE%3A%22bcpg%3AfinishedProduct%22%20AND%20%2Bbcpg%5C%3AerpCode%3A%22PERF-PF1%22&maxResults=10&fields=cm%3Aname%2Cbcpg%3AlegalName", mockBackEnd.takeRequest().getRequestUrl().toString());
     
