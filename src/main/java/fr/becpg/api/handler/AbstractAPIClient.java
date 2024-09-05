@@ -1,17 +1,10 @@
 package fr.becpg.api.handler;
 
-import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.net.ssl.SSLException;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.ClientResponse;
@@ -21,15 +14,7 @@ import fr.becpg.api.BecpgRestApiConfiguration;
 import fr.becpg.api.helper.CompressParamHelper;
 import fr.becpg.api.model.RemoteAPIError;
 import fr.becpg.api.model.RemoteAPIException;
-import fr.becpg.api.security.WebClientAuthenticationProvider;
-import io.netty.handler.logging.LogLevel;
-import io.netty.handler.ssl.SslContext;
-import io.netty.handler.ssl.SslContextBuilder;
-import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import reactor.core.publisher.Mono;
-import reactor.netty.http.client.HttpClient;
-import reactor.netty.resources.ConnectionProvider;
-import reactor.netty.transport.logging.AdvancedByteBufFormat;
 
 /**
  * <p>Abstract AbstractAPIClient class.</p>
@@ -73,57 +58,12 @@ public abstract class AbstractAPIClient {
 	protected static final String VAR_QUERY = "{query}";
 
 	protected static final String VAR_LISTS = "{lists}";
-
-
-	private static Log logger = LogFactory.getLog(AbstractAPIClient.class);
 	
 	@Autowired
 	protected BecpgRestApiConfiguration apiConfiguration;
 
-	@Autowired(required = false)
-	protected WebClientAuthenticationProvider authenticationProvider;
-
-	@Bean("remoteWebClient")
-	public WebClient webClient() {
-		
-		String baseUrl = apiConfiguration.getContentServiceUrl() + "/alfresco/service/becpg/remote";
-		
-		ConnectionProvider provider = ConnectionProvider.builder("becpg-java-rest-api").maxConnections(50).maxIdleTime(Duration.ofSeconds(20))
-				.maxLifeTime(Duration.ofSeconds(60)).pendingAcquireTimeout(Duration.ofSeconds(60)).evictInBackground(Duration.ofSeconds(120)).build();
-
-		HttpClient httpClient = HttpClient.create(provider).wiretap("reactor.netty.http.client.HttpClient", LogLevel.DEBUG,
-				AdvancedByteBufFormat.TEXTUAL);
-
-		 if (apiConfiguration.shouldDisableSSLVerification()) {
-	            SslContext sslContext;
-	            try {
-	                sslContext = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE).build();
-	                httpClient = httpClient.secure(t -> t.sslContext(sslContext));
-	  
-	                logger.debug("SSL verification disabled successfully");
-	            } catch (SSLException e) {
-	                logger.error("Cannot disable SSL for connection", e);
-	            }
-			} else {
-				logger.debug("SSL verification is enabled");
-			}
-
-		WebClient.Builder builder = WebClient.builder().codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(16 * 1024 * 1024))
-				.clientConnector(new ReactorClientHttpConnector(httpClient)).defaultHeaders(header -> {
-					if (apiConfiguration.getCustomHeaders() != null) {
-						for (Map.Entry<String, String> customHeader : apiConfiguration.getCustomHeaders().entrySet()) {
-							header.set(customHeader.getKey(), customHeader.getValue());
-						}
-
-					}
-				});
-
-		if (authenticationProvider != null) {
-			builder = builder.filter(authenticationProvider.authenticationFilter());
-		}
-
-		return builder.baseUrl(baseUrl).build();
-		
+	protected WebClient webClient() {
+		return apiConfiguration.webClient();
 	}
 
 	
