@@ -52,6 +52,7 @@ public abstract class AbstractAPIClient {
 	/** Constant <code>PARAM_VERSION_DESCRIPTION="versionDescription"</code> */
 	protected static final String PARAM_VERSION_DESCRIPTION = "versionDescription";
 	
+	protected static final String PARAM_PAGE = "page";
 	
 	protected static final String VAR_FIELDS = "{fields}";
 

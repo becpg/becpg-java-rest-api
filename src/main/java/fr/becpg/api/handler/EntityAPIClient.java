@@ -3,6 +3,7 @@ package fr.becpg.api.handler;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
@@ -18,6 +19,7 @@ import fr.becpg.api.model.RemoteEntityList;
 import fr.becpg.api.model.RemoteEntityRef;
 import fr.becpg.api.model.RemoteEntitySchema;
 import fr.becpg.api.security.EnableAuthConfiguration;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
@@ -47,34 +49,75 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 	/** {@inheritDoc} */
 	@Override
 	public List<RemoteEntityRef> list(@NonNull String query, List<String> attributes, int maxResults) {
-		RemoteEntityList entityList = fetchEntityList(query, null, attributes, maxResults).block();
-
+	    if (maxResults == -1) {
+	        return fetchEntityListAllPages(query, null, attributes, maxResults)
+	            .flatMapIterable(RemoteEntityList::getEntities)
+	            .collectList()
+	            .block();
+	    }
+	    RemoteEntityList entityList =  fetchEntityList(query, null, attributes, maxResults).block();
 		return entityList != null ? entityList.getEntities() : null;
 	}
 
 	/** {@inheritDoc} */
 	@Override
 	public List<RemoteEntityRef> listByPath(@NonNull String query, @NonNull String path, List<String> attributes, int maxResults) {
-		RemoteEntityList entityList = fetchEntityList(query, path, attributes, maxResults).block();
+	    if (maxResults == -1) {
+	        return fetchEntityListAllPages(query, path, attributes, maxResults)
+	            .flatMapIterable(RemoteEntityList::getEntities)
+	            .collectList()
+	            .block();
+	    }
+	    RemoteEntityList entityList =  fetchEntityList(query, path, attributes, maxResults).block();
 
 		return entityList != null ? entityList.getEntities() : null;
 	}
 
 	
+	@Override
 	public Mono<RemoteEntityList> fetchEntityList(@NonNull String query, String path ,List<String> attributes, Integer maxResults) {
-	        return webClient().get()
-	                .uri(uriBuilder -> uriBuilder.path(REMOTE_ENTITY_URL+"/list")
-	                        .queryParam(PARAM_FORMAT, FORMAT_JSON)
-	                        .queryParam(PARAM_QUERY, VAR_QUERY )           
-	                        .queryParamIfPresent(PARAM_PATH, Optional.ofNullable(path))
-	                        .queryParamIfPresent(PARAM_MAX_RESULTS, Optional.ofNullable(maxResults))
-	                        .queryParam(PARAM_FIELDS, VAR_FIELDS)
-	                        .build(query, buildFieldsParam(attributes)))
-	                .accept(MediaType.APPLICATION_JSON)
-	                .retrieve()
-	                .onStatus(HttpStatusCode::isError, response -> handleErrorResponse(response))
-	                .bodyToMono(RemoteEntityList.class);
-	    }
+        return webClient().get()
+                .uri(uriBuilder -> uriBuilder.path(REMOTE_ENTITY_URL+"/list")
+                        .queryParam(PARAM_FORMAT, FORMAT_JSON)
+                        .queryParam(PARAM_QUERY, VAR_QUERY )           
+                        .queryParamIfPresent(PARAM_PATH, Optional.ofNullable(path))
+                        .queryParamIfPresent(PARAM_MAX_RESULTS, Optional.ofNullable(maxResults))
+                        .queryParam(PARAM_FIELDS, VAR_FIELDS)
+                        .build(query, buildFieldsParam(attributes)))
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .onStatus(HttpStatusCode::isError, response -> handleErrorResponse(response))
+                .bodyToMono(RemoteEntityList.class);
+    }
+	
+	@Override
+	public Mono<RemoteEntityList> fetchEntityListPage(String query, String path, List<String> attributes, Integer maxResults, Integer page) {
+        return webClient().get()
+                .uri(uriBuilder -> uriBuilder.path(REMOTE_ENTITY_URL+"/list")
+                        .queryParam(PARAM_FORMAT, FORMAT_JSON)
+                        .queryParam(PARAM_QUERY, VAR_QUERY )           
+                        .queryParamIfPresent(PARAM_PATH, Optional.ofNullable(path))
+                        .queryParamIfPresent(PARAM_MAX_RESULTS, Optional.ofNullable(maxResults))
+                        .queryParamIfPresent(PARAM_PAGE, Optional.ofNullable(page))
+                        .queryParam(PARAM_FIELDS, VAR_FIELDS)
+                        .build(query, buildFieldsParam(attributes)))
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .onStatus(HttpStatusCode::isError, response -> handleErrorResponse(response))
+                .bodyToMono(RemoteEntityList.class);
+    }
+	
+	@Override
+	public Flux<RemoteEntityList> fetchEntityListAllPages(String query, String path, List<String> attributes, Integer maxResults) {
+		AtomicInteger pageNumber = new AtomicInteger(1);
+		return Flux.defer(() -> fetchEntityListPage(query, path, attributes, maxResults, pageNumber.get()))
+			.expand(remoteEntityList -> {
+				if (remoteEntityList.hasMoreItems()) {
+					return fetchEntityListPage(query, path, attributes, maxResults, pageNumber.addAndGet(1));
+				}
+				return Mono.empty();
+			});
+	}
 	  
 
 	/** {@inheritDoc} */

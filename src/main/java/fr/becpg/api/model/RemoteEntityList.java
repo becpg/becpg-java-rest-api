@@ -13,8 +13,27 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class RemoteEntityList {
 
 	@JsonProperty("entities")
-	List<RemoteEntityRef> entities;
+	private List<RemoteEntityRef> entities;
 
+	@JsonProperty("pagination")
+	private Pagination pagination;
+	
+	public Pagination getPagination() {
+		return pagination;
+	}
+	
+	public void setPagination(Pagination pagination) {
+		this.pagination = pagination;
+	}
+	
+	public boolean hasMoreItems() {
+		return pagination != null && pagination.isHasMoreItems();
+	}
+	
+	public int getTotalItems() {
+		return pagination == null ? 0 : pagination.getCount();
+	}
+	
 	/**
 	 * <p>Getter for the field <code>entities</code>.</p>
 	 *

@@ -10,6 +10,7 @@ import fr.becpg.api.model.RemoteEntity;
 import fr.becpg.api.model.RemoteEntityList;
 import fr.becpg.api.model.RemoteEntityRef;
 import fr.becpg.api.model.RemoteEntitySchema;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
@@ -50,7 +51,10 @@ public interface EntityAPI {
 	List<RemoteEntityRef> listByPath(String query, String path, List<String> attributes, int maxResults);
 
 	Mono<RemoteEntityList> fetchEntityList(@NonNull String query, String path, List<String> attributes, Integer maxResults);
-
+	
+	Mono<RemoteEntityList> fetchEntityListPage(@NonNull String query, String path, List<String> attributes, Integer maxResults, Integer page);
+	
+	Flux<RemoteEntityList> fetchEntityListAllPages(@NonNull String query, String path, List<String> attributes, Integer maxResults);
 	/**
 	 * <p>get.</p>
 	 *
