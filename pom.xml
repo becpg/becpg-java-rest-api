@@ -126,13 +126,15 @@
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-release-plugin</artifactId>
-					<configuration>
-						<tagNameFormat>@{project.version}</tagNameFormat>
-						<scmCommentPrefix>[Release]</scmCommentPrefix>
-						<pushChanges>false</pushChanges>
-					</configuration>
-			    </plugin>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>3.1.1</version>
+				<configuration>
+					<tagNameFormat>@{project.version}</tagNameFormat>
+					<scmCommentPrefix>[Release]</scmCommentPrefix>
+					<scmDevelopmentCommitComment>[skip ci] Prepare for next development iteration</scmDevelopmentCommitComment>
+					<pushChanges>false</pushChanges>
+				</configuration>
+			</plugin>
 		</plugins>
 		<extensions>
 			<extension>
