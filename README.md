@@ -1,4 +1,4 @@
-# Welcome to the beCPG REST API SDK
+ # Welcome to the beCPG REST API SDK
 
 <p align="center">
   <img title="becpg" alt='becpg' src='docs/images/becpg.png' ></img>
@@ -15,6 +15,8 @@ This SDK provides functionality to consume beCPG REST Remote API.
 
 | Version | beCPG Version | Version API | Version JAVA | Changes |
 | --- | --- | --- | --- | -- |
+| 1.1.4 | >= 4.2.3 | >= 3.5 (Partial support on >=3.3) | JAVA 17 | Fix Memory issue |
+| 1.1.3 | >= 4.2.3 | >= 3.5 (Partial support on >=3.3) | JAVA 17 | Bugfix in compressParam |
 | 1.1.2 | >= 4.2.3 | >= 3.5 (Partial support on >=3.3) | JAVA 17 | Add entity schema support |
 | 1.1.1 | >= 4.2.2 | >= 3.4 (Partial support on >=3.3) | JAVA 17 | Add nested datalist getter (API >=3.4) |
 | 1.1.0 | >= 4.2.2 | >= 3.3 (Partial support on >=3.1) | JAVA 17 | Migrate To spring boot 3 and Java 17 |
