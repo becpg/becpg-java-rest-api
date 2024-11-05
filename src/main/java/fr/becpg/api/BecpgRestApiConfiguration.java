@@ -19,6 +19,7 @@ import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import reactor.netty.http.client.HttpClient;
+import reactor.netty.resources.ConnectionProvider;
 import reactor.netty.transport.logging.AdvancedByteBufFormat;
 
 /**
@@ -72,13 +73,16 @@ public class BecpgRestApiConfiguration {
 
 	@Autowired(required = false)
 	protected WebClientAuthenticationProvider authenticationProvider;
+	
+	@Autowired(required = false)
+	private ConnectionProvider connectionProvider;
 
 	@Bean("remoteWebClient")
 	public WebClient webClient() {
 
 		String baseUrl = getContentServiceUrl() + "/alfresco/service/becpg/remote";
 
-		HttpClient httpClient = HttpClient.create();
+		HttpClient httpClient = connectionProvider != null ? HttpClient.create(connectionProvider) : HttpClient.create();
 		
 		if(logger.isDebugEnabled()) {
 			httpClient.wiretap("reactor.netty.http.client.HttpClient", LogLevel.DEBUG, AdvancedByteBufFormat.TEXTUAL);
