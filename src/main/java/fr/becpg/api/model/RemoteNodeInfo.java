@@ -86,6 +86,12 @@ public class RemoteNodeInfo {
 		if (this.name == null) {
 			this.name = (String) fields.get("bcpg:charactName");
 		}
+		if (this.name == null) {
+			this.name = (String) fields.get("cm:userName");
+		}
+		if (this.name == null) {
+			this.name = (String) fields.get("cm:authorityName");
+		}
 		this.code = (String) fields.get("bcpg:code");
 		this.type = (String) fields.get("type");
 		this.erpCode = (String) fields.get("bcpg:erpCode");
@@ -411,14 +417,27 @@ public class RemoteNodeInfo {
 	@JsonIgnore
 	public List<RemoteNodeInfo> getAssociations(String assocName) {
 		List<RemoteNodeInfo> ret = new ArrayList<>();
-		@SuppressWarnings("unchecked")
-		List<Map<String, Object>> assocs = attributes != null ? (List<Map<String, Object>>) attributes.get(assocName) : null;
-		if (assocs != null) {
-			for (Map<String, Object> assoc : assocs) {
+		
+		if (attributes != null && attributes.get(assocName) instanceof List) {
+			
+			@SuppressWarnings("unchecked")
+			List<Map<String, Object>> assocs = (List<Map<String, Object>>) attributes.get(assocName);
+			if (assocs != null) {
+				for (Map<String, Object> assoc : assocs) {
+					ret.add(new RemoteNodeInfo(assoc));
+				}
+			}
+			
+		} else {
+			
+			@SuppressWarnings("unchecked")
+			Map<String, Object> assoc = attributes != null ? (Map<String, Object>) attributes.get(assocName) : null;
+			if (assoc != null) {
 				ret.add(new RemoteNodeInfo(assoc));
 			}
-
+			
 		}
+		
 		return ret;
 	}
 
