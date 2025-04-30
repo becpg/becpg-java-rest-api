@@ -58,6 +58,18 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 	    RemoteEntityList entityList =  fetchEntityList(query, null, attributes, maxResults).block();
 		return entityList != null ? entityList.getEntities() : null;
 	}
+	
+	@Override
+	public List<RemoteEntityRef> list(RemoteEntity entityQuery, String query, List<String> attributes, int maxResults) {
+	    if (maxResults == -1) {
+	        return fetchEntityListAllPages(entityQuery, query, null, attributes, maxResults)
+	            .flatMapIterable(RemoteEntityList::getEntities)
+	            .collectList()
+	            .block();
+	    }
+	    RemoteEntityList entityList =  fetchEntityList(query, null, attributes, maxResults).block();
+		return entityList != null ? entityList.getEntities() : null;
+	}
 
 	/** {@inheritDoc} */
 	@Override
@@ -108,6 +120,24 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
     }
 	
 	@Override
+	public Mono<RemoteEntityList> fetchEntityListPage(RemoteEntity entityQuery, String query, String path, List<String> attributes, Integer maxResults, Integer page) {
+		return webClient().post()
+				.uri(uriBuilder -> uriBuilder.path(REMOTE_ENTITY_URL+"/list")
+						.queryParam(PARAM_FORMAT, FORMAT_JSON)
+						.queryParam(PARAM_QUERY, VAR_QUERY )           
+						.queryParamIfPresent(PARAM_PATH, Optional.ofNullable(path))
+						.queryParamIfPresent(PARAM_MAX_RESULTS, Optional.ofNullable(maxResults))
+						.queryParamIfPresent(PARAM_PAGE, Optional.ofNullable(page))
+						.queryParam(PARAM_FIELDS, VAR_FIELDS)
+						.build(query, buildFieldsParam(attributes)))
+				.body(BodyInserters.fromValue(entityQuery))
+				.accept(MediaType.APPLICATION_JSON)
+				.retrieve()
+				.onStatus(HttpStatusCode::isError, response -> handleErrorResponse(response))
+				.bodyToMono(RemoteEntityList.class);
+	}
+	
+	@Override
 	public Flux<RemoteEntityList> fetchEntityListAllPages(String query, String path, List<String> attributes, Integer maxResults) {
 		AtomicInteger pageNumber = new AtomicInteger(1);
 		return Flux.defer(() -> fetchEntityListPage(query, path, attributes, maxResults, pageNumber.get()))
@@ -117,6 +147,18 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 				}
 				return Mono.empty();
 			});
+	}
+	
+	@Override
+	public Flux<RemoteEntityList> fetchEntityListAllPages(RemoteEntity entityQuery, String query, String path, List<String> attributes, Integer maxResults) {
+		AtomicInteger pageNumber = new AtomicInteger(1);
+		return Flux.defer(() -> fetchEntityListPage(entityQuery, query, path, attributes, maxResults, pageNumber.get()))
+				.expand(remoteEntityList -> {
+					if (remoteEntityList.hasMoreItems()) {
+						return fetchEntityListPage(entityQuery, query, path, attributes, maxResults, pageNumber.addAndGet(1));
+					}
+					return Mono.empty();
+				});
 	}
 	  
 
