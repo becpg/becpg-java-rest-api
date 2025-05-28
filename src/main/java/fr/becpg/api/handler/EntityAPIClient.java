@@ -70,6 +70,11 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 	    RemoteEntityList entityList =  fetchEntityList(query, null, attributes, maxResults).block();
 		return entityList != null ? entityList.getEntities() : null;
 	}
+	
+	@Override
+	public List<RemoteEntityRef> list(RemoteEntity entityQuery) {
+		return list(entityQuery, null, null, -1);
+	}
 
 	/** {@inheritDoc} */
 	@Override
@@ -159,6 +164,11 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 					}
 					return Mono.empty();
 				});
+	}
+	
+	@Override
+	public Flux<RemoteEntityList> fetchEntityListAllPages(RemoteEntity entityQuery) {
+		return fetchEntityListAllPages(entityQuery, null, null, null, -1);
 	}
 	  
 
