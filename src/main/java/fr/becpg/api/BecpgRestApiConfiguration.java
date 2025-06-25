@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import fr.becpg.api.security.WebClientAuthenticationProvider;
@@ -18,6 +19,7 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
+import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.resources.ConnectionProvider;
 import reactor.netty.transport.logging.AdvancedByteBufFormat;
@@ -118,8 +120,19 @@ public class BecpgRestApiConfiguration {
 			builder = builder.filter(authenticationProvider.authenticationFilter());
 		}
 
-		return builder.baseUrl(baseUrl).build();
-
+		return builder.baseUrl(baseUrl)
+				.filters(exchangeFilterFunctions -> {
+				      exchangeFilterFunctions.add(logRequest());
+				})
+				.build();
 	}
-
+	
+	 private static ExchangeFilterFunction logRequest() {
+	        return ExchangeFilterFunction.ofRequestProcessor(clientRequest -> {
+	        	logger.debug("Request: " + clientRequest.method() + " " +  clientRequest.url());
+	            clientRequest.headers().forEach((name, values) -> values.forEach(value -> logger.debug(name + ": " + value)));
+	            return Mono.just(clientRequest);
+	        });
+	    }
+	 
 }
