@@ -77,7 +77,7 @@ public class BecpgRestApiConfiguration {
 	protected WebClientAuthenticationProvider authenticationProvider;
 	
 	@Autowired(required = false)
-	private ConnectionProvider connectionProvider;
+	protected ConnectionProvider connectionProvider;
 
 	@Bean("remoteWebClient")
 	public WebClient webClient() {
