@@ -1,7 +1,10 @@
 package fr.becpg.api;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -16,6 +19,8 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 
@@ -34,6 +39,12 @@ class EntityApiTest extends AbstractRemoteApiTest {
 	private EntityAPI entityApi;
 
 	private static MockWebServer mockBackEnd;
+
+	@Value("classpath:entitiesWithMoreItems.json")
+	protected Resource entitiesWithMoreItems;
+
+	@Value("classpath:entitiesWithoutMoreItems.json")
+	protected Resource entitiesWithoutMoreItems;
 
 	@BeforeAll
 	static void setUp() throws IOException {
@@ -101,6 +112,19 @@ class EntityApiTest extends AbstractRemoteApiTest {
 			break;
 		}
 
+	}
+	
+	@Test
+	void testListAllPages() throws IOException {
+
+		mockBackEnd.enqueue(new MockResponse().setBody(asString(entitiesWithMoreItems)).addHeader("Content-Type", "application/json"));
+		mockBackEnd.enqueue(new MockResponse().setBody(asString(entitiesWithMoreItems)).addHeader("Content-Type", "application/json"));
+		mockBackEnd.enqueue(new MockResponse().setBody(asString(entitiesWithMoreItems)).addHeader("Content-Type", "application/json"));
+		mockBackEnd.enqueue(new MockResponse().setBody(asString(entitiesWithMoreItems)).addHeader("Content-Type", "application/json"));
+		mockBackEnd.enqueue(new MockResponse().setBody(asString(entitiesWithoutMoreItems)).addHeader("Content-Type", "application/json"));
+
+		List<RemoteEntityRef> entities = entityApi.list("+TYPE:\"bcpg:finishedProduct\"", Arrays.asList("cm:name"), -1);
+		assertEquals(5, entities.size());
 	}
 	
 	@Test

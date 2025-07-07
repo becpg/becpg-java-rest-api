@@ -1,0 +1,17 @@
+{
+    "entities": [
+        {
+            "entity": {
+                "cm:name": "Tarte coco tradition",
+                "bcpg:erpCode": "PERF-PF1",
+                "id": "2a1fbec2-7079-434e-bea6-6a6e86768697",
+                "type": "bcpg:finishedProduct",
+                "bcpg:code": "PF94590"
+            }
+        }
+    ],
+    "pagination" : {
+    	"hasMoreItems" : true,
+    	"count": 1
+    }
+}

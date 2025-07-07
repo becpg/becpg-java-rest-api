@@ -8,6 +8,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
 
@@ -145,9 +147,11 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 	@Override
 	public Flux<RemoteEntityList> fetchEntityListAllPages(String query, String path, List<String> attributes, Integer maxResults) {
 		AtomicInteger pageNumber = new AtomicInteger(1);
-		return Flux.defer(() -> fetchEntityListPage(query, path, attributes, maxResults, pageNumber.get()))
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		return fetchEntityListPage(query, path, attributes, maxResults, pageNumber.get())
 			.expand(remoteEntityList -> {
 				if (remoteEntityList.hasMoreItems()) {
+					SecurityContextHolder.getContext().setAuthentication(authentication);
 					return fetchEntityListPage(query, path, attributes, maxResults, pageNumber.addAndGet(1));
 				}
 				return Mono.empty();
@@ -157,9 +161,11 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 	@Override
 	public Flux<RemoteEntityList> fetchEntityListAllPages(RemoteEntity entityQuery, String query, String path, List<String> attributes, Integer maxResults) {
 		AtomicInteger pageNumber = new AtomicInteger(1);
-		return Flux.defer(() -> fetchEntityListPage(entityQuery, query, path, attributes, maxResults, pageNumber.get()))
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		return fetchEntityListPage(entityQuery, query, path, attributes, maxResults, pageNumber.get())
 				.expand(remoteEntityList -> {
 					if (remoteEntityList.hasMoreItems()) {
+						SecurityContextHolder.getContext().setAuthentication(authentication);
 						return fetchEntityListPage(entityQuery, query, path, attributes, maxResults, pageNumber.addAndGet(1));
 					}
 					return Mono.empty();
