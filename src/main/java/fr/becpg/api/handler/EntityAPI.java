@@ -40,6 +40,8 @@ public interface EntityAPI {
 	List<RemoteEntityRef> list(@NonNull String query, List<String> attributes, int maxResults);
 
 	List<RemoteEntityRef> list(RemoteEntity entityQuery, String query, List<String> attributes, int maxResults);
+	
+	List<RemoteEntityRef> list(RemoteEntity entityQuery);
 
 	/**
 	 * <p>list.</p>
@@ -62,6 +64,8 @@ public interface EntityAPI {
 	Flux<RemoteEntityList> fetchEntityListAllPages(@NonNull String query, String path, List<String> attributes, Integer maxResults);
 	
 	Flux<RemoteEntityList> fetchEntityListAllPages(RemoteEntity entityQuery, String query, String path, List<String> attributes, Integer maxResults);
+	
+	Flux<RemoteEntityList> fetchEntityListAllPages(RemoteEntity entityQuery);
 
 	/**
 	 * <p>get.</p>
