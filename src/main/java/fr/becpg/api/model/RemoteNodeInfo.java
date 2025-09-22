@@ -329,7 +329,7 @@ public class RemoteNodeInfo {
 	@Nullable
 	@JsonIgnore
 	public Date getDateProp(String propName) {
-		return attributes != null ? DateExtractorHelper.parse((String) attributes.get(propName)) : null;
+		return attributes != null && attributes.get(propName)!=null ? DateExtractorHelper.parse((String) attributes.get(propName)) : null;
 	}
 
 	/**

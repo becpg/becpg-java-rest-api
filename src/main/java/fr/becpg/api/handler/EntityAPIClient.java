@@ -103,7 +103,7 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
     }
 	
 	@Override
-	public Mono<RemoteEntityList> fetchEntityListPage(String query, String path, List<String> attributes, Integer maxResults, Integer page) {
+	public Mono<RemoteEntityList> fetchEntityListPage(@NonNull String query, String path, List<String> attributes, Integer maxResults, Integer page) {
         return webClient().get()
                 .uri(uriBuilder -> uriBuilder.path(REMOTE_ENTITY_URL+"/list")
                         .queryParam(PARAM_FORMAT, FORMAT_JSON)
@@ -138,7 +138,7 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 	}
 	
 	@Override
-	public Flux<RemoteEntityList> fetchEntityListAllPages(String query, String path, List<String> attributes, Integer maxResults) {
+	public Flux<RemoteEntityList> fetchEntityListAllPages(@NonNull String query, String path, List<String> attributes, Integer maxResults) {
 		AtomicInteger pageNumber = new AtomicInteger(1);
 		return Flux.defer(() -> fetchEntityListPage(query, path, attributes, maxResults, pageNumber.get()))
 			.expand(remoteEntityList -> {

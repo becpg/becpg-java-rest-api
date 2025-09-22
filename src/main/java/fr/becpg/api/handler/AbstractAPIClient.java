@@ -85,7 +85,7 @@ public abstract class AbstractAPIClient {
 	 * @return a {@link java.lang.String} object
 	 */
 	protected String buildFieldsParam(List<String> fields) {
-		if (fields != null) {
+		if (fields != null && !fields.isEmpty()) {
 			return compress(String.join(",", fields));
 		}
 		return null;

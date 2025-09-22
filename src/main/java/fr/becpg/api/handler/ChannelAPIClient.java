@@ -58,7 +58,7 @@ public class ChannelAPIClient extends AbstractAPIClient implements ChannelAPI {
 
 	/** {@inheritDoc} */
 	@Override
-	public RemoteEntity get(String channelId) {
+	public RemoteEntity get(@NonNull String channelId) {
 		RemoteEntityRef entityRef = webClient().get()
 				.uri(uriBuilder -> uriBuilder
 						.path("/entity").queryParam(PARAM_FORMAT, FORMAT_JSON).queryParam(PARAM_QUERY,VAR_QUERY).build( buildQuery(channelId)))

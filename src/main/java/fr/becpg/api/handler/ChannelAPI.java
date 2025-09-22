@@ -2,6 +2,8 @@ package fr.becpg.api.handler;
 
 import java.util.List;
 
+import org.springframework.lang.NonNull;
+
 import fr.becpg.api.model.RemoteEntity;
 import fr.becpg.api.model.RemoteEntityRef;
 
@@ -19,7 +21,7 @@ public interface ChannelAPI {
 	 * @param channelId a {@link java.lang.String} object
 	 * @return a {@link java.util.List} object
 	 */
-	List<RemoteEntityRef> list(String channelId);
+	List<RemoteEntityRef> list(@NonNull String channelId);
 
 	/**
 	 * Returns the list of the entities that are in the channel with a max result. The return values will be retrieved with the attributes filled
@@ -30,7 +32,7 @@ public interface ChannelAPI {
 	 * @param maxResults a int
 	 * @return a {@link java.util.List} object
 	 */
-	List<RemoteEntityRef> list(String channelId, List<String> attributes, int maxResults);
+	List<RemoteEntityRef> list(@NonNull String channelId, List<String> attributes, int maxResults);
 
 	/**
 	 * Returns the channel with the id channelId
@@ -38,6 +40,6 @@ public interface ChannelAPI {
 	 * @param channelId a {@link java.lang.String} object
 	 * @return a {@link fr.becpg.api.model.RemoteEntity} object
 	 */
-	RemoteEntity get(String channelId);
+	RemoteEntity get(@NonNull String channelId);
 
 }

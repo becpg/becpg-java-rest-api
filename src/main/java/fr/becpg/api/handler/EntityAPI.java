@@ -27,7 +27,7 @@ public interface EntityAPI {
 	 * @param query a {@link java.lang.String} object
 	 * @return a {@link java.util.List} object
 	 */
-	List<RemoteEntityRef> list(String query);
+	List<RemoteEntityRef> list(@NonNull String query);
 
 	/**
 	 * <p>list.</p>
@@ -37,7 +37,7 @@ public interface EntityAPI {
 	 * @param maxResults a int
 	 * @return a {@link java.util.List} object
 	 */
-	List<RemoteEntityRef> list(String query, List<String> attributes, int maxResults);
+	List<RemoteEntityRef> list(@NonNull String query, List<String> attributes, int maxResults);
 
 	List<RemoteEntityRef> list(RemoteEntity entityQuery, String query, List<String> attributes, int maxResults);
 
@@ -50,7 +50,7 @@ public interface EntityAPI {
 	 * @param maxResults a int
 	 * @return a {@link java.util.List} object
 	 */
-	List<RemoteEntityRef> listByPath(String query, String path, List<String> attributes, int maxResults);
+	List<RemoteEntityRef> listByPath(@NonNull String query, @NonNull String path, List<String> attributes, int maxResults);
 
 	Mono<RemoteEntityList> fetchEntityList(@NonNull String query, String path, List<String> attributes, Integer maxResults);
 	

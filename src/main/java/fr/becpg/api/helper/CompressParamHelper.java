@@ -44,7 +44,7 @@ public class CompressParamHelper {
 	 * @return a {@link java.lang.String} object.
 	 */
 	public static  String encodeParam(String value) {
-		if (value != null) {
+		if (value != null && !value.isBlank()) {
 			byte[] compressedData = new byte[4096];
 			for(Entry<String,String> entry: replacementMaps.entrySet()) {
 				value = value.replaceAll(entry.getKey(), entry.getValue());
