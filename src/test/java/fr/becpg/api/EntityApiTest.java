@@ -59,7 +59,7 @@ class EntityApiTest extends AbstractRemoteApiTest {
 	}
 
 	@DynamicPropertySource
-	static void properties(DynamicPropertyRegistry r) throws IOException {
+	static void properties(DynamicPropertyRegistry r)  {
 		r.add("content.service.url", () -> "http://localhost:" + mockBackEnd.getPort());
 	}
 
@@ -97,7 +97,6 @@ class EntityApiTest extends AbstractRemoteApiTest {
 			Assert.assertNotNull(entity.getDatalists());
 
 		
-			logger.info(entity.getStringProp("bcpg:entityTplRef"));
 
 			List<RemoteNodeInfo> geoOrigins = entity.getAssociations("bcpg:productGeoOrigin");
 			Assert.assertNotNull(geoOrigins);
@@ -107,6 +106,9 @@ class EntityApiTest extends AbstractRemoteApiTest {
 			Assert.assertNotNull(entityTpl);
 			Assert.assertNotNull(entityTpl.getName());
 
+
+			logger.info(entityTpl.toString());
+			
 			Assert.assertEquals("Produit fini", entityTpl.getName());
 			logger.info(entityTpl.getName());
 
@@ -129,7 +131,7 @@ class EntityApiTest extends AbstractRemoteApiTest {
 	}
 	
 	@Test
-    void testURLEncoding() throws JSONException, IOException, InterruptedException {
+    void testURLEncoding() throws  IOException, InterruptedException {
         
         mockBackEnd.enqueue(new MockResponse().setBody(asString(entities)).addHeader("Content-Type", "application/json"));
 
