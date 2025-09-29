@@ -9,7 +9,7 @@
 	</parent>
 	<groupId>fr.becpg</groupId>
 	<artifactId>becpg-java-rest-api</artifactId>
-	<version>1.1.7</version>
+	<version>1.1.8-SNAPSHOT</version>
 	<name>becpg-java-rest-api</name>
 	<description>beCPG Java Rest API</description>
 	<properties>
