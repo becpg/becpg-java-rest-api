@@ -96,7 +96,8 @@ class EntityApiTest extends AbstractRemoteApiTest {
 			Assert.assertNotNull(entity.getAttributes());
 			Assert.assertNotNull(entity.getDatalists());
 
-			logger.info(entity.getAttributes().get("bcpg:entityTplRef").toString());
+		
+			logger.info(entity.getStringProp("bcpg:entityTplRef"));
 
 			List<RemoteNodeInfo> geoOrigins = entity.getAssociations("bcpg:productGeoOrigin");
 			Assert.assertNotNull(geoOrigins);
