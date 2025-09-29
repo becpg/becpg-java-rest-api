@@ -19,3 +19,15 @@
 * [skip ci][Release]: Update CHANGELOG.md for 1.1.5 release
 * [skip ci] Prepare for next development iteration
 
+## [ 1.1.7 ] - lun. 29 sept. 2025 11:27:49 CEST
+
+* [Release] prepare release 1.1.7
+* [Setup] Fix unit test
+* [Setup] Update libs
+* [Bug] Fix unit test
+* Merge branch 'main' of https://github.com/becpg/becpg-java-rest-api
+* [Bug] Do not compress param if empty attributes list
+* [skip ci][Release]: Update CHANGELOG.md for 1.1.6 release
+* [skip ci] Prepare for next development iteration
+* [Setup] Update library
+
