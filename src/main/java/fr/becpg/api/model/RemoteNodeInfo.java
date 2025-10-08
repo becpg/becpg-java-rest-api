@@ -442,6 +442,31 @@ public class RemoteNodeInfo {
 	}
 
 	/**
+	 * <p>setAssociations.</p>
+	 *
+	 * @param assocName a {@link java.lang.String} object
+	 * @param associations a {@link java.util.List} object
+	 */
+	@JsonIgnore
+	public void setAssociations(String assocName, List<RemoteNodeInfo> associations) {
+		if (attributes == null) {
+			attributes = new HashMap<>();
+		}
+		
+		if (associations == null || associations.isEmpty()) {
+			attributes.remove(assocName);
+		} else if (associations.size() == 1) {
+			attributes.put(assocName, associations.get(0).getOptionalIdentifiers());
+		} else {
+			List<Map<String, Object>> assocList = new ArrayList<>();
+			for (RemoteNodeInfo assoc : associations) {
+				assocList.add(assoc.getOptionalIdentifiers());
+			}
+			attributes.put(assocName, assocList);
+		}
+	}
+
+	/**
 	 * <p>getAssociation.</p>
 	 *
 	 * @param assocName a {@link java.lang.String} object

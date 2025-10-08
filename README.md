@@ -15,6 +15,7 @@ This SDK provides functionality to consume beCPG REST Remote API.
 
 | Version | beCPG Version | Version API | Version JAVA | Changes |
 | --- | --- | --- | --- | -- |
+| 1.1.8 | >= 24.2.2 | >= 3.5 | JAVA 17 | Add BecpgAPIModel and helpers for setAssociations |
 | 1.1.7 | >= 23.4.2 | >= 3.5 (Partial support on >=3.3) | JAVA 17 | Bug fixes |
 | 1.1.6 | >= 23.4.2 | >= 3.5 (Partial support on >=3.3) | JAVA 17 | Add advanced search support |
 | 1.1.5 | >= 4.2.3 | >= 3.5 (Partial support on >=3.3) | JAVA 17 | Fix cm:person charact and single assoc |
