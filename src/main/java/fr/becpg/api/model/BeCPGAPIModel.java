@@ -22,6 +22,7 @@ public final class BeCPGAPIModel {
 	public static final String ASSOC_CM_CONTAINS = "cm:contains";
 	public static final String PROP_CM_NAME = "cm:name";
 	public static final String PROP_BEST_BEFORE_DATE = "bcpg:bestBeforeDate";
+	public static final String PROP_PRODUCT_USE_BY_DATE = "qa:productUseByDate";
 	public static final String PROP_USE_BY_DATE = "bcpg:useByDate";
 	public static final String PROP_PERIOD_AFTER_OPENING = "bcpg:periodAfterOpening";
 
@@ -50,6 +51,12 @@ public final class BeCPGAPIModel {
 	public static final String TYPE_CERTIFICATION = "bcpg:certification";
 	public static final String TYPE_APPROVAL_NUMBER = "bcpg:approvalNumber";
 	public static final String TYPE_LABORATORY = "bcpg:laboratory";
+
+	// --- Batch ---
+	public static final String PROP_BATCH_STATE = "qa:batchState";
+	public static final String PROP_BATCH_QTY_UNIT = "qa:batchQtyUnit";
+	public static final String PROP_BATCH_QTY = "qa:batchQty";
+	public static final String PROP_BATCH_ID = "qa:batchId";
 
 	// --- Ingredient Type ---
 	public static final String TYPE_ING = "bcpg:ing";
@@ -103,6 +110,15 @@ public final class BeCPGAPIModel {
 	public static final String TYPE_SVHCLIST = "bcpg:svhcList";
 	public static final String TYPE_LCALIST = "bcpg:lcaList";
 	public static final String TYPE_INGREGULATORYLIST = "bcpg:ingRegulatoryList";
+	public static final String TYPE_TASKLIST = "pjt:taskList";
+	public static final String TYPE_BUDGETLIST = "pjt:budgetList";
+	public static final String TYPE_DELIVERABLELIST = "pjt:deliverableList";
+	public static final String TYPE_INVOICELIST = "pjt:invoiceList";
+	public static final String TYPE_LOGTIMELIST = "pjt:logTimeList";
+	public static final String TYPE_SCORELIST = "pjt:scoreList";
+	public static final String TYPE_PROCESSLIST = "mpm:processList";
+	public static final String TYPE_STOCKLIST = "qa:stockList";
+
 	public static final String TYPE_PRODUCT_MICROBIO_CRITERIA = "bcpg:productMicrobioCriteria";
 
 	// --- Entity Template ---
@@ -159,6 +175,41 @@ public final class BeCPGAPIModel {
 	public static final String PROP_TASKLIST_END = "pjt:tlEnd";
 	public static final String PROP_TASKLIST_PREV_TASKS = "pjt:tlPrevTasks";
 	public static final String PROP_TASKLIST_REFUSED_TASK_REF = "pjt:tlRefusedTaskRef";
+
+	// --- Project score Datalist ---
+	public static final String ASSOC_SL_SCORE_CRITERION = "pjt:slScoreCriterion";
+	public static final String PROP_SL_WEIGHT = "pjt:slWeight";
+	public static final String PROP_SL_SCORE = "pjt:slScore";
+	public static final String PROP_SL_SCREENING = "pjt:slScreening";
+	public static final String PROP_SL_SCORE_RANGE = "pjt:slScoreRange";
+
+	// --- Project logtime Datalist ---
+	public static final String ASSOC_LTL_TASK = "pjt:ltlTask";
+	public static final String PROP_LTL_DATE = "pjt:ltlDate";
+	public static final String PROP_LTL_TYPE = "pjt:ltlType";
+	public static final String PROP_LTL_COMMENT = "pjt:ltlComment";
+	public static final String PROP_LTL_TIME = "pjt:ltlTime";
+
+	// --- Project invoice Datalist ---
+	public static final String ASSOC_IL_BUDGET_REF = "pjt:ilBudgetRef";
+	public static final String ASSOC_IL_TASK_REF = "pjt:ilTaskRef";
+	public static final String PROP_IL_INVOICE_NAME = "pjt:ilInvoiceName";
+	public static final String PROP_IL_DATE = "pjt:ilDate";
+	public static final String PROP_INVOICE = "pjt:invoice";
+
+	// --- Project deliverables Datalist ---
+	public static final String ASSOC_DL_CONTENT = "pjt:dlContent";
+	public static final String ASSOC_DL_TASKS = "pjt:dlTask";
+	public static final String PROP_DL_URL = "pjt:dlUrl";
+	public static final String PROP_DL_SCRIPT_EXEC_ORDER = "pjt:dlScriptExecOrder";
+	public static final String PROP_DL_STATE = "pjt:dlState";
+	public static final String PROP_DL_DESCRIPTION = "pjt:dlDescription";
+
+	// --- Project budgeting Datalist ---
+	public static final String PROP_BUDGETLIST_BUDGETED_EXPENSE = "pjt:blBudgetedExpense";
+	public static final String PROP_BUDGETLIST_BUDGETED_INVOICE = "pjt:blBudgetedInvoice";
+	public static final String PROP_BUDGETLIST_ITEM = "pjt:blItem";
+	public static final String PROP_BUDGETLIST_PROFIT = "pjt:blProfit";
 
 	// --- Organoleptic DataList ---
 	public static final String PROP_ORGANO_LIST_VALUE = "bcpg:organoListValue";
@@ -393,14 +444,18 @@ public final class BeCPGAPIModel {
 	// LCA
 	public static final String PROP_LCA_FORMULA = "bcpg:lcaFormula";
 	public static final String PROP_LCAUNIT = "bcpg:lcaUnit";
-	public static final String PROP_LCALIST_UNIT = "bcpg:lcaListUnit";
 	public static final String PROP_LCAFIXED = "bcpg:lcaFixed";
 	public static final String PROP_LCATYPE = "bcpg:lcaType";
-	public static final String ASSOC_LCALIST_LCA = "bcpg:lcaListLca";
 	public static final String PROP_LCA_NORMALIZATION = "bcpg:lcaNormalization";
 	public static final String PROP_LCA_PONDERATION = "bcpg:lcaPonderation";
 	public static final String PROP_LCA_CODE = "bcpg:lcaCode";
-	
+	public static final String ASSOC_LCALIST_LCA = "bcpg:lcaListLca";
+	public static final String ASSOC_LCALIST_COMPONENT = "bcpg:lcaListComponent";
+	public static final String PROP_LCALIST_UNIT = "bcpg:lcaListUnit";
+	public static final String PROP_LCALIST_VALUE = "bcpg:lcaListValue";
+	public static final String PROP_LCALIST_PREVIOUS_VALUE = "bcpg:lcaListPreviousValue";
+	public static final String PROP_LCALIST_FUTURE_VALUE = "bcpg:lcaListFutureValue";
+
 	// Ingredient Extended
 	public static final String PROP_ING_CEECODE = "bcpg:ingCEECode";
 	public static final String PROP_ING_CASCODE = "bcpg:ingCASCode";
@@ -468,6 +523,7 @@ public final class BeCPGAPIModel {
 	public static final String ASPECT_MANUFACTURING = "bcpg:manufacturingAspect";
 	public static final String ASSOC_SUBSIDIARY = "bcpg:subsidiaryRef";
 	public static final String ASSOC_PLANTS = "bcpg:plants";
+	public static final String ASSOC_LABORATORIES = "bcpg:laboratories";
 	public static final String ASSOC_TRADEMARK = "bcpg:trademarkRef";
 	public static final String ASSOC_SUBSIDIARY_CERTIFICATIONS = "bcpg:subsidiaryCertifications";
 	public static final String ASSOC_PLANT_CERTIFICATIONS = "bcpg:plantCertifications";
