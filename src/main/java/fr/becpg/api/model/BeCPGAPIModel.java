@@ -224,7 +224,7 @@ public final class BeCPGAPIModel {
 	public static final String PROP_MICROBIO_UNIT = "bcpg:mblUnit";
 
 	// --- Allergen DataList ---
-	public static final String ASSOC_ALLERGEN = "bcpg:allergenListAllergen";
+	public static final String ASSOC_ALLERGEN_LIST_ALLERGEN = "bcpg:allergenListAllergen";
 	public static final String PROP_ALLERGEN_LIST_VOLUNTARY = "bcpg:allergenListVoluntary";
 	public static final String PROP_ALLERGEN_LIST_INVOLUNTARY = "bcpg:allergenListInVoluntary";
 	public static final String PROP_ALLERGEN_LIST_ON_LINE = "bcpg:allergenListOnLine";
