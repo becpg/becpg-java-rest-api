@@ -15,6 +15,7 @@ public final class BeCPGAPIModel {
 	public static final String PROP_CHARACT_NAME = "bcpg:charactName";
 	public static final String PROP_PARENT_LEVEL = "bcpg:parentLevel";
 	public static final String PROP_LK_VALUE = "bcpg:lkvValue";
+	public static final String PROP_LV_VALUE = "bcpg:lvValue";
 	public static final String PROP_CODE = "bcpg:code";
 	public static final String PROP_ERP_CODE = "bcpg:erpCode";
 	public static final String PROP_LEGAL_NAME = "bcpg:legalName";
@@ -29,6 +30,11 @@ public final class BeCPGAPIModel {
 	// --- Specific Properties ---
 	public static final String PROP_CM_USER = "cm:person";
 	public static final String PROP_CM_USERNAME = "cm:userName";
+	
+	public static final String TYPE_ENTITY_V2 = "bcpg:entityV2";
+	public static final String TYPE_FOLDER = "cm:folder";
+	public static final String TYPE_CONTENT = "cm:content";
+
 
 	// --- Product Types ---
 	public static final String TYPE_FINISHED_PRODUCT = "bcpg:finishedProduct";
@@ -221,7 +227,8 @@ public final class BeCPGAPIModel {
 
 	public static final String PROP_MICROBIO_LIST_VALUE = "bcpg:mblValue";
 	public static final String ASSOC_MICROBIO_LIST_MICROBIO = "bcpg:mblMicrobio";
-	public static final String PROP_MICROBIO_UNIT = "bcpg:mblUnit";
+	public static final String PROP_MICROBIO_LIST_UNIT = "bcpg:mblUnit";
+	public static final String PROP_MICROBIO_LIST_MAXI = "bcpg:mblMaxi";
 
 	// --- Allergen DataList ---
 	public static final String ASSOC_ALLERGEN_LIST_ALLERGEN = "bcpg:allergenListAllergen";
@@ -282,7 +289,10 @@ public final class BeCPGAPIModel {
 
 	// --- Physico-Chemical DataList ---
 	public static final String PROP_PCL_VALUE = "bcpg:pclValue";
+	public static final String PROP_PCL_UNIT= "bcpg:pclUnit";
 	public static final String ASSOC_PCL_PHYSICO_CHEM = "bcpg:pclPhysicoChem";
+	
+	public static final String ASSOC_DOCUMENT_ENTITY_REF = "bcpg:documentEntityRef";
 
 	// --- Cost List ---
 	public static final String ASSOC_COST_LIST_COST = "bcpg:costListCost";
