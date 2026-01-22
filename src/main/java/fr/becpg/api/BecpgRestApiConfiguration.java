@@ -20,6 +20,7 @@ import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import reactor.core.publisher.Mono;
+import reactor.netty.http.HttpProtocol;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.resources.ConnectionProvider;
 import reactor.netty.transport.logging.AdvancedByteBufFormat;
@@ -47,6 +48,12 @@ public class BecpgRestApiConfiguration {
 	@Value("${remote.ssl.trustAll:false}")
 	private Boolean sslTrustAll;
 
+	@Value("${remote.force.http1:false}")
+	private Boolean forceHttp1;
+
+	@Value("${remote.force.tls12:false}")
+	private Boolean forceTls12;
+
 	/**
 	 * <p>Getter for the field <code>contentServiceUrl</code>.</p>
 	 *
@@ -73,6 +80,24 @@ public class BecpgRestApiConfiguration {
 		return Boolean.TRUE.equals(sslTrustAll);
 	}
 
+	/**
+	 * <p>Getter for the field <code>forceHttp1</code>.</p>
+	 *
+	 * @return a {@link java.lang.Boolean} object
+	 */
+	public boolean shouldForceHttp1() {
+		return Boolean.TRUE.equals(forceHttp1);
+	}
+
+	/**
+	 * <p>Getter for the field <code>forceTls12</code>.</p>
+	 *
+	 * @return a {@link java.lang.Boolean} object
+	 */
+	public boolean shouldForceTls12() {
+		return Boolean.TRUE.equals(forceTls12);
+	}
+
 	@Autowired(required = false)
 	protected WebClientAuthenticationProvider authenticationProvider;
 	
@@ -85,6 +110,10 @@ public class BecpgRestApiConfiguration {
 		String baseUrl = getContentServiceUrl() + "/alfresco/service/becpg/remote";
 
 		HttpClient httpClient = connectionProvider != null ? HttpClient.create(connectionProvider) : HttpClient.create();
+		if (shouldForceHttp1()) {
+			httpClient = httpClient.protocol(HttpProtocol.HTTP11);
+			logger.info("HTTP/1.1 forced for remote WebClient");
+		}
 		
 		if(logger.isDebugEnabled()) {
 			httpClient.wiretap("reactor.netty.http.client.HttpClient", LogLevel.DEBUG, AdvancedByteBufFormat.TEXTUAL);
@@ -93,12 +122,25 @@ public class BecpgRestApiConfiguration {
 		if (shouldDisableSSLVerification()) {
 			SslContext sslContext;
 			try {
-				sslContext = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE).build();
+				SslContextBuilder sslContextBuilder = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE);
+				if (shouldForceTls12()) {
+					sslContextBuilder = sslContextBuilder.protocols("TLSv1.2");
+					logger.info("TLSv1.2 forced for remote WebClient");
+				}
+				sslContext = sslContextBuilder.build();
 				httpClient = httpClient.secure(t -> t.sslContext(sslContext));
 
 				logger.debug("SSL verification disabled successfully");
 			} catch (SSLException e) {
 				logger.error("Cannot disable SSL for connection", e);
+			}
+		} else if (shouldForceTls12()) {
+			try {
+				SslContext sslContext = SslContextBuilder.forClient().protocols("TLSv1.2").build();
+				httpClient = httpClient.secure(t -> t.sslContext(sslContext));
+				logger.info("TLSv1.2 forced for remote WebClient");
+			} catch (SSLException e) {
+				logger.error("Cannot force TLSv1.2 for connection", e);
 			}
 		} else {
 			logger.debug("SSL verification is enabled");
