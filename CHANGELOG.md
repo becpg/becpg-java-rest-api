@@ -31,3 +31,15 @@
 * [skip ci] Prepare for next development iteration
 * [Setup] Update library
 
+## [ 1.1.8 ] - jeu. 22 janv. 2026 17:02:35 CET
+
+* [Release] prepare release 1.1.8
+* [Feature] - Add HTTP/1.1 and TLSv1.2 forcing options and document them
+* [Setup] Update dependencies
+* Add DictionaryHelper
+* Fix allergenListAllergen assoc name
+* [Feature] Improve BecpgAPIModel
+* [Feature] Add BecpgAPIModel and helpers for setAssociations
+* [skip ci][Release]: Update CHANGELOG.md for 1.1.7 release
+* [skip ci] Prepare for next development iteration
+
