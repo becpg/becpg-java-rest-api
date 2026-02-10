@@ -15,7 +15,7 @@ This SDK provides functionality to consume beCPG REST Remote API.
 
 | Version | beCPG Version | Version API | Version JAVA | Changes |
 | --- | --- | --- | --- | -- |
-| 1.1.8 | >= 24.2.2 | >= 3.5 | JAVA 17 | Add BecpgAPIModel and helpers for setAssociations |
+| 1.1.8 | >= 23.4.2 | >= 3.5 | JAVA 17 | Add BecpgAPIModel, setAssociations helpers, HTTP/1.1 and TLSv1.2 forcing options |
 | 1.1.7 | >= 23.4.2 | >= 3.5 (Partial support on >=3.3) | JAVA 17 | Bug fixes |
 | 1.1.6 | >= 23.4.2 | >= 3.5 (Partial support on >=3.3) | JAVA 17 | Add advanced search support |
 | 1.1.5 | >= 4.2.3 | >= 3.5 (Partial support on >=3.3) | JAVA 17 | Fix cm:person charact and single assoc |
@@ -132,6 +132,13 @@ It is possible to disable SSL verification with the option (For testing only for
 
 ```
 remote.ssl.trustAll=true
+```
+
+If the target server has issues with HTTP/2 or TLS negotiation, you can force HTTP/1.1 or TLSv1.2:
+
+```
+remote.force.http1=true
+remote.force.tls12=true
 ```
 
 #### Compress params
