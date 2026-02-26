@@ -43,3 +43,12 @@
 * [skip ci][Release]: Update CHANGELOG.md for 1.1.7 release
 * [skip ci] Prepare for next development iteration
 
+## [ 1.1.9 ] - jeu. 26 févr. 2026 14:33:22 CET
+
+* [Release] prepare release 1.1.9
+* [Setup] Prepare for release
+* Merge branch 'main' of https://github.com/becpg/becpg-java-rest-api.git into main
+* Add RemoteEntityHelper class
+* [skip ci][Release]: Update CHANGELOG.md for 1.1.8 release
+* [skip ci] Prepare for next development iteration
+
