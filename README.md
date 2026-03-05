@@ -15,6 +15,7 @@ This SDK provides functionality to consume beCPG REST Remote API.
 
 | Version | beCPG Version | Version API | Version JAVA | Changes |
 | --- | --- | --- | --- | -- |
+| 1.1.10 | >= 23.4.2 | >= 3.5 | JAVA 17 | Add session cookie reuse with host/path binding and automatic refresh on expiration (Basic and OAuth2 modes) |
 | 1.1.9 | >= 23.4.2 | >= 3.5 | JAVA 17 | Add common helper functions |
 | 1.1.8 | >= 23.4.2 | >= 3.5 | JAVA 17 | Add BecpgAPIModel, setAssociations helpers, HTTP/1.1 and TLSv1.2 forcing options |
 | 1.1.7 | >= 23.4.2 | >= 3.5 (Partial support on >=3.3) | JAVA 17 | Bug fixes |
@@ -72,7 +73,7 @@ Then, add the dependency on the desired starter(s)
    <dependency>
        <groupId>fr.becpg</groupId>
 	    <artifactId>becpg-java-rest-api</artifactId>
-		<version>1.1.0</version>
+		<version>1.1.9</version>
     </dependency>  
         
 </dependencies>
@@ -126,6 +127,21 @@ content.service.security.delegated=true
 ```
 
 And provide a bean that implements the interface **DelegatedAuthenticationProvider**.
+
+#### Session cookie reuse (recommended)
+
+To avoid re-authenticating each request, keep session cookie reuse enabled:
+
+```
+content.service.security.preferSessionCookie=true
+```
+
+Behavior:
+
+- Works in both **Basic Auth** and **OAuth2** modes.
+- Reuses server session cookies when available.
+- Automatically retries authentication when a cookie expires (HTTP 401).
+- Cookies are bound to the matching host/path scope.
 
 #### SSL
 

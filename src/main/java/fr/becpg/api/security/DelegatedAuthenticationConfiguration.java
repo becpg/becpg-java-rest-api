@@ -1,5 +1,6 @@
 package fr.becpg.api.security;
 
+import java.util.function.Supplier;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -19,6 +20,17 @@ public class DelegatedAuthenticationConfiguration {
 
 	@Bean("remoteAuthenticationFilter")
 	WebClientAuthenticationProvider authenticationFilter(DelegatedAuthenticationProvider    delegatedAuthenticationProvider) {
-       return () -> ExchangeFilterFunction.ofRequestProcessor(clientRequest -> Mono.just(delegatedAuthenticationProvider.setAuthentication(clientRequest)));
+		return new WebClientAuthenticationProvider() {
+			@Override
+			public ExchangeFilterFunction authenticationFilter() {
+				return ExchangeFilterFunction
+						.ofRequestProcessor(clientRequest -> Mono.just(delegatedAuthenticationProvider.setAuthentication(clientRequest)));
+			}
+
+			@Override
+			public <T> T doInSession(Supplier<T> operation) {
+				return delegatedAuthenticationProvider.doInSession(operation);
+			}
+		};
     }
 }

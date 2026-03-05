@@ -1,5 +1,7 @@
 package fr.becpg.api.security;
 
+import java.util.function.Supplier;
+
 import org.springframework.web.reactive.function.client.ClientRequest;
 
 /**
@@ -14,4 +16,15 @@ public interface DelegatedAuthenticationProvider {
      * @param template {@link RequestTemplate} to set the authentication details
      */
     ClientRequest setAuthentication(ClientRequest request);
+
+	/**
+	 * Execute an operation in the delegated authentication session scope.
+	 *
+	 * @param operation operation to execute
+	 * @param <T> operation return type
+	 * @return operation result
+	 */
+	default <T> T doInSession(Supplier<T> operation) {
+		return operation.get();
+	}
 }

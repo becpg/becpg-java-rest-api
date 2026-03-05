@@ -1,6 +1,7 @@
 package fr.becpg.api;
 
 import java.util.Map;
+import java.util.function.Supplier;
 
 import javax.net.ssl.SSLException;
 
@@ -10,10 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import fr.becpg.api.security.RemoteSessionCookieStore;
 import fr.becpg.api.security.WebClientAuthenticationProvider;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.ssl.SslContext;
@@ -104,6 +108,33 @@ public class BecpgRestApiConfiguration {
 	@Autowired(required = false)
 	protected ConnectionProvider connectionProvider;
 
+	@Autowired(required = false)
+	private RemoteSessionCookieStore sessionCookieStore;
+
+	/**
+	 * Execute an operation in the authentication provider session scope.
+	 *
+	 * @param operation operation to execute
+	 * @param <T> operation return type
+	 * @return operation result
+	 */
+	public <T> T doInSession(Supplier<T> operation) {
+		if (sessionCookieStore != null) {
+			sessionCookieStore.beginSession();
+		}
+
+		try {
+		if (authenticationProvider != null) {
+			return authenticationProvider.doInSession(operation);
+		}
+		return operation.get();
+		} finally {
+			if (sessionCookieStore != null) {
+				sessionCookieStore.endSession();
+			}
+		}
+	}
+
 	@Bean("remoteWebClient")
 	public WebClient webClient() {
 
@@ -158,6 +189,8 @@ public class BecpgRestApiConfiguration {
 					}
 				});
 
+		builder = builder.filter(sessionCookieFilter());
+
 		if (authenticationProvider != null) {
 			builder = builder.filter(authenticationProvider.authenticationFilter());
 		}
@@ -176,5 +209,24 @@ public class BecpgRestApiConfiguration {
 	            return Mono.just(clientRequest);
 	        });
 	    }
+
+	private ExchangeFilterFunction sessionCookieFilter() {
+		return (request, next) -> {
+			ClientRequest requestWithCookie = request;
+			if (sessionCookieStore != null) {
+				String cookieHeader = sessionCookieStore.buildCookieHeader(request.url());
+				if (cookieHeader != null && !cookieHeader.isBlank()) {
+					requestWithCookie = ClientRequest.from(request).headers(headers -> headers.set(HttpHeaders.COOKIE, cookieHeader)).build();
+				}
+			}
+			final ClientRequest outboundRequest = requestWithCookie;
+
+			return next.exchange(outboundRequest).doOnNext(response -> {
+				if (sessionCookieStore != null) {
+					sessionCookieStore.updateFromResponse(outboundRequest.url(), response.headers().asHttpHeaders());
+				}
+			});
+		};
+	}
 	 
 }
