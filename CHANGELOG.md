@@ -52,3 +52,15 @@
 * [skip ci][Release]: Update CHANGELOG.md for 1.1.8 release
 * [skip ci] Prepare for next development iteration
 
+## [ 1.1.10 ] - jeu. 05 mars 2026 17:21:01 CET
+
+* [Release] prepare release 1.1.10
+* [Sonar] Fix sonar issue
+* Fix #32325 - [Feature] Add session management
+* [Bug] Deprecate DictionnaryHelper
+* Fix #32325 - [Feature] Add session management
+* [Setup] Fix build
+* Fix #32325 - [Feature] Add session management
+* [skip ci][Release]: Update CHANGELOG.md for 1.1.9 release
+* [skip ci] Prepare for next development iteration
+
