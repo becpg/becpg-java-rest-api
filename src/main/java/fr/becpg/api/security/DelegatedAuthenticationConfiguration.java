@@ -11,8 +11,10 @@ import reactor.core.publisher.Mono;
 
 /**
  * Configuration for external delegated authentication mechanism. This must be provided by the integrator of the SDK in the form of a bean that implements the
- * interface {@link DelegatedAuthenticationProvider}. This authentication method is enabled via the property
+ * interface {@link fr.becpg.api.security.DelegatedAuthenticationProvider}. This authentication method is enabled via the property
  * <code>content.service.security.delegated</code>.
+ *
+ * @author matthieu
  */
 @Configuration
 @ConditionalOnProperty("content.service.security.delegated")

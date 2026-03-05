@@ -11,6 +11,11 @@ import org.springframework.security.oauth2.client.InMemoryReactiveOAuth2Authoriz
 import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.reactive.function.client.ServerOAuth2AuthorizedClientExchangeFilterFunction;
 
+/**
+ * <p>OAuth2Configuration class.</p>
+ *
+ * @author matthieu
+ */
 @Configuration
 @EnableConfigurationProperties({OAuth2ClientProperties.class})
 @ConditionalOnProperty("spring.security.oauth2.client.registration.becpg-java-rest-api.provider")

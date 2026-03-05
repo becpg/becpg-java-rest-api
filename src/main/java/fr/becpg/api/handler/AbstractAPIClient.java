@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.ClientResponse;
@@ -51,32 +52,39 @@ public abstract class AbstractAPIClient {
 	protected static final String PARAM_MAJOR_VERSION = "majorVersion";
 	/** Constant <code>PARAM_VERSION_DESCRIPTION="versionDescription"</code> */
 	protected static final String PARAM_VERSION_DESCRIPTION = "versionDescription";
-	
+
+	/** Constant <code>PARAM_PAGE="page"</code> */
 	protected static final String PARAM_PAGE = "page";
-	
+
+	/** Constant <code>VAR_FIELDS="{fields}"</code> */
 	protected static final String VAR_FIELDS = "{fields}";
 
+	/** Constant <code>VAR_QUERY="{query}"</code> */
 	protected static final String VAR_QUERY = "{query}";
 
+	/** Constant <code>VAR_LISTS="{lists}"</code> */
 	protected static final String VAR_LISTS = "{lists}";
-	
+
 	@Autowired
 	protected BecpgRestApiConfiguration apiConfiguration;
 
-	protected WebClient webClient() {
-		return apiConfiguration.webClient();
+	@Autowired
+	@Qualifier("remoteWebClient")
+	protected WebClient webClient;
+	
+	public WebClient webClient() {
+		return webClient;
 	}
 
-	
 	/**
 	 * Handle remote errors
-	 * @param response
-	 * @return
+	 *
+	 * @param response a {@link org.springframework.web.reactive.function.client.ClientResponse} object
+	 * @return a {@link reactor.core.publisher.Mono} object
 	 */
-    protected Mono<RemoteAPIException> handleErrorResponse(ClientResponse response) {
-        return response.bodyToMono(RemoteAPIError.class)
-                .flatMap(error -> Mono.error(new RemoteAPIException(error)));
-    }
+	protected Mono<RemoteAPIException> handleErrorResponse(ClientResponse response) {
+		return response.bodyToMono(RemoteAPIError.class).flatMap(error -> Mono.error(new RemoteAPIException(error)));
+	}
 
 	/**
 	 * <p>buildFieldsParam.</p>
@@ -85,7 +93,7 @@ public abstract class AbstractAPIClient {
 	 * @return a {@link java.lang.String} object
 	 */
 	protected String buildFieldsParam(List<String> fields) {
-		if (fields != null && !fields.isEmpty()) {
+		if ((fields != null) && !fields.isEmpty()) {
 			return compress(String.join(",", fields));
 		}
 		return null;
@@ -118,12 +126,13 @@ public abstract class AbstractAPIClient {
 	 *
 	 * @param params a {@link java.util.Map} object
 	 * @return a {@link java.lang.String} object
+	 * @param <T> a T class
 	 */
 	protected <T> MultiValueMap<String, String> buildJsonParams(Map<String, T> params) {
 
 		MultiValueMap<String, String> paramsMap = new LinkedMultiValueMap<>();
 
-		if (params != null && !params.isEmpty()) {
+		if ((params != null) && !params.isEmpty()) {
 			for (Entry<String, T> entry : params.entrySet()) {
 				paramsMap.put(JSON_PARAM + entry.getKey(), List.of(entry.getValue() == null ? null : entry.getValue().toString()));
 			}

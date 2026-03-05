@@ -1,5 +1,6 @@
 package fr.becpg.api.model;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -13,7 +14,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @version $Id: $Id
  */
 @JsonInclude(Include.NON_NULL)
-public class RemoteAPIError {
+public class RemoteAPIError implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	@JsonProperty("exception")
 	private String exception;
@@ -24,7 +27,9 @@ public class RemoteAPIError {
 	@JsonProperty("status")
 	private RemoteAPIErrorStatus status;
 
-	public class RemoteAPIErrorStatus {
+	public static class RemoteAPIErrorStatus implements Serializable {
+
+		private static final long serialVersionUID = 1L;
 
 		@JsonProperty("code")
 		String code;
@@ -61,11 +66,7 @@ public class RemoteAPIError {
 
 		@Override
 		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = (prime * result) + getEnclosingInstance().hashCode();
-			result = (prime * result) + Objects.hash(code, description, name);
-			return result;
+			return Objects.hash(code, description, name);
 		}
 
 		@Override
@@ -77,14 +78,7 @@ public class RemoteAPIError {
 				return false;
 			}
 			RemoteAPIErrorStatus other = (RemoteAPIErrorStatus) obj;
-			if (!getEnclosingInstance().equals(other.getEnclosingInstance())) {
-				return false;
-			}
 			return Objects.equals(code, other.code) && Objects.equals(description, other.description) && Objects.equals(name, other.name);
-		}
-
-		private RemoteAPIError getEnclosingInstance() {
-			return RemoteAPIError.this;
 		}
 
 	}

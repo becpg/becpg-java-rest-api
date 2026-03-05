@@ -277,7 +277,7 @@ public class RemoteNodeInfo {
 	/**
 	 * <p>Setter for the field <code>content</code>.</p>
 	 *
-	 * @param attributes a {@link java.lang.String} object
+	 * @param content a {@link java.lang.String} object
 	 */
 	public void setContent(String content) {
 		this.content = content;
@@ -513,7 +513,8 @@ public class RemoteNodeInfo {
 	
 	/**
 	 * Allow to merge two entities
-	 * @param entity
+	 *
+	 * @param entity a {@link fr.becpg.api.model.RemoteEntity} object
 	 */
 	public void merge(RemoteEntity entity) {
 		if(entity.getAttributes()!=null) {

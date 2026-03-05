@@ -36,6 +36,8 @@ import reactor.core.publisher.Mono;
 /**
  * Configuration for basic authentication. It configures a {@link BasicAuthRequestInterceptor} that uses the credentials configured in the properties
  * <code>content.service.security.basicAuth.username</code> and <code>content.service.security.basicAuth.password</code>.
+ *
+ * @author matthieu
  */
 @Configuration
 @ConditionalOnProperty("content.service.security.basicAuth.username")

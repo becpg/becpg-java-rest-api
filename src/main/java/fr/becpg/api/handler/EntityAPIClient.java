@@ -38,6 +38,8 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 	
 	private static final String REMOTE_ENTITY_URL = "/entity";
 
+	private static final String REMOTE_ENTITY_LIST_URL = REMOTE_ENTITY_URL + "/list";
+
 
 	/** {@inheritDoc} */
 	@Override
@@ -61,6 +63,7 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 		return entityList != null ? entityList.getEntities() : null;
 	}
 	
+	/** {@inheritDoc} */
 	@Override
 	public List<RemoteEntityRef> list(RemoteEntity entityQuery, String query, List<String> attributes, int maxResults) {
 	    if (maxResults == -1) {
@@ -73,6 +76,7 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 		return entityList != null ? entityList.getEntities() : null;
 	}
 	
+	/** {@inheritDoc} */
 	@Override
 	public List<RemoteEntityRef> list(RemoteEntity entityQuery) {
 		return list(entityQuery, null, null, -1);
@@ -93,10 +97,11 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 	}
 
 	
+	/** {@inheritDoc} */
 	@Override
 	public Mono<RemoteEntityList> fetchEntityList(@NonNull String query, String path ,List<String> attributes, Integer maxResults) {
         return webClient().get()
-                .uri(uriBuilder -> uriBuilder.path(REMOTE_ENTITY_URL+"/list")
+                .uri(uriBuilder -> uriBuilder.path(REMOTE_ENTITY_LIST_URL)
                         .queryParam(PARAM_FORMAT, FORMAT_JSON)
                         .queryParam(PARAM_QUERY, VAR_QUERY )           
                         .queryParamIfPresent(PARAM_PATH, Optional.ofNullable(path))
@@ -109,10 +114,11 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
                 .bodyToMono(RemoteEntityList.class);
     }
 	
+	/** {@inheritDoc} */
 	@Override
 	public Mono<RemoteEntityList> fetchEntityListPage(@NonNull String query, String path, List<String> attributes, Integer maxResults, Integer page) {
         return webClient().get()
-                .uri(uriBuilder -> uriBuilder.path(REMOTE_ENTITY_URL+"/list")
+                .uri(uriBuilder -> uriBuilder.path(REMOTE_ENTITY_LIST_URL)
                         .queryParam(PARAM_FORMAT, FORMAT_JSON)
                         .queryParam(PARAM_QUERY, VAR_QUERY )           
                         .queryParamIfPresent(PARAM_PATH, Optional.ofNullable(path))
@@ -126,10 +132,11 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
                 .bodyToMono(RemoteEntityList.class);
     }
 	
+	/** {@inheritDoc} */
 	@Override
 	public Mono<RemoteEntityList> fetchEntityListPage(RemoteEntity entityQuery, String query, String path, List<String> attributes, Integer maxResults, Integer page) {
 		return webClient().post()
-				.uri(uriBuilder -> uriBuilder.path(REMOTE_ENTITY_URL+"/list")
+				.uri(uriBuilder -> uriBuilder.path(REMOTE_ENTITY_LIST_URL)
 						.queryParam(PARAM_FORMAT, FORMAT_JSON)
 						.queryParam(PARAM_QUERY, VAR_QUERY )           
 						.queryParamIfPresent(PARAM_PATH, Optional.ofNullable(path))
@@ -144,6 +151,7 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 				.bodyToMono(RemoteEntityList.class);
 	}
 	
+	/** {@inheritDoc} */
 	@Override
 	public Flux<RemoteEntityList> fetchEntityListAllPages(@NonNull String query, String path, List<String> attributes, Integer maxResults) {
 		AtomicInteger pageNumber = new AtomicInteger(1);
@@ -158,6 +166,7 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 			});
 	}
 	
+	/** {@inheritDoc} */
 	@Override
 	public Flux<RemoteEntityList> fetchEntityListAllPages(RemoteEntity entityQuery, String query, String path, List<String> attributes, Integer maxResults) {
 		AtomicInteger pageNumber = new AtomicInteger(1);
@@ -172,6 +181,7 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 				});
 	}
 	
+	/** {@inheritDoc} */
 	@Override
 	public Flux<RemoteEntityList> fetchEntityListAllPages(RemoteEntity entityQuery) {
 		return fetchEntityListAllPages(entityQuery, null, null, null, -1);
@@ -195,6 +205,7 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 	}
 
 	
+	/** {@inheritDoc} */
 	@Override
 	public Mono<RemoteEntityRef> fetchEntity(String id, List<String> attributes, List<String> datalists, Map<String, Boolean> params) {
 		return webClient().get()
@@ -285,6 +296,7 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 				.bodyToMono(RemoteEntitySchema.class).block();
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public RemoteEntitySchema getSchemaForType(String type) {
 		return webClient().get()
@@ -294,6 +306,7 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 				.bodyToMono(RemoteEntitySchema.class).block();
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public RemoteEntitySchema getSchemaForType(String type, List<String> attributes, List<String> datalists, Map<String, Boolean> params) {
 		return webClient().get()

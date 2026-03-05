@@ -32,6 +32,7 @@ import reactor.core.publisher.Mono;
 public class ContentAPIClient extends AbstractAPIClient implements ContentAPI {
 
 	private static final String PARAM_SHARE = "share";
+	private static final String REMOTE_CONTENT_URL = "/entity/content";
 
 	/** {@inheritDoc} */
 	@Override
@@ -40,7 +41,7 @@ public class ContentAPIClient extends AbstractAPIClient implements ContentAPI {
 
 		if (sharedId == null) {
 			DataBuffer dataBuffer = webClient().get()
-					.uri(uriBuilder -> uriBuilder.path("/entity/content").queryParam(PARAM_NODEREF, buildNodeRefParam(remoteNodeInfo.getId()))
+					.uri(uriBuilder -> uriBuilder.path(REMOTE_CONTENT_URL).queryParam(PARAM_NODEREF, buildNodeRefParam(remoteNodeInfo.getId()))
 							.queryParam(PARAM_SHARE, true).build())
 					.retrieve()
 					.onStatus(HttpStatusCode::isError,
@@ -63,7 +64,7 @@ public class ContentAPIClient extends AbstractAPIClient implements ContentAPI {
 	public void writeContent(RemoteNodeInfo remoteNodeInfo, Path filePath) throws IOException {
 
 		Flux<DataBuffer> dataBuffer = webClient().get()
-				.uri(uriBuilder -> uriBuilder.path("/entity/content").queryParam(PARAM_NODEREF, buildNodeRefParam(remoteNodeInfo.getId())).build())
+				.uri(uriBuilder -> uriBuilder.path(REMOTE_CONTENT_URL).queryParam(PARAM_NODEREF, buildNodeRefParam(remoteNodeInfo.getId())).build())
 				.retrieve()
 				.onStatus(HttpStatusCode::isError,
 						response -> response.bodyToMono(RemoteAPIError.class).flatMap(error -> Mono.error(new RemoteAPIException(error))))
@@ -78,7 +79,7 @@ public class ContentAPIClient extends AbstractAPIClient implements ContentAPI {
 	public InputStream getContent(RemoteNodeInfo remoteNodeInfo) throws IOException {
 
 		DataBuffer dataBuffer = webClient().get()
-				.uri(uriBuilder -> uriBuilder.path("/entity/content").queryParam(PARAM_NODEREF, buildNodeRefParam(remoteNodeInfo.getId())).build())
+				.uri(uriBuilder -> uriBuilder.path(REMOTE_CONTENT_URL).queryParam(PARAM_NODEREF, buildNodeRefParam(remoteNodeInfo.getId())).build())
 				.retrieve()
 				.onStatus(HttpStatusCode::isError,
 						response -> response.bodyToMono(RemoteAPIError.class).flatMap(error -> Mono.error(new RemoteAPIException(error))))

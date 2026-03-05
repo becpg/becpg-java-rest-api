@@ -11,9 +11,6 @@ import fr.becpg.api.model.RemoteEntitySchema;
 
 /**
  * Helper class for RemoteEntitySchema
- * 
- *  @author frederic
- *
  */
 public class RemoteEntitySchemaHelper {
 
@@ -24,11 +21,11 @@ public class RemoteEntitySchemaHelper {
 	}
 
 	/**
-	 * Helper method aimed to find recursively a given property in a {@link RemoteEntitySchema}
-	 * 
-	 * @param entitySchema
-	 * @param prop
-	 * @return the {@link RemoteEntitySchema} of the property we need or null if the property does not exist in the schema
+	 * Helper method aimed to find recursively a given property in a {@link fr.becpg.api.model.RemoteEntitySchema}
+	 *
+	 * @param entitySchema a {@link fr.becpg.api.model.RemoteEntitySchema} object
+	 * @param prop a {@link java.lang.String} object
+	 * @return the {@link fr.becpg.api.model.RemoteEntitySchema} of the property we need or null if the property does not exist in the schema
 	 */
 	public static RemoteEntitySchema getRemoteEntitySchema(RemoteEntitySchema entitySchema, String prop) {
 

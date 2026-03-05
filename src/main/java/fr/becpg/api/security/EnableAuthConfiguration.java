@@ -7,6 +7,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import org.springframework.context.annotation.Import;
 
+/**
+ * <p>EnableAuthConfiguration class.</p>
+ *
+ * @author matthieu
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 @Import({BasicAuthConfiguration.class, OAuth2Configuration.class, DelegatedAuthenticationConfiguration.class})

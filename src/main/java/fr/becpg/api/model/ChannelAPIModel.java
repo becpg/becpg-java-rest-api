@@ -18,6 +18,7 @@ public class ChannelAPIModel {
 	/** Constant <code>FIELDS="bp:pubChannelId,bp:pubChannelAction,bp:"{trunked}</code> */
 	public static final String FIELDS = "bp:pubChannelId,bp:pubChannelAction,bp:pubChannelLastDate,bp:pubChannelConfig,bp:pubChannelConfigFile";
 
+	/** Constant <code>CHANNEL_API_PATH="/app:company_home/cm:System/cm:Characts"{trunked}</code> */
 	public static final String CHANNEL_API_PATH = "/app:company_home/cm:System/cm:Characts/bcpg:entityLists/cm:PubChannels";
 
 
@@ -29,6 +30,7 @@ public class ChannelAPIModel {
 	/** Constant <code>ASSOC_CHANNELLIST_CHANNEL="bp:pubChannelListChannel"</code> */
 	public static final String ASSOC_CHANNELLIST_CHANNEL = "bp:pubChannelListChannel";
 
+	/** Constant <code>PROP_CHANNELLIST_ACTION="bp:pubChannelListAction"</code> */
 	public static final String PROP_CHANNELLIST_ACTION = "bp:pubChannelListAction";
 
 	/** Constant <code>PROP_CHANNEL_CATALOG_ID="bp:pubChannelCatalogId"</code> */

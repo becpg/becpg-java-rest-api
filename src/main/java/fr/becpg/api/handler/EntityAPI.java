@@ -39,8 +39,23 @@ public interface EntityAPI {
 	 */
 	List<RemoteEntityRef> list(@NonNull String query, List<String> attributes, int maxResults);
 
+	/**
+	 * <p>list.</p>
+	 *
+	 * @param entityQuery a {@link fr.becpg.api.model.RemoteEntity} object
+	 * @param query a {@link java.lang.String} object
+	 * @param attributes a {@link java.util.List} object
+	 * @param maxResults a int
+	 * @return a {@link java.util.List} object
+	 */
 	List<RemoteEntityRef> list(RemoteEntity entityQuery, String query, List<String> attributes, int maxResults);
 	
+	/**
+	 * <p>list.</p>
+	 *
+	 * @param entityQuery a {@link fr.becpg.api.model.RemoteEntity} object
+	 * @return a {@link java.util.List} object
+	 */
 	List<RemoteEntityRef> list(RemoteEntity entityQuery);
 
 	/**
@@ -54,17 +69,72 @@ public interface EntityAPI {
 	 */
 	List<RemoteEntityRef> listByPath(@NonNull String query, @NonNull String path, List<String> attributes, int maxResults);
 
+	/**
+	 * <p>fetchEntityList.</p>
+	 *
+	 * @param query a {@link java.lang.String} object
+	 * @param path a {@link java.lang.String} object
+	 * @param attributes a {@link java.util.List} object
+	 * @param maxResults a {@link java.lang.Integer} object
+	 * @return a {@link reactor.core.publisher.Mono} object
+	 */
 	Mono<RemoteEntityList> fetchEntityList(@NonNull String query, String path, List<String> attributes, Integer maxResults);
 	
+	/**
+	 * <p>fetchEntityListPage.</p>
+	 *
+	 * @param query a {@link java.lang.String} object
+	 * @param path a {@link java.lang.String} object
+	 * @param attributes a {@link java.util.List} object
+	 * @param maxResults a {@link java.lang.Integer} object
+	 * @param page a {@link java.lang.Integer} object
+	 * @return a {@link reactor.core.publisher.Mono} object
+	 */
 	Mono<RemoteEntityList> fetchEntityListPage(@NonNull String query, String path, List<String> attributes, Integer maxResults, Integer page);
 	
+	/**
+	 * <p>fetchEntityListPage.</p>
+	 *
+	 * @param entityQuery a {@link fr.becpg.api.model.RemoteEntity} object
+	 * @param query a {@link java.lang.String} object
+	 * @param path a {@link java.lang.String} object
+	 * @param attributes a {@link java.util.List} object
+	 * @param maxResults a {@link java.lang.Integer} object
+	 * @param page a {@link java.lang.Integer} object
+	 * @return a {@link reactor.core.publisher.Mono} object
+	 */
 	Mono<RemoteEntityList> fetchEntityListPage(RemoteEntity entityQuery, String query, String path, List<String> attributes, Integer maxResults,
 			Integer page);
 
+	/**
+	 * <p>fetchEntityListAllPages.</p>
+	 *
+	 * @param query a {@link java.lang.String} object
+	 * @param path a {@link java.lang.String} object
+	 * @param attributes a {@link java.util.List} object
+	 * @param maxResults a {@link java.lang.Integer} object
+	 * @return a {@link reactor.core.publisher.Flux} object
+	 */
 	Flux<RemoteEntityList> fetchEntityListAllPages(@NonNull String query, String path, List<String> attributes, Integer maxResults);
 	
+	/**
+	 * <p>fetchEntityListAllPages.</p>
+	 *
+	 * @param entityQuery a {@link fr.becpg.api.model.RemoteEntity} object
+	 * @param query a {@link java.lang.String} object
+	 * @param path a {@link java.lang.String} object
+	 * @param attributes a {@link java.util.List} object
+	 * @param maxResults a {@link java.lang.Integer} object
+	 * @return a {@link reactor.core.publisher.Flux} object
+	 */
 	Flux<RemoteEntityList> fetchEntityListAllPages(RemoteEntity entityQuery, String query, String path, List<String> attributes, Integer maxResults);
 	
+	/**
+	 * <p>fetchEntityListAllPages.</p>
+	 *
+	 * @param entityQuery a {@link fr.becpg.api.model.RemoteEntity} object
+	 * @return a {@link reactor.core.publisher.Flux} object
+	 */
 	Flux<RemoteEntityList> fetchEntityListAllPages(RemoteEntity entityQuery);
 
 	/**
@@ -109,6 +179,15 @@ public interface EntityAPI {
 	 */
 	RemoteEntity get(String id, List<String> attributes, List<String> datalists, Map<String, Boolean> params);
 
+	/**
+	 * <p>fetchEntity.</p>
+	 *
+	 * @param id a {@link java.lang.String} object
+	 * @param attributes a {@link java.util.List} object
+	 * @param datalists a {@link java.util.List} object
+	 * @param params a {@link java.util.Map} object
+	 * @return a {@link reactor.core.publisher.Mono} object
+	 */
 	Mono<RemoteEntityRef> fetchEntity(String id, List<String> attributes, List<String> datalists, Map<String, Boolean> params);
 
 	/**
@@ -206,6 +285,15 @@ public interface EntityAPI {
 	 */
 	RemoteEntity update(RemoteEntity entity, boolean createversion, boolean majorVersion, String versionDescription);
 
+	/**
+	 * <p>updateEntity.</p>
+	 *
+	 * @param entity a {@link fr.becpg.api.model.RemoteEntity} object
+	 * @param createversion a boolean
+	 * @param majorVersion a boolean
+	 * @param versionDescription a {@link java.lang.String} object
+	 * @return a {@link reactor.core.publisher.Mono} object
+	 */
 	Mono<RemoteAPIResponse> updateEntity(RemoteEntity entity, boolean createversion, boolean majorVersion, String versionDescription);
 
 }

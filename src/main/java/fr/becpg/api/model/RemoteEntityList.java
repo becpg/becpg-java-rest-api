@@ -18,18 +18,38 @@ public class RemoteEntityList {
 	@JsonProperty("pagination")
 	private Pagination pagination;
 	
+	/**
+	 * <p>Getter for the field <code>pagination</code>.</p>
+	 *
+	 * @return a {@link fr.becpg.api.model.Pagination} object
+	 */
 	public Pagination getPagination() {
 		return pagination;
 	}
 	
+	/**
+	 * <p>Setter for the field <code>pagination</code>.</p>
+	 *
+	 * @param pagination a {@link fr.becpg.api.model.Pagination} object
+	 */
 	public void setPagination(Pagination pagination) {
 		this.pagination = pagination;
 	}
 	
+	/**
+	 * <p>hasMoreItems.</p>
+	 *
+	 * @return a boolean
+	 */
 	public boolean hasMoreItems() {
 		return pagination != null && pagination.isHasMoreItems();
 	}
 	
+	/**
+	 * <p>getTotalItems.</p>
+	 *
+	 * @return a int
+	 */
 	public int getTotalItems() {
 		return pagination == null ? 0 : pagination.getCount();
 	}

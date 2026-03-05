@@ -211,36 +211,68 @@ public class RemoteEntitySchema {
 	}
 
 	
+	/**
+	 * <p>Getter for the field <code>format</code>.</p>
+	 *
+	 * @return a {@link java.lang.String} object
+	 */
 	public String getFormat() {
 		return format;
 	}
 
+	/**
+	 * <p>Setter for the field <code>format</code>.</p>
+	 *
+	 * @param format a {@link java.lang.String} object
+	 */
 	public void setFormat(String format) {
 		this.format = format;
 	}
 
+	/**
+	 * <p>Getter for the field <code>supportedLocales</code>.</p>
+	 *
+	 * @return a {@link java.lang.String} object
+	 */
 	public String getSupportedLocales() {
 		return supportedLocales;
 	}
 
+	/**
+	 * <p>Setter for the field <code>supportedLocales</code>.</p>
+	 *
+	 * @param supportedLocales a {@link java.lang.String} object
+	 */
 	public void setSupportedLocales(String supportedLocales) {
 		this.supportedLocales = supportedLocales;
 	}
 
+	/**
+	 * <p>Getter for the field <code>locale</code>.</p>
+	 *
+	 * @return a {@link java.lang.String} object
+	 */
 	public String getLocale() {
 		return locale;
 	}
 
+	/**
+	 * <p>Setter for the field <code>locale</code>.</p>
+	 *
+	 * @param locale a {@link java.lang.String} object
+	 */
 	public void setLocale(String locale) {
 		this.locale = locale;
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public int hashCode() {
 		return Objects.hash(description, format, items, locale, properties, required, schemaId, schemaVersion, supportedLocales, title, type);
 	}
 
 
+	/** {@inheritDoc} */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)

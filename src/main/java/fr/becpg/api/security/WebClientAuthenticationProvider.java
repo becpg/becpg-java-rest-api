@@ -4,8 +4,18 @@ import java.util.function.Supplier;
 
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 
+/**
+ * <p>WebClientAuthenticationProvider interface.</p>
+ *
+ * @author matthieu
+ */
 public interface WebClientAuthenticationProvider {
 
+	/**
+	 * <p>authenticationFilter.</p>
+	 *
+	 * @return a {@link org.springframework.web.reactive.function.client.ExchangeFilterFunction} object
+	 */
 	ExchangeFilterFunction authenticationFilter();
 
 	/**

@@ -8,7 +8,13 @@ import java.util.Map.Entry;
 
 import fr.becpg.api.model.BeCPGAPIModel;
 
-@Deprecated
+/**
+ * <p>DictionaryHelper class.</p>
+ *
+ * @author matthieu
+ * @since 1.1.10
+ */
+@Deprecated(since = "0.1.10")
 public class DictionaryHelper {
 	
 	private DictionaryHelper() {
@@ -43,7 +49,7 @@ public class DictionaryHelper {
 
 	/**
 	 * Checks if a type is a subtype of a parent type in the hierarchy.
-	 * 
+	 *
 	 * @param type the type to check
 	 * @param parentType the potential parent type
 	 * @return true if type is a subtype of parentType or equal to it, false otherwise
@@ -102,6 +108,13 @@ public class DictionaryHelper {
 		}
 	}
 
+	/**
+	 * <p>getSubTypesOf.</p>
+	 *
+	 * @param parentType a {@link java.lang.String} object
+	 * @param includeAllHierarchy a boolean
+	 * @return a {@link java.util.List} object
+	 */
 	public static List<String> getSubTypesOf(String parentType, boolean includeAllHierarchy) {
 		List<String> subTypes = new ArrayList<>();
 		for (Entry<String, TypeHierarchy> entry : TYPE_REGISTRY.entrySet()) {

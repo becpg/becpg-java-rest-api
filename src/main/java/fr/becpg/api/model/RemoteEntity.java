@@ -82,7 +82,6 @@ public class RemoteEntity extends RemoteNodeInfo {
 	/**
 	 * Get a nested list
 	 *
-	 *
 	 * @param datalistName a {@link java.lang.String} object
 	 * @param nestedDatalistName a {@link java.lang.String} object
 	 * @return a {@link java.util.List} object
@@ -96,8 +95,9 @@ public class RemoteEntity extends RemoteNodeInfo {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 *
 	 * Allow to merge two entities
-	 * @param entity
 	 */
 	@Override
 	public void merge(RemoteEntity entity) {

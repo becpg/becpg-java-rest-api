@@ -6,6 +6,8 @@ import org.springframework.web.reactive.function.client.ClientRequest;
 
 /**
  * Interface to be implemented to allow a delegated authentication in the SDK.
+ *
+ * @author matthieu
  */
 @FunctionalInterface
 public interface DelegatedAuthenticationProvider {
@@ -13,7 +15,8 @@ public interface DelegatedAuthenticationProvider {
     /**
      * Set the authentication details in the request template.
      *
-     * @param template {@link RequestTemplate} to set the authentication details
+     * @param request a {@link org.springframework.web.reactive.function.client.ClientRequest} object
+     * @return a {@link org.springframework.web.reactive.function.client.ClientRequest} object
      */
     ClientRequest setAuthentication(ClientRequest request);
 

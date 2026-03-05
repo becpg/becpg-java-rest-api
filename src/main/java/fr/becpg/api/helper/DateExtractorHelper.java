@@ -2,12 +2,13 @@ package fr.becpg.api.helper;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 
@@ -19,19 +20,11 @@ import java.util.regex.Pattern;
  */
 public class DateExtractorHelper {
 
-	private static final ThreadLocal<Map<String, TimeZone>> timezones = new ThreadLocal<>();
-	
 	private static final Pattern ISO_DATE_PATTERN = Pattern.compile("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$");
 
 
 	private DateExtractorHelper() {
 		super();
-	}
-
-	/** {@inheritDoc} */
-	@Override
-	protected void finalize() {
-		timezones.remove();
 	}
 
 	/**
@@ -82,71 +75,50 @@ public class DateExtractorHelper {
 			}
 		}
 
-		Date parsed;
+		try {
+			if (isoDate.endsWith("Z")) {
+				return Date.from(Instant.parse(isoDate));
+			} else {
+				return Date.from(OffsetDateTime.parse(isoDate, DateTimeFormatter.ISO_OFFSET_DATE_TIME).toInstant());
+			}
+		} catch (Exception e) {
+			// Fallback or keep current logic if needed for specific formats not handled by java.time
+			return parseManual(isoDate);
+		}
+	}
 
+	private static Date parseManual(String isoDate) {
 		int offset = 0;
 
 		// extract year
 		int year = Integer.parseInt(isoDate.substring(offset, offset += 4));
-		if (isoDate.charAt(offset) != '-') {
-			throw new IndexOutOfBoundsException("Expected - character but found " + isoDate.charAt(offset));
-		}
+		offset = validateChar(isoDate, offset, '-');
 
 		// extract month
 		int month = Integer.parseInt(isoDate.substring(offset += 1, offset += 2));
-		if (isoDate.charAt(offset) != '-') {
-			throw new IndexOutOfBoundsException("Expected - character but found " + isoDate.charAt(offset));
-		}
+		offset = validateChar(isoDate, offset, '-');
 
 		// extract day
 		int day = Integer.parseInt(isoDate.substring(offset += 1, offset += 2));
-		if (isoDate.charAt(offset) != 'T') {
-			throw new IndexOutOfBoundsException("Expected T character but found " + isoDate.charAt(offset));
-		}
+		offset = validateChar(isoDate, offset, 'T');
 
 		// extract hours, minutes, seconds and milliseconds
 		int hour = Integer.parseInt(isoDate.substring(offset += 1, offset += 2));
-		if (isoDate.charAt(offset) != ':') {
-			throw new IndexOutOfBoundsException("Expected : character but found " + isoDate.charAt(offset));
-		}
+		offset = validateChar(isoDate, offset, ':');
 		int minutes = Integer.parseInt(isoDate.substring(offset += 1, offset += 2));
-		if (isoDate.charAt(offset) != ':') {
-			throw new IndexOutOfBoundsException("Expected : character but found " + isoDate.charAt(offset));
-		}
+		offset = validateChar(isoDate, offset, ':');
 		int seconds = Integer.parseInt(isoDate.substring(offset += 1, offset += 2));
-		if (isoDate.charAt(offset) != '.') {
-			throw new IndexOutOfBoundsException("Expected . character but found " + isoDate.charAt(offset));
-		}
+		offset = validateChar(isoDate, offset, '.');
 		int milliseconds = Integer.parseInt(isoDate.substring(offset += 1, offset += 3));
 
 		// extract timezone
-		String timezoneId;
-		char timezoneIndicator = isoDate.charAt(offset);
-		if ((timezoneIndicator == '+') || (timezoneIndicator == '-')) {
-			timezoneId = "GMT" + isoDate.substring(offset);
-		} else if (timezoneIndicator == 'Z') {
-			timezoneId = "GMT";
-		} else {
-			throw new IndexOutOfBoundsException("Invalid time zone indicator " + timezoneIndicator);
+		String timezoneId = extractTimezoneId(isoDate, offset);
+
+		TimeZone timezone = TimeZone.getTimeZone(timezoneId);
+		if (!timezone.getID().equals(timezoneId) && !timezoneId.equals("GMTZ") && !timezoneId.equals("GMT")) {
+			throw new IndexOutOfBoundsException("Invalid timezone: " + timezoneId);
 		}
 
-		// Get the timezone
-		Map<String, TimeZone> timezoneMap = timezones.get();
-		if (timezoneMap == null) {
-			timezoneMap = new HashMap<>(4);
-			timezones.set(timezoneMap);
-		}
-		TimeZone timezone = timezoneMap.get(timezoneId);
-		if (timezone == null) {
-			timezone = TimeZone.getTimeZone(timezoneId);
-			timezoneMap.put(timezoneId, timezone);
-		}
-		if (!timezone.getID().equals(timezoneId)) {
-			throw new IndexOutOfBoundsException();
-		}
-
-		// initialize Calendar object#
-		// Note: always de-serialise from Gregorian Calendar
 		Calendar calendar = new GregorianCalendar(timezone);
 		calendar.setLenient(false);
 		calendar.set(Calendar.YEAR, year);
@@ -157,10 +129,25 @@ public class DateExtractorHelper {
 		calendar.set(Calendar.SECOND, seconds);
 		calendar.set(Calendar.MILLISECOND, milliseconds);
 
-		// extract the date
-		parsed = calendar.getTime();
+		return calendar.getTime();
+	}
 
-		return parsed;
+	private static int validateChar(String isoDate, int offset, char expected) {
+		if (isoDate.charAt(offset) != expected) {
+			throw new IndexOutOfBoundsException("Expected " + expected + " character but found " + isoDate.charAt(offset));
+		}
+		return offset;
+	}
+
+	private static String extractTimezoneId(String isoDate, int offset) {
+		char timezoneIndicator = isoDate.charAt(offset);
+		if ((timezoneIndicator == '+') || (timezoneIndicator == '-')) {
+			return "GMT" + isoDate.substring(offset);
+		} else if (timezoneIndicator == 'Z') {
+			return "GMT";
+		} else {
+			throw new IndexOutOfBoundsException("Invalid time zone indicator " + timezoneIndicator);
+		}
 	}
 
 	/**
@@ -212,6 +199,12 @@ public class DateExtractorHelper {
 		buffer.append(strValue);
 	}
 
+	/**
+	 * <p>isDate.</p>
+	 *
+	 * @param isoDate a {@link java.lang.String} object
+	 * @return a boolean
+	 */
 	public static boolean isDate(String isoDate) {
 		return ISO_DATE_PATTERN.matcher(isoDate).matches();
 	}
