@@ -17,4 +17,5 @@ availableSecrets:
   - versionName: projects/${PROJECT_ID}/secrets/becpg-sonar-login/versions/latest
     env: 'SONAR_LOGIN' 
 options:
-  dynamic_substitutions: true    
+  dynamic_substitutions: true
+  logging: CLOUD_LOGGING_ONLY
