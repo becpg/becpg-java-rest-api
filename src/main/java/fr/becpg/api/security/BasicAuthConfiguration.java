@@ -9,6 +9,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 import javax.xml.XMLConstants;
@@ -23,6 +25,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.ClientRequest;
+import org.springframework.web.reactive.function.client.ClientResponse;
+import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
+import org.springframework.web.reactive.function.client.ExchangeFunction;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
@@ -48,72 +53,109 @@ public class BasicAuthConfiguration {
     @Value("${content.service.url:}")
     private String contentServiceUrl;
 
+    private final AtomicInteger activeSessionCount = new AtomicInteger(0);
+    private final AtomicReference<String> cachedSessionAlfTicket = new AtomicReference<>();
+    private final Object sessionTicketLock = new Object();
+
     @Bean("remoteAuthenticationFilter")
     @ConditionalOnProperty("content.service.security.basicAuth.username")
     WebClientAuthenticationProvider authenticationFilter (){
-
-		ThreadLocal<String> sessionAlfTicket = new ThreadLocal<>();
-		ThreadLocal<Integer> sessionDepth = ThreadLocal.withInitial(() -> Integer.valueOf(0));
 
 		return new WebClientAuthenticationProvider() {
 
 			@Override
 			public <T> T doInSession(Supplier<T> operation) {
-				int depth = sessionDepth.get().intValue() + 1;
-				sessionDepth.set(Integer.valueOf(depth));
+				activeSessionCount.incrementAndGet();
 				try {
 					return operation.get();
 				} finally {
-					int currentDepth = sessionDepth.get().intValue() - 1;
-					if (currentDepth <= 0) {
-						sessionDepth.remove();
-						sessionAlfTicket.remove();
-					} else {
-						sessionDepth.set(Integer.valueOf(currentDepth));
+					int currentSessionCount = activeSessionCount.decrementAndGet();
+					if (currentSessionCount <= 0) {
+						activeSessionCount.set(0);
+						cachedSessionAlfTicket.set(null);
 					}
 				}
 			}
 
 			@Override
-			public org.springframework.web.reactive.function.client.ExchangeFilterFunction authenticationFilter() {
+			public ExchangeFilterFunction authenticationFilter() {
 				return (request, next) -> {
-					if (sessionDepth.get().intValue() <= 0) {
-						if (logger.isDebugEnabled()) {
-							logger.debug("Executing request with direct Basic authentication outside doInSession scope");
-						}
-						ClientRequest basicRequest = ClientRequest.from(request)
-								.headers(headers -> headers.setBasicAuth(basicAuthUsername, basicAuthPassword))
-								.build();
-						return next.exchange(basicRequest);
+					if (activeSessionCount.get() <= 0) {
+						return executeWithBasicAuth(request, next);
 					}
-
-					String ticket = sessionAlfTicket.get();
-					if (ticket == null || ticket.isBlank()) {
-						ticket = retrieveAlfTicket();
-						sessionAlfTicket.set(ticket);
-					}
-
-					ClientRequest ticketRequest = ClientRequest.from(request)
-							.url(addAlfTicket(request.url(), ticket))
-							.build();
-
-					return next.exchange(ticketRequest).flatMap(response -> {
-						if (response.statusCode().value() == 401) {
-							logger.warn("Received HTTP 401 with current alf_ticket, refreshing ticket and retrying request");
-							sessionAlfTicket.remove();
-							String refreshedTicket = retrieveAlfTicket();
-							sessionAlfTicket.set(refreshedTicket);
-							ClientRequest retryRequest = ClientRequest.from(request)
-									.url(addAlfTicket(request.url(), refreshedTicket))
-									.build();
-							return next.exchange(retryRequest);
-						}
-						return Mono.just(response);
-					});
+					return executeWithTicket(request, next);
 				};
+			}
+
+			private Mono<ClientResponse> executeWithBasicAuth(ClientRequest request, ExchangeFunction next) {
+				if (logger.isDebugEnabled()) {
+					logger.debug("Executing request with direct Basic authentication outside doInSession scope");
+				}
+				ClientRequest basicRequest = ClientRequest.from(request)
+						.headers(headers -> headers.setBasicAuth(basicAuthUsername, basicAuthPassword))
+						.build();
+				return next.exchange(basicRequest);
+			}
+
+			private Mono<ClientResponse> executeWithTicket(ClientRequest request, ExchangeFunction next) {
+				String ticket = getOrCreateSessionAlfTicket();
+				ClientRequest ticketRequest = ClientRequest.from(request)
+						.url(addAlfTicket(request.url(), ticket))
+						.build();
+
+				return next.exchange(ticketRequest).flatMap(response -> {
+					if (response.statusCode().value() == 401) {
+						return retryWithRefreshedTicket(request, next);
+					}
+					return Mono.just(response);
+				});
+			}
+
+			private Mono<ClientResponse> retryWithRefreshedTicket(ClientRequest request, ExchangeFunction next) {
+				logger.warn("Received HTTP 401 with current alf_ticket, refreshing ticket and retrying request");
+				String refreshedTicket = refreshSessionAlfTicket();
+				ClientRequest retryRequest = ClientRequest.from(request)
+						.url(addAlfTicket(request.url(), refreshedTicket))
+						.build();
+				return next.exchange(retryRequest);
 			}
 		};
     }
+
+	/**
+	 * Return the cached session ticket or retrieve it once when absent.
+	 *
+	 * @return alfresco ticket for current connector execution scope
+	 */
+	private String getOrCreateSessionAlfTicket() {
+		String ticket = cachedSessionAlfTicket.get();
+		if (ticket != null && !ticket.isBlank()) {
+			return ticket;
+		}
+
+		synchronized (sessionTicketLock) {
+			String lockedTicket = cachedSessionAlfTicket.get();
+			if (lockedTicket != null && !lockedTicket.isBlank()) {
+				return lockedTicket;
+			}
+			String retrievedTicket = retrieveAlfTicket();
+			cachedSessionAlfTicket.set(retrievedTicket);
+			return retrievedTicket;
+		}
+	}
+
+	/**
+	 * Force a refresh of the cached session ticket.
+	 *
+	 * @return refreshed alfresco ticket
+	 */
+	private String refreshSessionAlfTicket() {
+		synchronized (sessionTicketLock) {
+			String refreshedTicket = retrieveAlfTicket();
+			cachedSessionAlfTicket.set(refreshedTicket);
+			return refreshedTicket;
+		}
+	}
 
 	/**
 	 * Retrieve an Alfresco ticket using the configured Basic credentials.

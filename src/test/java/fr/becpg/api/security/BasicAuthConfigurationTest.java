@@ -1,6 +1,10 @@
 package fr.becpg.api.security;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.AfterEach;
@@ -106,6 +110,43 @@ class BasicAuthConfigurationTest {
 
         Assertions.assertEquals("OLD-TICKET", firstApiRequest.getRequestUrl().queryParameter("alf_ticket"));
         Assertions.assertEquals("NEW-TICKET", secondApiRequest.getRequestUrl().queryParameter("alf_ticket"));
+    }
+
+    @Test
+    void shouldReuseTicketAcrossDifferentExecutionThreadWithinSessionScope() throws InterruptedException, ExecutionException {
+        BasicAuthConfiguration configuration = createConfiguration();
+        WebClientAuthenticationProvider provider = configuration.authenticationFilter();
+        WebClient webClient = createWebClient(provider);
+
+        mockBackEnd.enqueue(new MockResponse().setBody("<ticket>TICKET-THREAD</ticket>").setResponseCode(HttpStatus.OK.value()));
+        mockBackEnd.enqueue(new MockResponse().setBody("ok").setResponseCode(HttpStatus.OK.value()));
+
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        try {
+            provider.doInSession(() -> {
+                Future<String> responseFuture = executorService
+                        .submit(() -> webClient.get().uri("/entity").retrieve().bodyToMono(String.class).block());
+                try {
+                    return responseFuture.get();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new IllegalStateException("Interrupted while waiting async API response", e);
+                } catch (ExecutionException e) {
+                    throw new IllegalStateException("Cannot execute async API response retrieval", e);
+                }
+            });
+        } finally {
+            executorService.shutdownNow();
+        }
+
+        RecordedRequest loginRequest = mockBackEnd.takeRequest(1, TimeUnit.SECONDS);
+        RecordedRequest apiRequest = mockBackEnd.takeRequest(1, TimeUnit.SECONDS);
+
+        Assertions.assertNotNull(loginRequest);
+        Assertions.assertNotNull(apiRequest);
+        Assertions.assertTrue(loginRequest.getPath().startsWith("/alfresco/service/api/login?"));
+        Assertions.assertEquals("TICKET-THREAD", apiRequest.getRequestUrl().queryParameter("alf_ticket"));
+        Assertions.assertNull(apiRequest.getHeader("Authorization"));
     }
 
     private BasicAuthConfiguration createConfiguration() {
