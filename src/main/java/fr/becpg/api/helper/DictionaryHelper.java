@@ -1,4 +1,4 @@
-package fr.becpg.api.model;
+package fr.becpg.api.helper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,7 +6,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import fr.becpg.api.model.BeCPGAPIModel;
+
+@Deprecated
 public class DictionaryHelper {
+	
+	private DictionaryHelper() {
+		//DO Nothing
+	}
 
 	private static final TypeHierarchy TYPE_CONTENT = new TypeHierarchy(BeCPGAPIModel.TYPE_CONTENT, null);
 	private static final TypeHierarchy TYPE_FOLDER = new TypeHierarchy(BeCPGAPIModel.TYPE_FOLDER, null);
