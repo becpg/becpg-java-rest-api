@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.List;
 
 import org.junit.Assert;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -21,7 +20,6 @@ import fr.becpg.api.model.RemoteEntity;
 import fr.becpg.api.model.RemoteEntityRef;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
-import okhttp3.mockwebserver.RecordedRequest;
 
 @SpringBootTest
 class ChannelApiTest extends AbstractRemoteApiTest {
@@ -69,27 +67,4 @@ class ChannelApiTest extends AbstractRemoteApiTest {
 
 	}
 
-	@Test
-	void testSessionCookiePreferredOverAuthorization() throws Exception {
-		int previousRequestCount = mockBackEnd.getRequestCount();
-
-		mockBackEnd.enqueue(new MockResponse().setBody(asString(channel)).addHeader("Content-Type", "application/json")
-				.addHeader("Set-Cookie", "JSESSIONID=session-123; Path=/alfresco; HttpOnly"));
-
-		mockBackEnd.enqueue(new MockResponse().setBody(asString(entities)).addHeader("Content-Type", "application/json"));
-
-		channelAPI.get("sample-channel");
-		channelAPI.list("sample-channel");
-
-		for (int i = 0; i < previousRequestCount; i++) {
-			mockBackEnd.takeRequest();
-		}
-
-		RecordedRequest firstRequest = mockBackEnd.takeRequest();
-		RecordedRequest secondRequest = mockBackEnd.takeRequest();
-
-		Assertions.assertNotNull(firstRequest.getHeader("Authorization"));
-		Assertions.assertTrue(secondRequest.getHeader("Cookie").contains("JSESSIONID=session-123"));
-		Assertions.assertNull(secondRequest.getHeader("Authorization"));
-	}
 }

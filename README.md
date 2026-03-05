@@ -15,7 +15,7 @@ This SDK provides functionality to consume beCPG REST Remote API.
 
 | Version | beCPG Version | Version API | Version JAVA | Changes |
 | --- | --- | --- | --- | -- |
-| 1.1.10 | >= 23.4.2 | >= 3.5 | JAVA 17 | Add session cookie reuse with host/path binding and automatic refresh on expiration (Basic and OAuth2 modes) |
+| 1.1.10 | >= 23.4.2 | >= 3.5 | JAVA 17 | Add alfTocken session in basic Auth |
 | 1.1.9 | >= 23.4.2 | >= 3.5 | JAVA 17 | Add common helper functions |
 | 1.1.8 | >= 23.4.2 | >= 3.5 | JAVA 17 | Add BecpgAPIModel, setAssociations helpers, HTTP/1.1 and TLSv1.2 forcing options |
 | 1.1.7 | >= 23.4.2 | >= 3.5 (Partial support on >=3.3) | JAVA 17 | Bug fixes |
@@ -128,20 +128,24 @@ content.service.security.delegated=true
 
 And provide a bean that implements the interface **DelegatedAuthenticationProvider**.
 
-#### Session cookie reuse (recommended)
+#### OAuth2 bearer token reuse (recommended)
 
-To avoid re-authenticating each request, keep session cookie reuse enabled:
-
-```
-content.service.security.preferSessionCookie=true
-```
+When OAuth2 is enabled, the SDK reuses the bearer token during a `doInSession(...)` scope and only reacquires a token on `401` responses.
 
 Behavior:
 
-- Works in both **Basic Auth** and **OAuth2** modes.
-- Reuses server session cookies when available.
-- Automatically retries authentication when a cookie expires (HTTP 401).
-- Cookies are bound to the matching host/path scope.
+* Avoids token acquisition on every request inside a connector job/session.
+* Automatically retries authentication when the token is expired or rejected (HTTP 401).
+* Applies to OAuth2 modes (`client_credentials` and `password`).
+
+#### Basic Auth Alfresco ticket reuse
+
+When Basic authentication is enabled, the SDK can reuse an Alfresco ticket in a `doInSession(...)` scope:
+
+* The first call performs an Alfresco login (`/alfresco/service/api/login`) using configured Basic credentials.
+* The returned `alf_ticket` is reused for subsequent requests in the same scope.
+* On `401`, the SDK refreshes the ticket and retries the request once.
+* Outside `doInSession(...)`, the SDK keeps direct Basic authentication on each request.
 
 #### SSL
 
