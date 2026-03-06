@@ -15,6 +15,7 @@ This SDK provides functionality to consume beCPG REST Remote API.
 
 | Version | beCPG Version | Version API | Version JAVA | Changes |
 | --- | --- | --- | --- | -- |
+| 1.1.11 | >= 23.4.2 | >= 3.5 | JAVA 17 | Bug fix oauth |
 | 1.1.10 | >= 23.4.2 | >= 3.5 | JAVA 17 | Add alfTocken session in basic Auth |
 | 1.1.9 | >= 23.4.2 | >= 3.5 | JAVA 17 | Add common helper functions |
 | 1.1.8 | >= 23.4.2 | >= 3.5 | JAVA 17 | Add BecpgAPIModel, setAssociations helpers, HTTP/1.1 and TLSv1.2 forcing options |
