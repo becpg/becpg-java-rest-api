@@ -113,7 +113,7 @@ class BasicAuthConfigurationTest {
     }
 
     @Test
-    void shouldReuseTicketAcrossDifferentExecutionThreadWithinSessionScope() throws InterruptedException, ExecutionException {
+    void shouldReuseTicketAcrossDifferentExecutionThreadWithinSessionScope() throws InterruptedException {
         BasicAuthConfiguration configuration = createConfiguration();
         WebClientAuthenticationProvider provider = configuration.authenticationFilter();
         WebClient webClient = createWebClient(provider);

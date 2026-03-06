@@ -21,7 +21,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.ClientRequest;
@@ -40,7 +40,7 @@ import reactor.core.publisher.Mono;
  * @author matthieu
  */
 @Configuration
-@ConditionalOnProperty("content.service.security.basicAuth.username")
+@ConditionalOnExpression("'${content.service.security.basicAuth.username:}' != '' and '${spring.security.oauth2.client.registration.becpg-java-rest-api.provider:}' == ''")
 public class BasicAuthConfiguration {
 
     private static final Log logger = LogFactory.getLog(BasicAuthConfiguration.class);
@@ -60,24 +60,23 @@ public class BasicAuthConfiguration {
     private final Object sessionTicketLock = new Object();
 
     @Bean("remoteAuthenticationFilter")
-    @ConditionalOnProperty("content.service.security.basicAuth.username")
     WebClientAuthenticationProvider authenticationFilter (){
 
-		return new WebClientAuthenticationProvider() {
+        return new WebClientAuthenticationProvider() {
 
-			@Override
-			public <T> T doInSession(Supplier<T> operation) {
-				activeSessionCount.incrementAndGet();
-				try {
-					return operation.get();
-				} finally {
-					int currentSessionCount = activeSessionCount.decrementAndGet();
-					if (currentSessionCount <= 0) {
-						activeSessionCount.set(0);
-						cachedSessionAlfTicket.set(null);
-					}
-				}
-			}
+            @Override
+            public <T> T doInSession(Supplier<T> operation) {
+                activeSessionCount.incrementAndGet();
+                try {
+                    return operation.get();
+                } finally {
+                    int currentSessionCount = activeSessionCount.decrementAndGet();
+                    if (currentSessionCount <= 0) {
+                        activeSessionCount.set(0);
+                        cachedSessionAlfTicket.set(null);
+                    }
+                }
+            }
 
 			@Override
 			public ExchangeFilterFunction authenticationFilter() {

@@ -16,14 +16,14 @@ import fr.becpg.api.model.RemoteNodeInfo;
  * @author matthieu
  */
 public class RemoteEntityHelper {
-	
+
 	private static final String ID = "id";
 	private static final String ATTRIBUTES = "attributes";
 
 	private RemoteEntityHelper() {
-		
+
 	}
-	
+
 	/**
 	 * <p>findDocumentAttributes.</p>
 	 *
@@ -49,7 +49,7 @@ public class RemoteEntityHelper {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * <p>insertDocument.</p>
 	 *
@@ -60,7 +60,7 @@ public class RemoteEntityHelper {
 	@SuppressWarnings("unchecked")
 	public static void insertDocument(RemoteEntity original, RemoteEntity target, String docId) {
 		Map<String, Object> originalAttributes = original.getAttributes();
-		if (originalAttributes != null && originalAttributes.get(BeCPGAPIModel.ASSOC_CM_CONTAINS) != null) {
+		if ((originalAttributes != null) && (originalAttributes.get(BeCPGAPIModel.ASSOC_CM_CONTAINS) != null)) {
 			List<Map<String, Object>> originalDocuments = (List<Map<String, Object>>) originalAttributes.get(BeCPGAPIModel.ASSOC_CM_CONTAINS);
 			for (Map<String, Object> rootDocument : originalDocuments) {
 				Map<String, Object> foundDocWrapper = findDocumentWrapper(rootDocument, docId);
@@ -85,7 +85,7 @@ public class RemoteEntityHelper {
 			return document;
 		}
 		Map<String, Object> attrs = (Map<String, Object>) document.get(ATTRIBUTES);
-		if (attrs != null && attrs.get(BeCPGAPIModel.ASSOC_CM_CONTAINS) != null) {
+		if ((attrs != null) && (attrs.get(BeCPGAPIModel.ASSOC_CM_CONTAINS) != null)) {
 			List<Map<String, Object>> subDocs = (List<Map<String, Object>>) attrs.get(BeCPGAPIModel.ASSOC_CM_CONTAINS);
 			for (Map<String, Object> subDoc : subDocs) {
 				Map<String, Object> match = findDocumentWrapper(subDoc, docId);
@@ -106,7 +106,7 @@ public class RemoteEntityHelper {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * <p>extractName.</p>
 	 *
@@ -137,28 +137,32 @@ public class RemoteEntityHelper {
 		if (from == null) {
 			return null;
 		}
-	    RemoteEntity copy = new RemoteEntity();
-	    copyCommonFields(from, copy);
-	    
-	    if (from.getDatalists() != null) {
-	        Map<String, List<RemoteNodeInfo>> datalistsCopy = new HashMap<>();
-	        for (Map.Entry<String, List<RemoteNodeInfo>> entry : from.getDatalists().entrySet()) {
-	            List<RemoteNodeInfo> listCopy = new ArrayList<>();
-	            if (entry.getValue() != null) {
-	                for (RemoteNodeInfo node : entry.getValue()) {
-	                    listCopy.add(deepCopy(node));
-	                }
-	            }
-	            datalistsCopy.put(entry.getKey(), listCopy);
-	        }
-	        copy.setDatalists(datalistsCopy);
-	    }
-	    
-	    if (from.getParams() != null) {
-	        copy.setParams(deepCopyMap(from.getParams()));
-	    }
-	    
-	    return copy;
+		RemoteEntity copy = new RemoteEntity();
+		copyCommonFields(from, copy);
+
+		Map<String, List<RemoteNodeInfo>> datalists = from.getDatalists();
+		
+		if (datalists != null) {
+			Map<String, List<RemoteNodeInfo>> datalistsCopy = new HashMap<>();
+			for (Map.Entry<String, List<RemoteNodeInfo>> entry : datalists.entrySet()) {
+				List<RemoteNodeInfo> listCopy = new ArrayList<>();
+				if (entry.getValue() != null) {
+					for (RemoteNodeInfo node : entry.getValue()) {
+						listCopy.add(deepCopy(node));
+					}
+				}
+				datalistsCopy.put(entry.getKey(), listCopy);
+			}
+			copy.setDatalists(datalistsCopy);
+		}
+
+		
+		Map<String, Object> attributes = from.getParams();
+		if (attributes != null) {
+			copy.setParams(deepCopyMap(attributes));
+		}
+
+		return copy;
 	}
 
 	/**
@@ -168,17 +172,17 @@ public class RemoteEntityHelper {
 	 * @return a new RemoteNodeInfo instance
 	 */
 	public static RemoteNodeInfo deepCopy(RemoteNodeInfo original) {
-	    if (original == null) {
-	        return null;
-	    }
-	    
-	    if (original instanceof RemoteEntity originalEntity) {
-	        return deepCopy(originalEntity);
-	    }
-	    
-	    RemoteNodeInfo copy = new RemoteNodeInfo();
-	    copyCommonFields(original, copy);
-	    return copy;
+		if (original == null) {
+			return null;
+		}
+
+		if (original instanceof RemoteEntity originalEntity) {
+			return deepCopy(originalEntity);
+		}
+
+		RemoteNodeInfo copy = new RemoteNodeInfo();
+		copyCommonFields(original, copy);
+		return copy;
 	}
 
 	private static void copyCommonFields(RemoteNodeInfo from, RemoteNodeInfo to) {
@@ -191,11 +195,12 @@ public class RemoteEntityHelper {
 		to.setPath(from.getPath());
 		to.setType(from.getType());
 		to.setContent(from.getContent());
-		
-		if (from.getAttributes() != null) {
-			to.setAttributes(deepCopyMap(from.getAttributes()));
+
+		Map<String, Object> attributes = from.getAttributes();
+		if (attributes != null) {
+		    to.setAttributes(deepCopyMap(attributes));
 		}
-		
+
 		if (from.getOptionalIdentifiers() != null) {
 			to.setOptionalIdentifiers(deepCopyMap(from.getOptionalIdentifiers()));
 		}
@@ -212,44 +217,43 @@ public class RemoteEntityHelper {
 	/**
 	 * Helper method to deep copy generic values.
 	 * Handles primitives, strings, lists, maps, and RemoteNodeInfo objects.
-	 * 
+	 *
 	 * @param value the value to copy
 	 * @return a deep copy of the value
 	 */
 	private static Object deepCopyValue(Object value) {
-	    if (value == null) {
-	        return null;
-	    }
-	    
-	    if (value instanceof String || value instanceof Number || 
-	        value instanceof Boolean) {
-	        return value;
-	    }
+		if (value == null) {
+			return null;
+		}
 
-	    if (value instanceof Date date) {
-	        return new Date(date.getTime());
-	    }
-	    
-	    if (value instanceof RemoteNodeInfo remoteNodeInfo) {
-	        return deepCopy(remoteNodeInfo);
-	    }
-	    
-	    if (value instanceof List<?> originalList) {
-	        List<Object> listCopy = new ArrayList<>();
-	        for (Object item : originalList) {
-	            listCopy.add(deepCopyValue(item));
-	        }
-	        return listCopy;
-	    }
-	    
-	    if (value instanceof Map<?, ?> originalMap) {
-	        Map<Object, Object> mapCopy = new HashMap<>();
-	        for (Map.Entry<?, ?> entry : originalMap.entrySet()) {
-	            mapCopy.put(deepCopyValue(entry.getKey()), deepCopyValue(entry.getValue()));
-	        }
-	        return mapCopy;
-	    }
-	    
-	    return value;
+		if ((value instanceof String) || (value instanceof Number) || (value instanceof Boolean)) {
+			return value;
+		}
+
+		if (value instanceof Date date) {
+			return new Date(date.getTime());
+		}
+
+		if (value instanceof RemoteNodeInfo remoteNodeInfo) {
+			return deepCopy(remoteNodeInfo);
+		}
+
+		if (value instanceof List<?> originalList) {
+			List<Object> listCopy = new ArrayList<>();
+			for (Object item : originalList) {
+				listCopy.add(deepCopyValue(item));
+			}
+			return listCopy;
+		}
+
+		if (value instanceof Map<?, ?> originalMap) {
+			Map<Object, Object> mapCopy = new HashMap<>();
+			for (Map.Entry<?, ?> entry : originalMap.entrySet()) {
+				mapCopy.put(deepCopyValue(entry.getKey()), deepCopyValue(entry.getValue()));
+			}
+			return mapCopy;
+		}
+
+		return value;
 	}
 }
