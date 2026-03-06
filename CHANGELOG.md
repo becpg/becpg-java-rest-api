@@ -64,3 +64,11 @@
 * [skip ci][Release]: Update CHANGELOG.md for 1.1.9 release
 * [skip ci] Prepare for next development iteration
 
+## [ 1.1.11 ] - ven. 06 mars 2026 17:57:28 CET
+
+* [Release] prepare release 1.1.11
+* [Setup] Prepare release
+* [Bug] Disable basic auth when oauth is on
+* [skip ci][Release]: Update CHANGELOG.md for 1.1.10 release
+* [skip ci] Prepare for next development iteration
+
