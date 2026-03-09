@@ -25,6 +25,7 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 
 import fr.becpg.api.handler.EntityAPI;
+import fr.becpg.api.model.BeCPGAPIModel;
 import fr.becpg.api.model.RemoteEntity;
 import fr.becpg.api.model.RemoteEntityRef;
 import fr.becpg.api.model.RemoteNodeInfo;
@@ -95,9 +96,8 @@ class EntityApiTest extends AbstractRemoteApiTest {
 			Assert.assertEquals("Tarte coco tradition", entity.getName());
 			Assert.assertNotNull(entity.getAttributes());
 			Assert.assertNotNull(entity.getDatalists());
-
-		
-
+			Assert.assertEquals(14, entity.getDatalistItems(BeCPGAPIModel.TYPE_ORGANOLIST).size());
+			
 			List<RemoteNodeInfo> geoOrigins = entity.getAssociations("bcpg:productGeoOrigin");
 			Assert.assertNotNull(geoOrigins);
 			Assert.assertEquals(1, geoOrigins.size());
