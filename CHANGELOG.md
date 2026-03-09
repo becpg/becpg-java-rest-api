@@ -72,3 +72,11 @@
 * [skip ci][Release]: Update CHANGELOG.md for 1.1.10 release
 * [skip ci] Prepare for next development iteration
 
+## [ 1.1.12 ] - lun. 09 mars 2026 16:46:41 CET
+
+* [Release] prepare release 1.1.12
+* [Feature] Add unit test on datalist
+* Fix #17675 - [Bug] Fix alf ticket encoding
+* [skip ci][Release]: Update CHANGELOG.md for 1.1.11 release
+* [skip ci] Prepare for next development iteration
+
