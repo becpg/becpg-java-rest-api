@@ -397,4 +397,3 @@ Writes the content of the given node to the specified file.
 #### Throws
 
 - `IOException`: if there is an error while writing the content.
-
