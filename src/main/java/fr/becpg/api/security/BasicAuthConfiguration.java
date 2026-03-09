@@ -28,6 +28,7 @@ import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.ExchangeFunction;
+import org.springframework.web.util.UriComponentsBuilder;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
@@ -243,18 +244,10 @@ public class BasicAuthConfiguration {
 	 * @return URL containing alf_ticket query parameter
 	 */
 	private URI addAlfTicket(URI url, String ticket) {
-		try {
-			String query = url.getQuery();
-			if (query != null && query.contains(ALF_TICKET_PARAMETER + "=")) {
-				return url;
-			}
-
-			String separator = (query == null || query.isBlank()) ? "" : "&";
-			String encodedTicket = URLEncoder.encode(ticket, StandardCharsets.UTF_8);
-			String updatedQuery = (query == null ? "" : query) + separator + ALF_TICKET_PARAMETER + "=" + encodedTicket;
-			return new URI(url.getScheme(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), updatedQuery, url.getFragment());
-		} catch (URISyntaxException e) {
-			throw new IllegalStateException("Cannot append alf_ticket to request URL", e);
+		if (url.getQuery() != null && url.getQuery().contains(ALF_TICKET_PARAMETER + "=")) {
+			return url;
 		}
+		
+		return UriComponentsBuilder.fromUri(url).queryParam(ALF_TICKET_PARAMETER, ticket).build(true).toUri();
 	}
 }
