@@ -174,10 +174,10 @@ public interface EntityAPI {
 	 * @param id a string representing the ID of the entity
 	 * @param attributes a list of strings representing the attributes to include in the response
 	 * @param datalists a list of strings representing the data lists to include in the
-	 * @param params a map of strings to booleans representing the parameters to pass to the API
+	 * @param params a map of strings to objects representing the parameters to pass to the API
 	 * @return a {@link fr.becpg.api.model.RemoteEntity} object
 	 */
-	RemoteEntity get(String id, List<String> attributes, List<String> datalists, Map<String, Boolean> params);
+	RemoteEntity get(String id, List<String> attributes, List<String> datalists, Map<String, Object> params);
 
 	/**
 	 * <p>fetchEntity.</p>
@@ -188,7 +188,7 @@ public interface EntityAPI {
 	 * @param params a {@link java.util.Map} object
 	 * @return a {@link reactor.core.publisher.Mono} object
 	 */
-	Mono<RemoteEntityRef> fetchEntity(String id, List<String> attributes, List<String> datalists, Map<String, Boolean> params);
+	Mono<RemoteEntityRef> fetchEntity(String id, List<String> attributes, List<String> datalists, Map<String, Object> params);
 
 	/**
 	 * <p>get the entity schema</p>
@@ -231,10 +231,10 @@ public interface EntityAPI {
 	 * @param id a string representing the ID of the entity
 	 * @param attributes a list of strings representing the attributes to include in the response
 	 * @param datalists a list of strings representing the data lists to include in the
-	 * @param params a map of strings to booleans representing the parameters to pass to the API
+	 * @param params a map of strings to objects representing the parameters to pass to the API
 	 * @return a {@link fr.becpg.api.model.RemoteEntitySchema} object
 	 */
-	RemoteEntitySchema getSchema(String id, List<String> attributes, List<String> datalists, Map<String, Boolean> params);
+	RemoteEntitySchema getSchema(String id, List<String> attributes, List<String> datalists, Map<String, Object> params);
 
 	/**
 	 * Retrieves the  entity schema for specified type
@@ -252,10 +252,10 @@ public interface EntityAPI {
 	 * @param type a string representing the qname type of th entity
 	 * @param attributes a list of strings representing the attributes to include in the response
 	 * @param datalists a list of strings representing the data lists to include in the (Not supported Yet)
-	 * @param params a map of strings to booleans representing the parameters to pass to the API  (Not supported Yet)
+	 * @param params a map of strings to objects representing the parameters to pass to the API  (Not supported Yet)
 	 * @return a {@link fr.becpg.api.model.RemoteEntitySchema} object
 	 */
-	RemoteEntitySchema getSchemaForType(String type, List<String> attributes, List<String> datalists, Map<String, Boolean> params);
+	RemoteEntitySchema getSchemaForType(String type, List<String> attributes, List<String> datalists, Map<String, Object> params);
 
 	/**
 	 * <p>check.</p>

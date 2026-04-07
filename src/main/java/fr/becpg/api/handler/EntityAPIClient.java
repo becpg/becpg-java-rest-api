@@ -1,5 +1,6 @@
 package fr.becpg.api.handler;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -46,7 +47,7 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 	public List<RemoteEntityRef> list(@NonNull String query) {
 		RemoteEntityList entityList =  fetchEntityList(query, null, null, null).block();
 
-		return entityList != null ? entityList.getEntities() : null;
+		return entityList != null && entityList.getEntities() != null ? entityList.getEntities() : Collections.emptyList();
 
 	}
 
@@ -60,7 +61,7 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 	            .block();
 	    }
 	    RemoteEntityList entityList =  fetchEntityList(query, null, attributes, maxResults).block();
-		return entityList != null ? entityList.getEntities() : null;
+		return entityList != null && entityList.getEntities() != null ? entityList.getEntities() : Collections.emptyList();
 	}
 	
 	/** {@inheritDoc} */
@@ -73,7 +74,7 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 	            .block();
 	    }
 	    RemoteEntityList entityList =  fetchEntityList(query, null, attributes, maxResults).block();
-		return entityList != null ? entityList.getEntities() : null;
+		return entityList != null && entityList.getEntities() != null ? entityList.getEntities() : Collections.emptyList();
 	}
 	
 	/** {@inheritDoc} */
@@ -93,7 +94,7 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 	    }
 	    RemoteEntityList entityList =  fetchEntityList(query, path, attributes, maxResults).block();
 
-		return entityList != null ? entityList.getEntities() : null;
+		return entityList != null && entityList.getEntities() != null ? entityList.getEntities() : Collections.emptyList();
 	}
 
 	
@@ -198,7 +199,7 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 
 	/** {@inheritDoc} */
 	@Override
-	public RemoteEntity get(String id, List<String> attributes, List<String> datalists, Map<String, Boolean> params) {
+	public RemoteEntity get(String id, List<String> attributes, List<String> datalists, Map<String, Object> params) {
 		RemoteEntityRef entityRef = fetchEntity(id, attributes, datalists, params).block();
 
 		return entityRef != null ? entityRef.getEntity() : null;
@@ -207,7 +208,7 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 	
 	/** {@inheritDoc} */
 	@Override
-	public Mono<RemoteEntityRef> fetchEntity(String id, List<String> attributes, List<String> datalists, Map<String, Boolean> params) {
+	public Mono<RemoteEntityRef> fetchEntity(String id, List<String> attributes, List<String> datalists, Map<String, Object> params) {
 		return webClient().get()
 				.uri(uriBuilder -> uriBuilder.path(REMOTE_ENTITY_URL).queryParam(PARAM_FORMAT, FORMAT_JSON).queryParam(PARAM_NODEREF, buildNodeRefParam(id))
 						.queryParam(PARAM_FIELDS, VAR_FIELDS)
@@ -286,7 +287,7 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 
 	/** {@inheritDoc} */
 	@Override
-	public RemoteEntitySchema getSchema(String id, List<String> attributes, List<String> datalists, Map<String, Boolean> params) {
+	public RemoteEntitySchema getSchema(String id, List<String> attributes, List<String> datalists, Map<String, Object> params) {
 		return webClient().get()
 				.uri(uriBuilder -> uriBuilder.path(REMOTE_ENTITY_URL).queryParam(PARAM_FORMAT, FORMAT_JSON_SCHEMA)
 						.queryParam(PARAM_NODEREF, buildNodeRefParam(id)).queryParam(PARAM_FIELDS,VAR_FIELDS)
@@ -308,7 +309,7 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 
 	/** {@inheritDoc} */
 	@Override
-	public RemoteEntitySchema getSchemaForType(String type, List<String> attributes, List<String> datalists, Map<String, Boolean> params) {
+	public RemoteEntitySchema getSchemaForType(String type, List<String> attributes, List<String> datalists, Map<String, Object> params) {
 		return webClient().get()
 				.uri(uriBuilder -> uriBuilder.path("/dictionary").queryParam(PARAM_FORMAT, FORMAT_JSON_SCHEMA).queryParam(PARAM_TYPE, type)
 						.queryParam(PARAM_FIELDS,VAR_FIELDS).queryParam(PARAM_LISTS, VAR_LISTS)

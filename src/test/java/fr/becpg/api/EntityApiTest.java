@@ -78,7 +78,7 @@ class EntityApiTest extends AbstractRemoteApiTest {
 
 			mockBackEnd.enqueue(new MockResponse().setBody(asString(entity)).addHeader("Content-Type", "application/json"));
 
-			Map<String, Boolean> params = new HashMap<>();
+			Map<String, Object> params = new HashMap<>();
 			JSONObject jsonObject = new JSONObject(
 					"{\"appendCode\":false,\"appendErpCode\":false,\"appendNodeRef\":false,\"appendMlTextConstraint\":false,\"appendDataListNodeRef\":false}");
 			@SuppressWarnings("unchecked")
