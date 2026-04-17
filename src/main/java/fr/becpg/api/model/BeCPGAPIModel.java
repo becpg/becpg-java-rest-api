@@ -415,6 +415,8 @@ public final class BeCPGAPIModel {
 	public static final String PROP_ALLERGEN_LIST_ON_SITE = "bcpg:allergenListOnSite";
 	/** Constant <code>PROP_ALLERGEN_LIST_IS_CLEANED="bcpg:allergenListIsCleaned"</code> */
 	public static final String PROP_ALLERGEN_LIST_IS_CLEANED = "bcpg:allergenListIsCleaned";
+	/** Constant <code>PROP_ALLERGEN_LIST_QTY_PERC="bcpg:allergenListQtyPerc"</code> */
+	public static final String PROP_ALLERGEN_LIST_QTY_PERC = "bcpg:allergenListQtyPerc";
 
 	/** Constant <code>PROP_LCL_CLAIM_VALUE="bcpg:lclClaimValue"</code> */
 	public static final String PROP_LCL_CLAIM_VALUE = "bcpg:lclClaimValue";
