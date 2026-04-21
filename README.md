@@ -15,6 +15,8 @@ This SDK provides functionality to consume beCPG REST Remote API.
 
 | Version | beCPG Version | Version API | Version JAVA | Changes |
 | --- | --- | --- | --- | -- |
+| 1.1.13 | >= 23.4.2 | >= 3.5 | JAVA 17 | Add bcpg:allergenListQtyPerc field constant |
+| 1.1.12 | >= 23.4.2 | >= 3.5 | JAVA 17 | Fix alf ticket encoding |
 | 1.1.11 | >= 23.4.2 | >= 3.5 | JAVA 17 | Bug fix oauth |
 | 1.1.10 | >= 23.4.2 | >= 3.5 | JAVA 17 | Add alfTocken session in basic Auth |
 | 1.1.9 | >= 23.4.2 | >= 3.5 | JAVA 17 | Add common helper functions |
