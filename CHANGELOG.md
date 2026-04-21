@@ -80,3 +80,12 @@
 * [skip ci][Release]: Update CHANGELOG.md for 1.1.11 release
 * [skip ci] Prepare for next development iteration
 
+## [ 1.1.13 ] - mar. 21 avril 2026 10:37:43 CEST
+
+* [Release] prepare release 1.1.13
+* Update README
+* Add bcpg:allergenListQtyPerc field constant
+* [Feature] Generalize Entity API parameters and improve null safety
+* [skip ci][Release]: Update CHANGELOG.md for 1.1.12 release
+* [skip ci] Prepare for next development iteration
+
