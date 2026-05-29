@@ -8,7 +8,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
-import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -21,62 +20,57 @@ import fr.becpg.api.model.RemoteEntity;
 import fr.becpg.api.model.RemoteEntityList;
 import fr.becpg.api.model.RemoteEntityRef;
 import fr.becpg.api.model.RemoteEntitySchema;
-import fr.becpg.api.security.EnableAuthConfiguration;
+import lombok.NonNull;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
  * <p>EntityAPIClient class.</p>
  *
- * @version $Id: $Id
  * @author matthieu
+ * @version $Id: $Id
+ * @since 3.2.0
  */
 @Component
-@EnableAuthConfiguration
 public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 
-	private static final String PARAM_TYPE = "type";
-	
-	private static final String REMOTE_ENTITY_URL = "/entity";
-
-	private static final String REMOTE_ENTITY_LIST_URL = REMOTE_ENTITY_URL + "/list";
-
+	/** Constant <code>REMOTE_ENTITY_URL="/remote/entity"</code> */
+	public static final String REMOTE_ENTITY_URL = "/remote/entity";
+	/** Constant <code>REMOTE_ENTITY_LIST_URL="/remote/entity/list"</code> */
+	public static final String REMOTE_ENTITY_LIST_URL = "/remote/entity/list";
 
 	/** {@inheritDoc} */
 	@Override
 	public List<RemoteEntityRef> list(@NonNull String query) {
-		RemoteEntityList entityList =  fetchEntityList(query, null, null, null).block();
-
-		return entityList != null && entityList.getEntities() != null ? entityList.getEntities() : Collections.emptyList();
-
+		return list(query, null, -1);
 	}
 
 	/** {@inheritDoc} */
 	@Override
 	public List<RemoteEntityRef> list(@NonNull String query, List<String> attributes, int maxResults) {
-	    if (maxResults == -1) {
-	        return fetchEntityListAllPages(query, null, attributes, maxResults)
-	            .flatMapIterable(RemoteEntityList::getEntities)
-	            .collectList()
-	            .block();
-	    }
-	    RemoteEntityList entityList =  fetchEntityList(query, null, attributes, maxResults).block();
+		return list(query, attributes, maxResults, (Map<String, Boolean>) null);
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public List<RemoteEntityRef> list(@NonNull String query, List<String> attributes, int maxResults, Map<String, Boolean> params) {
+		if (maxResults == -1) {
+			return fetchEntityListAllPages(query, null, attributes, maxResults, params).flatMapIterable(RemoteEntityList::getEntities).collectList().block();
+		}
+		RemoteEntityList entityList = fetchEntityList(query, null, attributes, maxResults, params).block();
 		return entityList != null && entityList.getEntities() != null ? entityList.getEntities() : Collections.emptyList();
 	}
-	
+
 	/** {@inheritDoc} */
 	@Override
 	public List<RemoteEntityRef> list(RemoteEntity entityQuery, String query, List<String> attributes, int maxResults) {
-	    if (maxResults == -1) {
-	        return fetchEntityListAllPages(entityQuery, query, null, attributes, maxResults)
-	            .flatMapIterable(RemoteEntityList::getEntities)
-	            .collectList()
-	            .block();
-	    }
-	    RemoteEntityList entityList =  fetchEntityList(query, null, attributes, maxResults).block();
+		if (maxResults == -1) {
+			return fetchEntityListAllPages(entityQuery, query, null, attributes, maxResults).flatMapIterable(RemoteEntityList::getEntities).collectList().block();
+		}
+		RemoteEntityList entityList = fetchEntityList(query, null, attributes, maxResults).block();
 		return entityList != null && entityList.getEntities() != null ? entityList.getEntities() : Collections.emptyList();
 	}
-	
+
 	/** {@inheritDoc} */
 	@Override
 	public List<RemoteEntityRef> list(RemoteEntity entityQuery) {
@@ -86,108 +80,96 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 	/** {@inheritDoc} */
 	@Override
 	public List<RemoteEntityRef> listByPath(@NonNull String query, @NonNull String path, List<String> attributes, int maxResults) {
-	    if (maxResults == -1) {
-	        return fetchEntityListAllPages(query, path, attributes, maxResults)
-	            .flatMapIterable(RemoteEntityList::getEntities)
-	            .collectList()
-	            .block();
-	    }
-	    RemoteEntityList entityList =  fetchEntityList(query, path, attributes, maxResults).block();
+		if (maxResults == -1) {
+			return fetchEntityListAllPages(query, path, attributes, maxResults).flatMapIterable(RemoteEntityList::getEntities).collectList().block();
+		}
+		RemoteEntityList entityList = fetchEntityList(query, path, attributes, maxResults).block();
 
 		return entityList != null && entityList.getEntities() != null ? entityList.getEntities() : Collections.emptyList();
 	}
 
-	
 	/** {@inheritDoc} */
 	@Override
-	public Mono<RemoteEntityList> fetchEntityList(@NonNull String query, String path ,List<String> attributes, Integer maxResults) {
-        return webClient().get()
-                .uri(uriBuilder -> uriBuilder.path(REMOTE_ENTITY_LIST_URL)
-                        .queryParam(PARAM_FORMAT, FORMAT_JSON)
-                        .queryParam(PARAM_QUERY, VAR_QUERY )           
-                        .queryParamIfPresent(PARAM_PATH, Optional.ofNullable(path))
-                        .queryParamIfPresent(PARAM_MAX_RESULTS, Optional.ofNullable(maxResults))
-                        .queryParam(PARAM_FIELDS, VAR_FIELDS)
-                        .build(query, buildFieldsParam(attributes)))
-                .accept(MediaType.APPLICATION_JSON)
-                .retrieve()
-                .onStatus(HttpStatusCode::isError, response -> handleErrorResponse(response))
-                .bodyToMono(RemoteEntityList.class);
-    }
-	
+	public Mono<RemoteEntityList> fetchEntityList(@NonNull String query, String path, List<String> attributes, Integer maxResults) {
+		return fetchEntityList(query, path, attributes, maxResults, (Map<String, Boolean>) null);
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public Mono<RemoteEntityList> fetchEntityList(@NonNull String query, String path, List<String> attributes, Integer maxResults, Map<String, Boolean> params) {
+		return webClient().get()
+				.uri(uriBuilder -> uriBuilder.path(REMOTE_ENTITY_LIST_URL).queryParam(PARAM_FORMAT, FORMAT_JSON).queryParam(PARAM_QUERY, VAR_QUERY )
+						.queryParamIfPresent(PARAM_PATH, Optional.ofNullable(path)).queryParamIfPresent(PARAM_MAX_RESULTS, Optional.ofNullable(maxResults))
+						.queryParams(buildJsonParams(params)).queryParam(PARAM_FIELDS, VAR_FIELDS).build(query, buildFieldsParam(attributes)))
+				.accept(MediaType.APPLICATION_JSON).retrieve().onStatus(HttpStatusCode::isError, response -> handleErrorResponse(response)).bodyToMono(RemoteEntityList.class);
+	}
+
 	/** {@inheritDoc} */
 	@Override
 	public Mono<RemoteEntityList> fetchEntityListPage(@NonNull String query, String path, List<String> attributes, Integer maxResults, Integer page) {
-        return webClient().get()
-                .uri(uriBuilder -> uriBuilder.path(REMOTE_ENTITY_LIST_URL)
-                        .queryParam(PARAM_FORMAT, FORMAT_JSON)
-                        .queryParam(PARAM_QUERY, VAR_QUERY )           
-                        .queryParamIfPresent(PARAM_PATH, Optional.ofNullable(path))
-                        .queryParamIfPresent(PARAM_MAX_RESULTS, Optional.ofNullable(maxResults))
-                        .queryParamIfPresent(PARAM_PAGE, Optional.ofNullable(page))
-                        .queryParam(PARAM_FIELDS, VAR_FIELDS)
-                        .build(query, buildFieldsParam(attributes)))
-                .accept(MediaType.APPLICATION_JSON)
-                .retrieve()
-                .onStatus(HttpStatusCode::isError, response -> handleErrorResponse(response))
-                .bodyToMono(RemoteEntityList.class);
-    }
-	
+		return fetchEntityListPage(query, path, attributes, maxResults, page, (Map<String, Boolean>) null);
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public Mono<RemoteEntityList> fetchEntityListPage(@NonNull String query, String path, List<String> attributes, Integer maxResults, Integer page, Map<String, Boolean> params) {
+		return webClient().get()
+				.uri(uriBuilder -> uriBuilder.path(REMOTE_ENTITY_LIST_URL).queryParam(PARAM_FORMAT, FORMAT_JSON).queryParam(PARAM_QUERY, VAR_QUERY )
+						.queryParamIfPresent(PARAM_PATH, Optional.ofNullable(path)).queryParamIfPresent(PARAM_MAX_RESULTS, Optional.ofNullable(maxResults))
+						.queryParamIfPresent(PARAM_PAGE, Optional.ofNullable(page)).queryParams(buildJsonParams(params)).queryParam(PARAM_FIELDS, VAR_FIELDS).build(query, buildFieldsParam(attributes)))
+				.accept(MediaType.APPLICATION_JSON).retrieve().onStatus(HttpStatusCode::isError, response -> handleErrorResponse(response)).bodyToMono(RemoteEntityList.class);
+	}
+
 	/** {@inheritDoc} */
 	@Override
 	public Mono<RemoteEntityList> fetchEntityListPage(RemoteEntity entityQuery, String query, String path, List<String> attributes, Integer maxResults, Integer page) {
 		return webClient().post()
-				.uri(uriBuilder -> uriBuilder.path(REMOTE_ENTITY_LIST_URL)
-						.queryParam(PARAM_FORMAT, FORMAT_JSON)
-						.queryParam(PARAM_QUERY, VAR_QUERY )           
-						.queryParamIfPresent(PARAM_PATH, Optional.ofNullable(path))
-						.queryParamIfPresent(PARAM_MAX_RESULTS, Optional.ofNullable(maxResults))
-						.queryParamIfPresent(PARAM_PAGE, Optional.ofNullable(page))
-						.queryParam(PARAM_FIELDS, VAR_FIELDS)
-						.build(query, buildFieldsParam(attributes)))
-				.body(BodyInserters.fromValue(entityQuery))
-				.accept(MediaType.APPLICATION_JSON)
-				.retrieve()
-				.onStatus(HttpStatusCode::isError, response -> handleErrorResponse(response))
+				.uri(uriBuilder -> uriBuilder.path(REMOTE_ENTITY_LIST_URL).queryParam(PARAM_FORMAT, FORMAT_JSON).queryParam(PARAM_QUERY, VAR_QUERY )
+						.queryParamIfPresent(PARAM_PATH, Optional.ofNullable(path)).queryParamIfPresent(PARAM_MAX_RESULTS, Optional.ofNullable(maxResults))
+						.queryParamIfPresent(PARAM_PAGE, Optional.ofNullable(page)).queryParam(PARAM_FIELDS, VAR_FIELDS).build(query, buildFieldsParam(attributes)))
+				.body(BodyInserters.fromValue(entityQuery)).accept(MediaType.APPLICATION_JSON).retrieve().onStatus(HttpStatusCode::isError, response -> handleErrorResponse(response))
 				.bodyToMono(RemoteEntityList.class);
 	}
-	
+
 	/** {@inheritDoc} */
 	@Override
 	public Flux<RemoteEntityList> fetchEntityListAllPages(@NonNull String query, String path, List<String> attributes, Integer maxResults) {
+		return fetchEntityListAllPages(query, path, attributes, maxResults, (Map<String, Boolean>) null);
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public Flux<RemoteEntityList> fetchEntityListAllPages(@NonNull String query, String path, List<String> attributes, Integer maxResults, Map<String, Boolean> params) {
 		AtomicInteger pageNumber = new AtomicInteger(1);
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		return fetchEntityListPage(query, path, attributes, maxResults, pageNumber.get())
-			.expand(remoteEntityList -> {
-				if (remoteEntityList.hasMoreItems()) {
-					SecurityContextHolder.getContext().setAuthentication(authentication);
-					return fetchEntityListPage(query, path, attributes, maxResults, pageNumber.addAndGet(1));
-				}
-				return Mono.empty();
-			});
+		return fetchEntityListPage(query, path, attributes, maxResults, pageNumber.get(), params).expand(remoteEntityList -> {
+			if (remoteEntityList.hasMoreItems()) {
+				SecurityContextHolder.getContext().setAuthentication(authentication);
+				return fetchEntityListPage(query, path, attributes, maxResults, pageNumber.addAndGet(1), params);
+			}
+			return Mono.empty();
+		});
 	}
-	
+
 	/** {@inheritDoc} */
 	@Override
 	public Flux<RemoteEntityList> fetchEntityListAllPages(RemoteEntity entityQuery, String query, String path, List<String> attributes, Integer maxResults) {
 		AtomicInteger pageNumber = new AtomicInteger(1);
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		return fetchEntityListPage(entityQuery, query, path, attributes, maxResults, pageNumber.get())
-				.expand(remoteEntityList -> {
-					if (remoteEntityList.hasMoreItems()) {
-						SecurityContextHolder.getContext().setAuthentication(authentication);
-						return fetchEntityListPage(entityQuery, query, path, attributes, maxResults, pageNumber.addAndGet(1));
-					}
-					return Mono.empty();
-				});
+		return fetchEntityListPage(entityQuery, query, path, attributes, maxResults, pageNumber.get()).expand(remoteEntityList -> {
+			if (remoteEntityList.hasMoreItems()) {
+				SecurityContextHolder.getContext().setAuthentication(authentication);
+				return fetchEntityListPage(entityQuery, query, path, attributes, maxResults, pageNumber.addAndGet(1));
+			}
+			return Mono.empty();
+		});
 	}
-	
+
 	/** {@inheritDoc} */
 	@Override
 	public Flux<RemoteEntityList> fetchEntityListAllPages(RemoteEntity entityQuery) {
 		return fetchEntityListAllPages(entityQuery, null, null, null, -1);
 	}
-	  
 
 	/** {@inheritDoc} */
 	@Override
@@ -205,21 +187,16 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 		return entityRef != null ? entityRef.getEntity() : null;
 	}
 
-	
 	/** {@inheritDoc} */
 	@Override
 	public Mono<RemoteEntityRef> fetchEntity(String id, List<String> attributes, List<String> datalists, Map<String, Object> params) {
 		return webClient().get()
 				.uri(uriBuilder -> uriBuilder.path(REMOTE_ENTITY_URL).queryParam(PARAM_FORMAT, FORMAT_JSON).queryParam(PARAM_NODEREF, buildNodeRefParam(id))
-						.queryParam(PARAM_FIELDS, VAR_FIELDS)
-						.queryParam(PARAM_LISTS,VAR_LISTS)
-						.queryParams(buildJsonParams(params)).build(Optional.ofNullable(buildFieldsParam(attributes)).orElse(""),Optional.ofNullable(buildFieldsParam(datalists)).orElse("")))
-				.accept(MediaType.APPLICATION_JSON).retrieve()
-				.onStatus(HttpStatusCode::isError, response -> handleErrorResponse(response))
-				.bodyToMono(RemoteEntityRef.class);
+						.queryParam(PARAM_FIELDS, VAR_FIELDS).queryParam(PARAM_LISTS, VAR_LISTS).queryParams(buildJsonParams(params))
+						.build(Optional.ofNullable(buildFieldsParam(attributes)).orElse(""), Optional.ofNullable(buildFieldsParam(datalists)).orElse("")))
+				.accept(MediaType.APPLICATION_JSON).retrieve().onStatus(HttpStatusCode::isError, response -> handleErrorResponse(response)).bodyToMono(RemoteEntityRef.class);
 	}
-	
-	
+
 	/** {@inheritDoc} */
 	@Override
 	public RemoteEntity update(RemoteEntity entity) {
@@ -228,60 +205,47 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 
 	/** {@inheritDoc} */
 	@Override
-	public RemoteEntity update(RemoteEntity entity, boolean createversion, boolean majorVersion, String versionDescription) {		
+	public RemoteEntity update(RemoteEntity entity, boolean createversion, boolean majorVersion, String versionDescription) {
 		RemoteAPIResponse resp = updateEntity(entity, createversion, majorVersion, versionDescription).block();
-		if(resp!=null ) {
+		if (resp != null) {
 			entity.setId(resp.getId());
 		}
 		return entity;
 
 	}
-	
+
 	/** {@inheritDoc} */
 	@Override
 	public Mono<RemoteAPIResponse> updateEntity(RemoteEntity entity, boolean createversion, boolean majorVersion, String versionDescription) {
-		
+
 		if (entity.getId() != null && !entity.getId().isBlank()) {
 			return webClient().post()
-					.uri(uriBuilder -> uriBuilder.path(REMOTE_ENTITY_URL).queryParam(PARAM_FORMAT, FORMAT_JSON)
-							.queryParam(PARAM_NODEREF, buildNodeRefParam((entity.getId()))).queryParam(PARAM_CREATE_VERSION, createversion)
-							.queryParam(PARAM_MAJOR_VERSION, majorVersion).queryParam(PARAM_VERSION_DESCRIPTION, "{description}").build(versionDescription))
+					.uri(uriBuilder -> uriBuilder.path(REMOTE_ENTITY_URL).queryParam(PARAM_FORMAT, FORMAT_JSON).queryParam(PARAM_NODEREF, buildNodeRefParam((entity.getId())))
+							.queryParam(PARAM_CREATE_VERSION, createversion).queryParam(PARAM_MAJOR_VERSION, majorVersion).queryParam(PARAM_VERSION_DESCRIPTION, "{description}").build(versionDescription))
 
-					.contentType(MediaType.APPLICATION_JSON).body(BodyInserters.fromValue(new RemoteEntityRef(entity)))
-					.accept(MediaType.APPLICATION_JSON).retrieve()
-					.onStatus(HttpStatusCode::isError, response -> handleErrorResponse(response))
-					.bodyToMono(RemoteAPIResponse.class);
-		} 
-		
-		return webClient().put().uri(uriBuilder -> uriBuilder.path(REMOTE_ENTITY_URL).queryParam(PARAM_FORMAT, FORMAT_JSON).build())
-					.contentType(MediaType.APPLICATION_JSON).body(BodyInserters.fromValue(new RemoteEntityRef(entity)))
-					.accept(MediaType.APPLICATION_JSON).retrieve()
-					.onStatus(HttpStatusCode::isError, response -> handleErrorResponse(response))
-					.bodyToMono(RemoteAPIResponse.class);
-		
+					.contentType(MediaType.APPLICATION_JSON).body(BodyInserters.fromValue(new RemoteEntityRef(entity))).accept(MediaType.APPLICATION_JSON).retrieve()
+					.onStatus(HttpStatusCode::isError, response -> handleErrorResponse(response)).bodyToMono(RemoteAPIResponse.class);
+		}
+
+		return webClient().put().uri(uriBuilder -> uriBuilder.path(REMOTE_ENTITY_URL).queryParam(PARAM_FORMAT, FORMAT_JSON).build()).contentType(MediaType.APPLICATION_JSON)
+				.body(BodyInserters.fromValue(new RemoteEntityRef(entity))).accept(MediaType.APPLICATION_JSON).retrieve().onStatus(HttpStatusCode::isError, response -> handleErrorResponse(response))
+				.bodyToMono(RemoteAPIResponse.class);
 
 	}
-	
 
 	/** {@inheritDoc} */
 	@Override
 	public String check(String id) {
 		return webClient().get().uri(uriBuilder -> uriBuilder.path("/check").queryParam(PARAM_NODEREF, buildNodeRefParam(id)).build()).retrieve()
-				.onStatus(HttpStatusCode::isError,
-						response -> response.bodyToMono(RemoteAPIError.class).flatMap(error -> Mono.error(new RemoteAPIException(error))))
-				.bodyToMono(String.class).block();
+				.onStatus(HttpStatusCode::isError, response -> response.bodyToMono(RemoteAPIError.class).flatMap(error -> Mono.error(new RemoteAPIException(error)))).bodyToMono(String.class).block();
 
 	}
 
 	/** {@inheritDoc} */
 	@Override
 	public RemoteEntitySchema getSchema(String id) {
-		return webClient().get()
-				.uri(uriBuilder -> uriBuilder
-						.path(REMOTE_ENTITY_URL).queryParam(PARAM_FORMAT, FORMAT_JSON_SCHEMA).queryParam(PARAM_NODEREF, buildNodeRefParam(id)).build())
-				.accept(MediaType.APPLICATION_JSON).retrieve()
-				.onStatus(HttpStatusCode::isError, response -> handleErrorResponse(response))
-				.bodyToMono(RemoteEntitySchema.class).block();
+		return webClient().get().uri(uriBuilder -> uriBuilder.path(REMOTE_ENTITY_URL).queryParam(PARAM_FORMAT, FORMAT_JSON_SCHEMA).queryParam(PARAM_NODEREF, buildNodeRefParam(id)).build())
+				.accept(MediaType.APPLICATION_JSON).retrieve().onStatus(HttpStatusCode::isError, response -> handleErrorResponse(response)).bodyToMono(RemoteEntitySchema.class).block();
 
 	}
 
@@ -289,34 +253,25 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 	@Override
 	public RemoteEntitySchema getSchema(String id, List<String> attributes, List<String> datalists, Map<String, Object> params) {
 		return webClient().get()
-				.uri(uriBuilder -> uriBuilder.path(REMOTE_ENTITY_URL).queryParam(PARAM_FORMAT, FORMAT_JSON_SCHEMA)
-						.queryParam(PARAM_NODEREF, buildNodeRefParam(id)).queryParam(PARAM_FIELDS,VAR_FIELDS)
-						.queryParam(PARAM_LISTS, VAR_LISTS).queryParams(buildJsonParams(params)).build( buildFieldsParam(attributes), buildFieldsParam(datalists)))
-				.accept(MediaType.APPLICATION_JSON).retrieve()
-				.onStatus(HttpStatusCode::isError, response -> handleErrorResponse(response))
-				.bodyToMono(RemoteEntitySchema.class).block();
+				.uri(uriBuilder -> uriBuilder.path(REMOTE_ENTITY_URL).queryParam(PARAM_FORMAT, FORMAT_JSON_SCHEMA).queryParam(PARAM_NODEREF, buildNodeRefParam(id))
+						.queryParam(PARAM_FIELDS, VAR_FIELDS).queryParam(PARAM_LISTS, VAR_LISTS).queryParams(buildJsonParams(params)).build(buildFieldsParam(attributes), buildFieldsParam(datalists)))
+				.accept(MediaType.APPLICATION_JSON).retrieve().onStatus(HttpStatusCode::isError, response -> handleErrorResponse(response)).bodyToMono(RemoteEntitySchema.class).block();
 	}
 
 	/** {@inheritDoc} */
 	@Override
 	public RemoteEntitySchema getSchemaForType(String type) {
-		return webClient().get()
-				.uri(uriBuilder -> uriBuilder.path("/dictionary").queryParam(PARAM_FORMAT, FORMAT_JSON_SCHEMA).queryParam(PARAM_TYPE, type).build())
-				.accept(MediaType.APPLICATION_JSON).retrieve()
-				.onStatus(HttpStatusCode::isError, response -> handleErrorResponse(response))
-				.bodyToMono(RemoteEntitySchema.class).block();
+		return webClient().get().uri(uriBuilder -> uriBuilder.path("/dictionary").queryParam(PARAM_FORMAT, FORMAT_JSON_SCHEMA).queryParam(PARAM_TYPE, type).build()).accept(MediaType.APPLICATION_JSON)
+				.retrieve().onStatus(HttpStatusCode::isError, response -> handleErrorResponse(response)).bodyToMono(RemoteEntitySchema.class).block();
 	}
 
 	/** {@inheritDoc} */
 	@Override
 	public RemoteEntitySchema getSchemaForType(String type, List<String> attributes, List<String> datalists, Map<String, Object> params) {
 		return webClient().get()
-				.uri(uriBuilder -> uriBuilder.path("/dictionary").queryParam(PARAM_FORMAT, FORMAT_JSON_SCHEMA).queryParam(PARAM_TYPE, type)
-						.queryParam(PARAM_FIELDS,VAR_FIELDS).queryParam(PARAM_LISTS, VAR_LISTS)
-						.queryParams(buildJsonParams(params)).build( buildFieldsParam(attributes),buildFieldsParam(datalists) ))
-				.accept(MediaType.APPLICATION_JSON).retrieve()
-				.onStatus(HttpStatusCode::isError, response -> handleErrorResponse(response))
-				.bodyToMono(RemoteEntitySchema.class).block();
+				.uri(uriBuilder -> uriBuilder.path("/dictionary").queryParam(PARAM_FORMAT, FORMAT_JSON_SCHEMA).queryParam(PARAM_TYPE, type).queryParam(PARAM_FIELDS, VAR_FIELDS)
+						.queryParam(PARAM_LISTS, VAR_LISTS).queryParams(buildJsonParams(params)).build(buildFieldsParam(attributes), buildFieldsParam(datalists)))
+				.accept(MediaType.APPLICATION_JSON).retrieve().onStatus(HttpStatusCode::isError, response -> handleErrorResponse(response)).bodyToMono(RemoteEntitySchema.class).block();
 	}
 
 }

@@ -224,7 +224,7 @@ A list of `RemoteEntityRef` objects representing the entities that match the giv
 
 ---
 
-### `List<RemoteEntityRef> list(String query, List<String> attributes, int maxResults)`
+### `List<RemoteEntityRef> list(String query, List<String> attributes, int maxResults, Map<String, Boolean> params)`
 
 Lists the entities that match the given query.
 
@@ -233,6 +233,7 @@ Lists the entities that match the given query.
 - `query`: a string representing the query to execute.
 - `attributes`: a list of strings representing the attributes to include in the response.
 - `maxResults`: an integer representing the maximum number of results to return.
+- `params`: a map of strings to booleans representing the parameters to pass to the API (e.g., "appendCode", "appendErpCode", etc.).
 
 #### Returns
 

@@ -39,6 +39,17 @@ public interface EntityAPI {
 	 */
 	List<RemoteEntityRef> list(@NonNull String query, List<String> attributes, int maxResults);
 
+        /**
+         * <p>list.</p>
+         *
+         * @param query a {@link java.lang.String} object
+         * @param attributes a {@link java.util.List} object
+         * @param maxResults a int
+         * @param params a {@link java.util.Map} object
+         * @return a {@link java.util.List} object
+         */
+        List<RemoteEntityRef> list(@NonNull String query, List<String> attributes, int maxResults, Map<String, Boolean> params);
+
 	/**
 	 * <p>list.</p>
 	 *
@@ -79,6 +90,18 @@ public interface EntityAPI {
 	 * @return a {@link reactor.core.publisher.Mono} object
 	 */
 	Mono<RemoteEntityList> fetchEntityList(@NonNull String query, String path, List<String> attributes, Integer maxResults);
+
+        /**
+         * <p>fetchEntityList.</p>
+         *
+         * @param query a {@link java.lang.String} object
+         * @param path a {@link java.lang.String} object
+         * @param attributes a {@link java.util.List} object
+         * @param maxResults a {@link java.lang.Integer} object
+         * @param params a {@link java.util.Map} object
+         * @return a {@link reactor.core.publisher.Mono} object
+         */
+        Mono<RemoteEntityList> fetchEntityList(@NonNull String query, String path, List<String> attributes, Integer maxResults, Map<String, Boolean> params);
 	
 	/**
 	 * <p>fetchEntityListPage.</p>
@@ -91,6 +114,19 @@ public interface EntityAPI {
 	 * @return a {@link reactor.core.publisher.Mono} object
 	 */
 	Mono<RemoteEntityList> fetchEntityListPage(@NonNull String query, String path, List<String> attributes, Integer maxResults, Integer page);
+
+        /**
+         * <p>fetchEntityListPage.</p>
+         *
+         * @param query a {@link java.lang.String} object
+         * @param path a {@link java.lang.String} object
+         * @param attributes a {@link java.util.List} object
+         * @param maxResults a {@link java.lang.Integer} object
+         * @param page a {@link java.lang.Integer} object
+         * @param params a {@link java.util.Map} object
+         * @return a {@link reactor.core.publisher.Mono} object
+         */
+        Mono<RemoteEntityList> fetchEntityListPage(@NonNull String query, String path, List<String> attributes, Integer maxResults, Integer page, Map<String, Boolean> params);
 	
 	/**
 	 * <p>fetchEntityListPage.</p>
@@ -116,6 +152,18 @@ public interface EntityAPI {
 	 * @return a {@link reactor.core.publisher.Flux} object
 	 */
 	Flux<RemoteEntityList> fetchEntityListAllPages(@NonNull String query, String path, List<String> attributes, Integer maxResults);
+
+        /**
+         * <p>fetchEntityListAllPages.</p>
+         *
+         * @param query a {@link java.lang.String} object
+         * @param path a {@link java.lang.String} object
+         * @param attributes a {@link java.util.List} object
+         * @param maxResults a {@link java.lang.Integer} object
+         * @param params a {@link java.util.Map} object
+         * @return a {@link reactor.core.publisher.Flux} object
+         */
+        Flux<RemoteEntityList> fetchEntityListAllPages(@NonNull String query, String path, List<String> attributes, Integer maxResults, Map<String, Boolean> params);
 	
 	/**
 	 * <p>fetchEntityListAllPages.</p>
