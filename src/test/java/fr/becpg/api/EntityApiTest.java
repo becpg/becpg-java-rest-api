@@ -140,5 +140,16 @@ class EntityApiTest extends AbstractRemoteApiTest {
         Assert.assertEquals("http://localhost:" + mockBackEnd.getPort() + "/alfresco/service/becpg/remote/entity/list?format=json&query=%2BTYPE%3A%22bcpg%3AfinishedProduct%22%20AND%20%2Bbcpg%5C%3AerpCode%3A%22PERF-PF1%22&maxResults=10&fields=cm%3Aname%2Cbcpg%3AlegalName", mockBackEnd.takeRequest().getRequestUrl().toString());
     
     }
+
+	@Test
+	void testListWithParams() throws IOException, InterruptedException {
+		mockBackEnd.enqueue(new MockResponse().setBody(asString(entities)).addHeader("Content-Type", "application/json"));
+
+		Map<String, Boolean> params = Map.of("appendContent", true);
+		entityApi.list("+TYPE:\"bcpg:finishedProduct\"", List.of("cm:name"), 10, params);
+
+		String requestedUrl = mockBackEnd.takeRequest().getRequestUrl().toString();
+		Assert.assertTrue(requestedUrl.contains("jsonParamappendContent=true"));
+	}
 	
 }
