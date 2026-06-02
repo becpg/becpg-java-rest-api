@@ -89,3 +89,14 @@
 * [skip ci][Release]: Update CHANGELOG.md for 1.1.12 release
 * [skip ci] Prepare for next development iteration
 
+## [ 1.1.14 ] - mar. 02 juin 2026 17:17:18 CEST
+
+* [Release] prepare release 1.1.14
+* [Feature] Add system params to list method
+* Merge remote-tracking branch 'origin/feature/34448' into main
+* [Feature] Add system params to list method
+* [Documentation] Update readme
+* Fix #34448 - [Feature] Implement secure batch start, ack, and end endpoints in ChannelAPIClient
+* [skip ci][Release]: Update CHANGELOG.md for 1.1.13 release
+* [skip ci] Prepare for next development iteration
+
