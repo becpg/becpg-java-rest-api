@@ -207,6 +207,8 @@ public final class BeCPGAPIModel {
 	public static final String TYPE_LABELCLAIMLIST = "bcpg:labelClaimList";
 	/** Constant <code>TYPE_SVHCLIST="bcpg:svhcList"</code> */
 	public static final String TYPE_SVHCLIST = "bcpg:svhcList";
+	/** Constant <code>TYPE_TOXLIST="bcpg:toxList"</code> */
+	public static final String TYPE_TOXLIST = "bcpg:toxList";
 	/** Constant <code>TYPE_LCALIST="bcpg:lcaList"</code> */
 	public static final String TYPE_LCALIST = "bcpg:lcaList";
 	/** Constant <code>TYPE_INGREGULATORYLIST="bcpg:ingRegulatoryList"</code> */
@@ -789,6 +791,12 @@ public final class BeCPGAPIModel {
 	public static final String ASSOC_SVHCLIST_ING = "bcpg:svhcListIng";
 	/** Constant <code>PROP_SVHC_REASONS_FOR_INCLUSION="bcpg:svhcReasonsForInclusion"</code> */
 	public static final String PROP_SVHC_REASONS_FOR_INCLUSION = "bcpg:svhcReasonsForInclusion";
+
+	// Tox List
+	/** Constant <code>PROP_TOXLIST_VALUE="bcpg:toxListValue"</code> */
+	public static final String PROP_TOXLIST_VALUE = "bcpg:toxListValue";
+	/** Constant <code>ASSOC_TOXLIST_TOX="bcpg:toxListTox"</code> */
+	public static final String ASSOC_TOXLIST_TOX = "bcpg:toxListTox";
 	
 	// Allergen Extended
 	/** Constant <code>PROP_ALLERGEN_CODE="bcpg:allergenCode"</code> */
