@@ -80,8 +80,9 @@ public final class BeCPGAPIModel {
 	public static final String TYPE_LOGISTIC_UNIT = "bcpg:logisticUnit";
 	/** Constant <code>TYPE_PRODUCT_COLLECTION="bcpg:productCollection"</code> */
 	public static final String TYPE_PRODUCT_COLLECTION = "bcpg:productCollection";
-	/** Constant <code>TYPE_PROJECT="pjt:project"</code> */
-	public static final String TYPE_PROJECT = "pjt:project";
+	/** @deprecated Use {@link ProjectAPIModel#TYPE_PROJECT} instead */
+	@Deprecated
+	public static final String TYPE_PROJECT = ProjectAPIModel.TYPE_PROJECT;
 	/** Constant <code>TYPE_SUPPLIER="bcpg:supplier"</code> */
 	public static final String TYPE_SUPPLIER = "bcpg:supplier";
 	/** Constant <code>TYPE_CLIENT="bcpg:client"</code> */
