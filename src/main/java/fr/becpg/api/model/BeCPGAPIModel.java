@@ -204,18 +204,24 @@ public final class BeCPGAPIModel {
 	public static final String TYPE_LCALIST = "bcpg:lcaList";
 	/** Constant <code>TYPE_INGREGULATORYLIST="bcpg:ingRegulatoryList"</code> */
 	public static final String TYPE_INGREGULATORYLIST = "bcpg:ingRegulatoryList";
-	/** Constant <code>TYPE_TASKLIST="pjt:taskList"</code> */
-	public static final String TYPE_TASKLIST = "pjt:taskList";
-	/** Constant <code>TYPE_BUDGETLIST="pjt:budgetList"</code> */
-	public static final String TYPE_BUDGETLIST = "pjt:budgetList";
-	/** Constant <code>TYPE_DELIVERABLELIST="pjt:deliverableList"</code> */
-	public static final String TYPE_DELIVERABLELIST = "pjt:deliverableList";
-	/** Constant <code>TYPE_INVOICELIST="pjt:invoiceList"</code> */
-	public static final String TYPE_INVOICELIST = "pjt:invoiceList";
-	/** Constant <code>TYPE_LOGTIMELIST="pjt:logTimeList"</code> */
-	public static final String TYPE_LOGTIMELIST = "pjt:logTimeList";
-	/** Constant <code>TYPE_SCORELIST="pjt:scoreList"</code> */
-	public static final String TYPE_SCORELIST = "pjt:scoreList";
+	/** @deprecated Use {@link ProjectAPIModel#TYPE_TASK_LIST} instead */
+	@Deprecated
+	public static final String TYPE_TASKLIST = ProjectAPIModel.TYPE_TASK_LIST;
+	/** @deprecated Use {@link ProjectAPIModel#TYPE_BUDGET_LIST} instead */
+	@Deprecated
+	public static final String TYPE_BUDGETLIST = ProjectAPIModel.TYPE_BUDGET_LIST;
+	/** @deprecated Use {@link ProjectAPIModel#TYPE_DELIVERABLE_LIST} instead */
+	@Deprecated
+	public static final String TYPE_DELIVERABLELIST = ProjectAPIModel.TYPE_DELIVERABLE_LIST;
+	/** @deprecated Use {@link ProjectAPIModel#TYPE_INVOICE_LIST} instead */
+	@Deprecated
+	public static final String TYPE_INVOICELIST = ProjectAPIModel.TYPE_INVOICE_LIST;
+	/** @deprecated Use {@link ProjectAPIModel#TYPE_LOG_TIME_LIST} instead */
+	@Deprecated
+	public static final String TYPE_LOGTIMELIST = ProjectAPIModel.TYPE_LOG_TIME_LIST;
+	/** @deprecated Use {@link ProjectAPIModel#TYPE_SCORE_LIST} instead */
+	@Deprecated
+	public static final String TYPE_SCORELIST = ProjectAPIModel.TYPE_SCORE_LIST;
 	/** Constant <code>TYPE_PROCESSLIST="mpm:processList"</code> */
 	public static final String TYPE_PROCESSLIST = "mpm:processList";
 	/** Constant <code>TYPE_STOCKLIST="qa:stockList"</code> */
@@ -299,27 +305,37 @@ public final class BeCPGAPIModel {
 	/** Constant <code>PROP_PROCESS_STEP_ORDER="bcpg:processStepOrder"</code> */
 	public static final String PROP_PROCESS_STEP_ORDER = "bcpg:processStepOrder";
 
-	// --- Project Task Datalist ---
-	/** Constant <code>PROP_TASKLIST_RESOURCES="pjt:tlResources"</code> */
-	public static final String PROP_TASKLIST_RESOURCES = "pjt:tlResources";
-	/** Constant <code>PROP_TASKLIST_STATE="pjt:tlState"</code> */
-	public static final String PROP_TASKLIST_STATE = "pjt:tlState";
-	/** Constant <code>PROP_TASKLIST_TASK_NAME="pjt:tlTaskName"</code> */
-	public static final String PROP_TASKLIST_TASK_NAME = "pjt:tlTaskName";
-	/** Constant <code>PROP_TASKLIST_TASK_DESCRIPTION="pjt:tlTaskDescription"</code> */
-	public static final String PROP_TASKLIST_TASK_DESCRIPTION = "pjt:tlTaskDescription";
-	/** Constant <code>PROP_TASKLIST_IS_MILESTONE="pjt:tlIsMilestone"</code> */
-	public static final String PROP_TASKLIST_IS_MILESTONE = "pjt:tlIsMilestone";
-	/** Constant <code>PROP_TASKLIST_DURATION="pjt:tlDuration"</code> */
-	public static final String PROP_TASKLIST_DURATION = "pjt:tlDuration";
-	/** Constant <code>PROP_TASKLIST_START="pjt:tlStart"</code> */
-	public static final String PROP_TASKLIST_START = "pjt:tlStart";
-	/** Constant <code>PROP_TASKLIST_END="pjt:tlEnd"</code> */
-	public static final String PROP_TASKLIST_END = "pjt:tlEnd";
-	/** Constant <code>PROP_TASKLIST_PREV_TASKS="pjt:tlPrevTasks"</code> */
-	public static final String PROP_TASKLIST_PREV_TASKS = "pjt:tlPrevTasks";
-	/** Constant <code>PROP_TASKLIST_REFUSED_TASK_REF="pjt:tlRefusedTaskRef"</code> */
-	public static final String PROP_TASKLIST_REFUSED_TASK_REF = "pjt:tlRefusedTaskRef";
+	// --- Project Task Datalist --- @deprecated Use ProjectAPIModel constants instead
+	/** @deprecated Use {@link ProjectAPIModel#ASSOC_TL_RESOURCES} instead */
+	@Deprecated
+	public static final String PROP_TASKLIST_RESOURCES = ProjectAPIModel.ASSOC_TL_RESOURCES;
+	/** @deprecated Use {@link ProjectAPIModel#PROP_TL_STATE} instead */
+	@Deprecated
+	public static final String PROP_TASKLIST_STATE = ProjectAPIModel.PROP_TL_STATE;
+	/** @deprecated Use {@link ProjectAPIModel#PROP_TL_TASK_NAME} instead */
+	@Deprecated
+	public static final String PROP_TASKLIST_TASK_NAME = ProjectAPIModel.PROP_TL_TASK_NAME;
+	/** @deprecated Use {@link ProjectAPIModel#PROP_TL_TASK_DESCRIPTION} instead */
+	@Deprecated
+	public static final String PROP_TASKLIST_TASK_DESCRIPTION = ProjectAPIModel.PROP_TL_TASK_DESCRIPTION;
+	/** @deprecated Use {@link ProjectAPIModel#PROP_TL_IS_MILESTONE} instead */
+	@Deprecated
+	public static final String PROP_TASKLIST_IS_MILESTONE = ProjectAPIModel.PROP_TL_IS_MILESTONE;
+	/** @deprecated Use {@link ProjectAPIModel#PROP_TL_DURATION} instead */
+	@Deprecated
+	public static final String PROP_TASKLIST_DURATION = ProjectAPIModel.PROP_TL_DURATION;
+	/** @deprecated Use {@link ProjectAPIModel#PROP_TL_START} instead */
+	@Deprecated
+	public static final String PROP_TASKLIST_START = ProjectAPIModel.PROP_TL_START;
+	/** @deprecated Use {@link ProjectAPIModel#PROP_TL_END} instead */
+	@Deprecated
+	public static final String PROP_TASKLIST_END = ProjectAPIModel.PROP_TL_END;
+	/** @deprecated Use {@link ProjectAPIModel#PROP_TL_PREV_TASKS} instead */
+	@Deprecated
+	public static final String PROP_TASKLIST_PREV_TASKS = ProjectAPIModel.PROP_TL_PREV_TASKS;
+	/** @deprecated Use {@link ProjectAPIModel#PROP_TL_IS_REFUSED} instead */
+	@Deprecated
+	public static final String PROP_TASKLIST_REFUSED_TASK_REF = ProjectAPIModel.ASSOC_TL_REFUSED_TASK_REF;
 
 	// --- Project score Datalist ---
 	/** Constant <code>ASSOC_SL_SCORE_CRITERION="pjt:slScoreCriterion"</code> */
@@ -333,17 +349,22 @@ public final class BeCPGAPIModel {
 	/** Constant <code>PROP_SL_SCORE_RANGE="pjt:slScoreRange"</code> */
 	public static final String PROP_SL_SCORE_RANGE = "pjt:slScoreRange";
 
-	// --- Project logtime Datalist ---
-	/** Constant <code>ASSOC_LTL_TASK="pjt:ltlTask"</code> */
-	public static final String ASSOC_LTL_TASK = "pjt:ltlTask";
-	/** Constant <code>PROP_LTL_DATE="pjt:ltlDate"</code> */
-	public static final String PROP_LTL_DATE = "pjt:ltlDate";
-	/** Constant <code>PROP_LTL_TYPE="pjt:ltlType"</code> */
-	public static final String PROP_LTL_TYPE = "pjt:ltlType";
-	/** Constant <code>PROP_LTL_COMMENT="pjt:ltlComment"</code> */
-	public static final String PROP_LTL_COMMENT = "pjt:ltlComment";
-	/** Constant <code>PROP_LTL_TIME="pjt:ltlTime"</code> */
-	public static final String PROP_LTL_TIME = "pjt:ltlTime";
+	// --- Project logtime Datalist --- @deprecated Use ProjectAPIModel constants instead
+	/** @deprecated Use {@link ProjectAPIModel#ASSOC_LTL_TASK} instead */
+	@Deprecated
+	public static final String ASSOC_LTL_TASK = ProjectAPIModel.ASSOC_LTL_TASK;
+	/** @deprecated Use {@link ProjectAPIModel#PROP_LTL_DATE} instead */
+	@Deprecated
+	public static final String PROP_LTL_DATE = ProjectAPIModel.PROP_LTL_DATE;
+	/** @deprecated Use {@link ProjectAPIModel#PROP_LTL_TYPE} instead */
+	@Deprecated
+	public static final String PROP_LTL_TYPE = ProjectAPIModel.PROP_LTL_TYPE;
+	/** @deprecated Use {@link ProjectAPIModel#PROP_LTL_COMMENT} instead */
+	@Deprecated
+	public static final String PROP_LTL_COMMENT = ProjectAPIModel.PROP_LTL_COMMENT;
+	/** @deprecated Use {@link ProjectAPIModel#PROP_LTL_TIME} instead */
+	@Deprecated
+	public static final String PROP_LTL_TIME = ProjectAPIModel.PROP_LTL_TIME;
 
 	// --- Project invoice Datalist ---
 	/** Constant <code>ASSOC_IL_BUDGET_REF="pjt:ilBudgetRef"</code> */
@@ -357,29 +378,39 @@ public final class BeCPGAPIModel {
 	/** Constant <code>PROP_INVOICE="pjt:invoice"</code> */
 	public static final String PROP_INVOICE = "pjt:invoice";
 
-	// --- Project deliverables Datalist ---
-	/** Constant <code>ASSOC_DL_CONTENT="pjt:dlContent"</code> */
-	public static final String ASSOC_DL_CONTENT = "pjt:dlContent";
-	/** Constant <code>ASSOC_DL_TASKS="pjt:dlTask"</code> */
-	public static final String ASSOC_DL_TASKS = "pjt:dlTask";
-	/** Constant <code>PROP_DL_URL="pjt:dlUrl"</code> */
-	public static final String PROP_DL_URL = "pjt:dlUrl";
-	/** Constant <code>PROP_DL_SCRIPT_EXEC_ORDER="pjt:dlScriptExecOrder"</code> */
-	public static final String PROP_DL_SCRIPT_EXEC_ORDER = "pjt:dlScriptExecOrder";
-	/** Constant <code>PROP_DL_STATE="pjt:dlState"</code> */
-	public static final String PROP_DL_STATE = "pjt:dlState";
-	/** Constant <code>PROP_DL_DESCRIPTION="pjt:dlDescription"</code> */
-	public static final String PROP_DL_DESCRIPTION = "pjt:dlDescription";
+	// --- Project deliverables Datalist --- @deprecated Use ProjectAPIModel constants instead
+	/** @deprecated Use {@link ProjectAPIModel#ASSOC_DL_CONTENT} instead */
+	@Deprecated
+	public static final String ASSOC_DL_CONTENT = ProjectAPIModel.ASSOC_DL_CONTENT;
+	/** @deprecated Use {@link ProjectAPIModel#ASSOC_DL_TASK} instead */
+	@Deprecated
+	public static final String ASSOC_DL_TASKS = ProjectAPIModel.ASSOC_DL_TASK;
+	/** @deprecated Use {@link ProjectAPIModel#PROP_DL_URL} instead */
+	@Deprecated
+	public static final String PROP_DL_URL = ProjectAPIModel.PROP_DL_URL;
+	/** @deprecated Use {@link ProjectAPIModel#PROP_DL_SCRIPT_EXEC_ORDER} instead */
+	@Deprecated
+	public static final String PROP_DL_SCRIPT_EXEC_ORDER = ProjectAPIModel.PROP_DL_SCRIPT_EXEC_ORDER;
+	/** @deprecated Use {@link ProjectAPIModel#PROP_DL_STATE} instead */
+	@Deprecated
+	public static final String PROP_DL_STATE = ProjectAPIModel.PROP_DL_STATE;
+	/** @deprecated Use {@link ProjectAPIModel#PROP_DL_DESCRIPTION} instead */
+	@Deprecated
+	public static final String PROP_DL_DESCRIPTION = ProjectAPIModel.PROP_DL_DESCRIPTION;
 
-	// --- Project budgeting Datalist ---
-	/** Constant <code>PROP_BUDGETLIST_BUDGETED_EXPENSE="pjt:blBudgetedExpense"</code> */
-	public static final String PROP_BUDGETLIST_BUDGETED_EXPENSE = "pjt:blBudgetedExpense";
-	/** Constant <code>PROP_BUDGETLIST_BUDGETED_INVOICE="pjt:blBudgetedInvoice"</code> */
-	public static final String PROP_BUDGETLIST_BUDGETED_INVOICE = "pjt:blBudgetedInvoice";
-	/** Constant <code>PROP_BUDGETLIST_ITEM="pjt:blItem"</code> */
-	public static final String PROP_BUDGETLIST_ITEM = "pjt:blItem";
-	/** Constant <code>PROP_BUDGETLIST_PROFIT="pjt:blProfit"</code> */
-	public static final String PROP_BUDGETLIST_PROFIT = "pjt:blProfit";
+	// --- Project budgeting Datalist --- @deprecated Use ProjectAPIModel constants instead
+	/** @deprecated Use {@link ProjectAPIModel#PROP_BL_BUDGETED_EXPENSE} instead */
+	@Deprecated
+	public static final String PROP_BUDGETLIST_BUDGETED_EXPENSE = ProjectAPIModel.PROP_BL_BUDGETED_EXPENSE;
+	/** @deprecated Use {@link ProjectAPIModel#PROP_BL_BUDGETED_INVOICE} instead */
+	@Deprecated
+	public static final String PROP_BUDGETLIST_BUDGETED_INVOICE = ProjectAPIModel.PROP_BL_BUDGETED_INVOICE;
+	/** @deprecated Use {@link ProjectAPIModel#PROP_BL_ITEM} instead */
+	@Deprecated
+	public static final String PROP_BUDGETLIST_ITEM = ProjectAPIModel.PROP_BL_ITEM;
+	/** @deprecated Use {@link ProjectAPIModel#PROP_BL_PROFIT} instead */
+	@Deprecated
+	public static final String PROP_BUDGETLIST_PROFIT = ProjectAPIModel.PROP_BL_PROFIT;
 
 	// --- Organoleptic DataList ---
 	/** Constant <code>PROP_ORGANO_LIST_VALUE="bcpg:organoListValue"</code> */
