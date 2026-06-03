@@ -48,6 +48,12 @@ public final class BeCPGAPIModel {
 	public static final String PROP_CM_USER = "cm:person";
 	/** Constant <code>PROP_CM_USERNAME="cm:userName"</code> */
 	public static final String PROP_CM_USERNAME = "cm:userName";
+	/** Constant <code>PROP_CM_FIRSTNAME="cm:firstName"</code> */
+	public static final String PROP_CM_FIRSTNAME = "cm:firstName";
+	/** Constant <code>PROP_CM_LASTNAME="cm:lastName"</code> */
+	public static final String PROP_CM_LASTNAME = "cm:lastName";
+	/** Constant <code>PROP_CM_EMAIL="cm:email"</code> */
+	public static final String PROP_CM_EMAIL = "cm:email";
 	
 	/** Constant <code>TYPE_ENTITY_V2="bcpg:entityV2"</code> */
 	public static final String TYPE_ENTITY_V2 = "bcpg:entityV2";
