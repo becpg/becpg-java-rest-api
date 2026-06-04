@@ -15,6 +15,8 @@ This SDK provides functionality to consume beCPG REST Remote API.
 
 | Version | beCPG Version | Version API | Version JAVA | Changes |
 | --- | --- | --- | --- | -- |
+| 1.1.15 | >= 23.4.2 | >= 3.5 | JAVA 17 | Add ProjectAPIModel, person properties and validation constraints |
+| 1.1.14 | >= 23.4.2 | >= 3.5 | JAVA 17 | Add secure batch endpoints in ChannelAPI |
 | 1.1.13 | >= 23.4.2 | >= 3.5 | JAVA 17 | Add bcpg:allergenListQtyPerc field constant |
 | 1.1.12 | >= 23.4.2 | >= 3.5 | JAVA 17 | Fix alf ticket encoding |
 | 1.1.11 | >= 23.4.2 | >= 3.5 | JAVA 17 | Bug fix oauth |
@@ -76,7 +78,7 @@ Then, add the dependency on the desired starter(s)
    <dependency>
        <groupId>fr.becpg</groupId>
 	    <artifactId>becpg-java-rest-api</artifactId>
-		<version>1.1.9</version>
+		<version>1.1.15</version>
     </dependency>  
         
 </dependencies>
@@ -224,6 +226,22 @@ A list of `RemoteEntityRef` objects representing the entities that match the giv
 
 ---
 
+### `List<RemoteEntityRef> list(String query, List<String> attributes, int maxResults)`
+
+Lists the entities that match the given query.
+
+#### Parameters
+
+- `query`: a string representing the query to execute.
+- `attributes`: a list of strings representing the attributes to include in the response.
+- `maxResults`: an integer representing the maximum number of results to return.
+
+#### Returns
+
+A list of `RemoteEntityRef` objects representing the entities that match the given query.
+
+---
+
 ### `List<RemoteEntityRef> list(String query, List<String> attributes, int maxResults, Map<String, Boolean> params)`
 
 Lists the entities that match the given query.
@@ -321,8 +339,6 @@ Updates the specified entity.
 A `RemoteEntity` object representing the updated entity.
 
 
-
-
 # ChannelAPI
 
 The `ChannelAPI` interface provides methods for accessing and manipulating channels.
@@ -360,6 +376,46 @@ Gets the specified channel.
 
 #### Returns
 - a `RemoteEntity` object representing the channel.
+
+---
+
+### `RemoteAPIResponse batchStart(String channelId, String batchId)`
+
+Starts a batch for the specified channel.
+
+#### Parameters
+- `channelId`: a string representing the ID of the channel.
+- `batchId`: a string representing the ID of the batch.
+
+#### Returns
+- a `RemoteAPIResponse` object representing the response of the remote API.
+
+---
+
+### `RemoteAPIResponse batchAck(String channelId, String nodeRef, Map<String, Object> attributes)`
+
+Updates the channel status on an entity within a batch.
+
+#### Parameters
+- `channelId`: a string representing the ID of the channel.
+- `nodeRef`: a string representing the NodeRef of the entity.
+- `attributes`: a map of strings to objects representing the attributes to update.
+
+#### Returns
+- a `RemoteAPIResponse` object representing the response of the remote API.
+
+---
+
+### `RemoteAPIResponse batchEnd(String channelId, Map<String, Object> attributes)`
+
+Ends the batch for the specified channel.
+
+#### Parameters
+- `channelId`: a string representing the ID of the channel.
+- `attributes`: a map of strings to objects representing the channel attributes to update at the end of the batch.
+
+#### Returns
+- a `RemoteAPIResponse` object representing the response of the remote API.
 
 
 # ContentAPI
