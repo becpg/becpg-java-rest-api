@@ -100,3 +100,15 @@
 * [skip ci][Release]: Update CHANGELOG.md for 1.1.13 release
 * [skip ci] Prepare for next development iteration
 
+## [ 1.1.15 ] - jeu. 04 juin 2026 13:59:30 CEST
+
+* [Release] prepare release 1.1.15
+* [Setup] Preoare release
+* [Feature] Add JSON Schema validation constraints (maxLength, minLength, minimum, maximum) to RemoteEntitySchema
+* [Feature] Add bcpg:toxList constants to BeCPGAPIModel
+* [Feature] Add cm:firstName, cm:lastName, and cm:email constants to BeCPGAPIModel
+* [Cleanup] Deprecate BeCPGAPIModel.TYPE_PROJECT in favour of ProjectAPIModel
+* [Feature] Add ProjectAPIModel constants for pjt: model fields, deprecate BeCPGAPIModel pjt: constants
+* [skip ci][Release]: Update CHANGELOG.md for 1.1.14 release
+* [skip ci] Prepare for next development iteration
+
