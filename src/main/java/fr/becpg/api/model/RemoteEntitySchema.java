@@ -17,277 +17,361 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 @JsonInclude(Include.NON_NULL)
 public class RemoteEntitySchema {
-	
-	@JsonProperty("$schema")
-	private String schemaVersion;
-	
-	@JsonProperty("$id")
-	private String schemaId;
 
-	@JsonProperty("title")
-	private String title;
+        @JsonProperty("$schema")
+        private String schemaVersion;
 
-	@JsonProperty("description")
-	private String description;
+        @JsonProperty("$id")
+        private String schemaId;
 
-	@JsonProperty("type")
-	private String type;
-	
-	@JsonProperty("format")
-	private String format;
+        @JsonProperty("title")
+        private String title;
 
-	@JsonProperty("$supportedLocales")
-	private String supportedLocales;
-	
-	@JsonProperty("$locale")
-	private String locale;
-	
-	@JsonProperty("properties")
-	private Map<String, RemoteEntitySchema> properties;
-	
-	@JsonProperty("required")
-	private List<String> required;
+        @JsonProperty("description")
+        private String description;
 
-	@JsonProperty("items")
-	private RemoteEntitySchema items;
+        @JsonProperty("type")
+        private String type;
 
-	/**
-	 * <p>getAttributeSchema.</p>
-	 *
-	 * @param attributeName a {@link java.lang.String} object
-	 * @return a {@link fr.becpg.api.model.RemoteEntitySchema} object
-	 */
-	@JsonIgnore
-	public RemoteEntitySchema getAttributeSchema(String attributeName) {
+        @JsonProperty("format")
+        private String format;
 
-		if ((properties != null) && properties.containsKey(attributeName)) {
-			return properties.get(attributeName);
-		}
-		return null;
-	}
-	
-	/**
-	 * <p>Getter for the field <code>schemaVersion</code>.</p>
-	 *
-	 * @return a {@link java.lang.String} object
-	 */
-	public String getSchemaVersion() {
-		return schemaVersion;
-	}
+        @JsonProperty("$supportedLocales")
+        private String supportedLocales;
 
-	/**
-	 * <p>Setter for the field <code>schemaVersion</code>.</p>
-	 *
-	 * @param schemaVersion a {@link java.lang.String} object
-	 */
-	public void setSchemaVersion(String schemaVersion) {
-		this.schemaVersion = schemaVersion;
-	}
+        @JsonProperty("$locale")
+        private String locale;
 
-	/**
-	 * <p>Getter for the field <code>schemaId</code>.</p>
-	 *
-	 * @return a {@link java.lang.String} object
-	 */
-	public String getSchemaId() {
-		return schemaId;
-	}
+        @JsonProperty("properties")
+        private Map<String, RemoteEntitySchema> properties;
 
-	/**
-	 * <p>Setter for the field <code>schemaId</code>.</p>
-	 *
-	 * @param schemaId a {@link java.lang.String} object
-	 */
-	public void setSchemaId(String schemaId) {
-		this.schemaId = schemaId;
-	}
+        @JsonProperty("required")
+        private List<String> required;
 
-	/**
-	 * <p>Getter for the field <code>required</code>.</p>
-	 *
-	 * @return a {@link java.util.List} object
-	 */
-	public List<String> getRequired() {
-		return required;
-	}
+        @JsonProperty("items")
+        private RemoteEntitySchema items;
 
-	/**
-	 * <p>Setter for the field <code>required</code>.</p>
-	 *
-	 * @param required a {@link java.util.List} object
-	 */
-	public void setRequired(List<String> required) {
-		this.required = required;
-	}
+        @JsonProperty("maxLength")
+        private Integer maxLength;
 
-	/**
-	 * <p>Getter for the field <code>title</code>.</p>
-	 *
-	 * @return a {@link java.lang.String} object
-	 */
-	public String getTitle() {
-		return title;
-	}
+        @JsonProperty("minLength")
+        private Integer minLength;
 
-	/**
-	 * <p>Setter for the field <code>title</code>.</p>
-	 *
-	 * @param title a {@link java.lang.String} object
-	 */
-	public void setTitle(String title) {
-		this.title = title;
-	}
+        @JsonProperty("minimum")
+        private Double minimum;
 
-	/**
-	 * <p>Getter for the field <code>description</code>.</p>
-	 *
-	 * @return a {@link java.lang.String} object
-	 */
-	public String getDescription() {
-		return description;
-	}
+        @JsonProperty("maximum")
+        private Double maximum;
 
-	/**
-	 * <p>Setter for the field <code>description</code>.</p>
-	 *
-	 * @param description a {@link java.lang.String} object
-	 */
-	public void setDescription(String description) {
-		this.description = description;
-	}
+        /**
+         * <p>getAttributeSchema.</p>
+         *
+         * @param attributeName a {@link java.lang.String} object
+         * @return a {@link fr.becpg.api.model.RemoteEntitySchema} object
+         */
+        @JsonIgnore
+        public RemoteEntitySchema getAttributeSchema(String attributeName) {
 
-	/**
-	 * <p>Getter for the field <code>type</code>.</p>
-	 *
-	 * @return a {@link java.lang.String} object
-	 */
-	public String getType() {
-		return type;
-	}
+                if ((properties != null) && properties.containsKey(attributeName)) {
+                        return properties.get(attributeName);
+                }
+                return null;
+        }
 
-	/**
-	 * <p>Setter for the field <code>type</code>.</p>
-	 *
-	 * @param type a {@link java.lang.String} object
-	 */
-	public void setType(String type) {
-		this.type = type;
-	}
+        /**
+         * <p>Getter for the field <code>schemaVersion</code>.</p>
+         *
+         * @return a {@link java.lang.String} object
+         */
+        public String getSchemaVersion() {
+                return schemaVersion;
+        }
 
-	/**
-	 * <p>Getter for the field <code>properties</code>.</p>
-	 *
-	 * @return a {@link java.util.Map} object
-	 */
-	public Map<String, RemoteEntitySchema> getProperties() {
-		return properties;
-	}
+        /**
+         * <p>Setter for the field <code>schemaVersion</code>.</p>
+         *
+         * @param schemaVersion a {@link java.lang.String} object
+         */
+        public void setSchemaVersion(String schemaVersion) {
+                this.schemaVersion = schemaVersion;
+        }
 
-	/**
-	 * <p>Setter for the field <code>properties</code>.</p>
-	 *
-	 * @param properties a {@link java.util.Map} object
-	 */
-	public void setProperties(Map<String, RemoteEntitySchema> properties) {
-		this.properties = properties;
-	}
+        /**
+         * <p>Getter for the field <code>schemaId</code>.</p>
+         *
+         * @return a {@link java.lang.String} object
+         */
+        public String getSchemaId() {
+                return schemaId;
+        }
 
-	/**
-	 * <p>Getter for the field <code>items</code>.</p>
-	 *
-	 * @return a {@link fr.becpg.api.model.RemoteEntitySchema} object
-	 */
-	public RemoteEntitySchema getItems() {
-		return items;
-	}
+        /**
+         * <p>Setter for the field <code>schemaId</code>.</p>
+         *
+         * @param schemaId a {@link java.lang.String} object
+         */
+        public void setSchemaId(String schemaId) {
+                this.schemaId = schemaId;
+        }
 
-	/**
-	 * <p>Setter for the field <code>items</code>.</p>
-	 *
-	 * @param items a {@link fr.becpg.api.model.RemoteEntitySchema} object
-	 */
-	public void setItems(RemoteEntitySchema items) {
-		this.items = items;
-	}
+        /**
+         * <p>Getter for the field <code>required</code>.</p>
+         *
+         * @return a {@link java.util.List} object
+         */
+        public List<String> getRequired() {
+                return required;
+        }
 
-	
-	/**
-	 * <p>Getter for the field <code>format</code>.</p>
-	 *
-	 * @return a {@link java.lang.String} object
-	 */
-	public String getFormat() {
-		return format;
-	}
+        /**
+         * <p>Setter for the field <code>required</code>.</p>
+         *
+         * @param required a {@link java.util.List} object
+         */
+        public void setRequired(List<String> required) {
+                this.required = required;
+        }
 
-	/**
-	 * <p>Setter for the field <code>format</code>.</p>
-	 *
-	 * @param format a {@link java.lang.String} object
-	 */
-	public void setFormat(String format) {
-		this.format = format;
-	}
+        /**
+         * <p>Getter for the field <code>title</code>.</p>
+         *
+         * @return a {@link java.lang.String} object
+         */
+        public String getTitle() {
+                return title;
+        }
 
-	/**
-	 * <p>Getter for the field <code>supportedLocales</code>.</p>
-	 *
-	 * @return a {@link java.lang.String} object
-	 */
-	public String getSupportedLocales() {
-		return supportedLocales;
-	}
+        /**
+         * <p>Setter for the field <code>title</code>.</p>
+         *
+         * @param title a {@link java.lang.String} object
+         */
+        public void setTitle(String title) {
+                this.title = title;
+        }
 
-	/**
-	 * <p>Setter for the field <code>supportedLocales</code>.</p>
-	 *
-	 * @param supportedLocales a {@link java.lang.String} object
-	 */
-	public void setSupportedLocales(String supportedLocales) {
-		this.supportedLocales = supportedLocales;
-	}
+        /**
+         * <p>Getter for the field <code>description</code>.</p>
+         *
+         * @return a {@link java.lang.String} object
+         */
+        public String getDescription() {
+                return description;
+        }
 
-	/**
-	 * <p>Getter for the field <code>locale</code>.</p>
-	 *
-	 * @return a {@link java.lang.String} object
-	 */
-	public String getLocale() {
-		return locale;
-	}
+        /**
+         * <p>Setter for the field <code>description</code>.</p>
+         *
+         * @param description a {@link java.lang.String} object
+         */
+        public void setDescription(String description) {
+                this.description = description;
+        }
 
-	/**
-	 * <p>Setter for the field <code>locale</code>.</p>
-	 *
-	 * @param locale a {@link java.lang.String} object
-	 */
-	public void setLocale(String locale) {
-		this.locale = locale;
-	}
+        /**
+         * <p>Getter for the field <code>type</code>.</p>
+         *
+         * @return a {@link java.lang.String} object
+         */
+        public String getType() {
+                return type;
+        }
 
-	/** {@inheritDoc} */
-	@Override
-	public int hashCode() {
-		return Objects.hash(description, format, items, locale, properties, required, schemaId, schemaVersion, supportedLocales, title, type);
-	}
+        /**
+         * <p>Setter for the field <code>type</code>.</p>
+         *
+         * @param type a {@link java.lang.String} object
+         */
+        public void setType(String type) {
+                this.type = type;
+        }
+
+        /**
+         * <p>Getter for the field <code>properties</code>.</p>
+         *
+         * @return a {@link java.util.Map} object
+         */
+        public Map<String, RemoteEntitySchema> getProperties() {
+                return properties;
+        }
+
+        /**
+         * <p>Setter for the field <code>properties</code>.</p>
+         *
+         * @param properties a {@link java.util.Map} object
+         */
+        public void setProperties(Map<String, RemoteEntitySchema> properties) {
+                this.properties = properties;
+        }
+
+        /**
+         * <p>Getter for the field <code>items</code>.</p>
+         *
+         * @return a {@link fr.becpg.api.model.RemoteEntitySchema} object
+         */
+        public RemoteEntitySchema getItems() {
+                return items;
+        }
+
+        /**
+         * <p>Setter for the field <code>items</code>.</p>
+         *
+         * @param items a {@link fr.becpg.api.model.RemoteEntitySchema} object
+         */
+        public void setItems(RemoteEntitySchema items) {
+                this.items = items;
+        }
 
 
-	/** {@inheritDoc} */
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		RemoteEntitySchema other = (RemoteEntitySchema) obj;
-		return Objects.equals(description, other.description) && Objects.equals(format, other.format) && Objects.equals(items, other.items)
-				&& Objects.equals(locale, other.locale) && Objects.equals(properties, other.properties) && Objects.equals(required, other.required)
-				&& Objects.equals(schemaId, other.schemaId) && Objects.equals(schemaVersion, other.schemaVersion)
-				&& Objects.equals(supportedLocales, other.supportedLocales) && Objects.equals(title, other.title) && Objects.equals(type, other.type);
-	}
+        /**
+         * <p>Getter for the field <code>format</code>.</p>
+         *
+         * @return a {@link java.lang.String} object
+         */
+        public String getFormat() {
+                return format;
+        }
 
-	
-	
+        /**
+         * <p>Setter for the field <code>format</code>.</p>
+         *
+         * @param format a {@link java.lang.String} object
+         */
+        public void setFormat(String format) {
+                this.format = format;
+        }
+
+        /**
+         * <p>Getter for the field <code>supportedLocales</code>.</p>
+         *
+         * @return a {@link java.lang.String} object
+         */
+        public String getSupportedLocales() {
+                return supportedLocales;
+        }
+
+        /**
+         * <p>Setter for the field <code>supportedLocales</code>.</p>
+         *
+         * @param supportedLocales a {@link java.lang.String} object
+         */
+        public void setSupportedLocales(String supportedLocales) {
+                this.supportedLocales = supportedLocales;
+        }
+
+        /**
+         * <p>Getter for the field <code>locale</code>.</p>
+         *
+         * @return a {@link java.lang.String} object
+         */
+        public String getLocale() {
+                return locale;
+        }
+
+        /**
+         * <p>Setter for the field <code>locale</code>.</p>
+         *
+         * @param locale a {@link java.lang.String} object
+         */
+        public void setLocale(String locale) {
+                this.locale = locale;
+        }
+
+        /**
+         * <p>Getter for the field <code>maxLength</code>.</p>
+         *
+         * @return a {@link java.lang.Integer} object
+         */
+        public Integer getMaxLength() {
+                return maxLength;
+        }
+
+        /**
+         * <p>Setter for the field <code>maxLength</code>.</p>
+         *
+         * @param maxLength a {@link java.lang.Integer} object
+         */
+        public void setMaxLength(Integer maxLength) {
+                this.maxLength = maxLength;
+        }
+
+        /**
+         * <p>Getter for the field <code>minLength</code>.</p>
+         *
+         * @return a {@link java.lang.Integer} object
+         */
+        public Integer getMinLength() {
+                return minLength;
+        }
+
+        /**
+         * <p>Setter for the field <code>minLength</code>.</p>
+         *
+         * @param minLength a {@link java.lang.Integer} object
+         */
+        public void setMinLength(Integer minLength) {
+                this.minLength = minLength;
+        }
+
+        /**
+         * <p>Getter for the field <code>minimum</code>.</p>
+         *
+         * @return a {@link java.lang.Double} object
+         */
+        public Double getMinimum() {
+                return minimum;
+        }
+
+        /**
+         * <p>Setter for the field <code>minimum</code>.</p>
+         *
+         * @param minimum a {@link java.lang.Double} object
+         */
+        public void setMinimum(Double minimum) {
+                this.minimum = minimum;
+        }
+
+        /**
+         * <p>Getter for the field <code>maximum</code>.</p>
+         *
+         * @return a {@link java.lang.Double} object
+         */
+        public Double getMaximum() {
+                return maximum;
+        }
+
+        /**
+         * <p>Setter for the field <code>maximum</code>.</p>
+         *
+         * @param maximum a {@link java.lang.Double} object
+         */
+        public void setMaximum(Double maximum) {
+                this.maximum = maximum;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public int hashCode() {
+                return Objects.hash(description, format, items, locale, properties, required, schemaId, schemaVersion, supportedLocales, title, type, maxLength, minLength, minimum, maximum);
+        }
+
+
+        /** {@inheritDoc} */
+        @Override
+        public boolean equals(Object obj) {
+                if (this == obj)
+                        return true;
+                if (obj == null)
+                        return false;
+                if (getClass() != obj.getClass())
+                        return false;
+                RemoteEntitySchema other = (RemoteEntitySchema) obj;
+                return Objects.equals(description, other.description) && Objects.equals(format, other.format) && Objects.equals(items, other.items)
+                                && Objects.equals(locale, other.locale) && Objects.equals(properties, other.properties) && Objects.equals(required, other.required)
+                                && Objects.equals(schemaId, other.schemaId) && Objects.equals(schemaVersion, other.schemaVersion)
+                                && Objects.equals(supportedLocales, other.supportedLocales) && Objects.equals(title, other.title) && Objects.equals(type, other.type)
+                                && Objects.equals(maxLength, other.maxLength) && Objects.equals(minLength, other.minLength)
+                                && Objects.equals(minimum, other.minimum) && Objects.equals(maximum, other.maximum);
+        }
+
 }
