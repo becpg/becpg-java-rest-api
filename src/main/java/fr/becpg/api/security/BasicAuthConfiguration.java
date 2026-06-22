@@ -9,6 +9,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
@@ -48,16 +49,31 @@ public class BasicAuthConfiguration {
     private static final String ALF_TICKET_PARAMETER = "alf_ticket";
     private static final String ALF_LOGIN_ENDPOINT = "/alfresco/service/api/login";
 
+    /**
+     * Shared HTTP client used to retrieve Alfresco tickets, avoiding the creation of a new client on every login call.
+     */
+    private static final HttpClient LOGIN_HTTP_CLIENT = HttpClient.newHttpClient();
+
     @Value("${content.service.security.basicAuth.username:#{null}}")
     private String basicAuthUsername;
     @Value("${content.service.security.basicAuth.password:#{null}}")
     private String basicAuthPassword;
     @Value("${content.service.url:}")
     private String contentServiceUrl;
+    /**
+     * Time-to-live (in milliseconds) of the alf_ticket cached outside of a {@code doInSession} scope. Defaults to 30 minutes. This avoids sending the
+     * Basic credentials (and thus a Keycloak password validation) on every single request made outside of a connector job.
+     */
+    @Value("${content.service.security.basicAuth.ticketTtl:1800000}")
+    private long ticketTtl;
 
     private final AtomicInteger activeSessionCount = new AtomicInteger(0);
     private final AtomicReference<String> cachedSessionAlfTicket = new AtomicReference<>();
     private final Object sessionTicketLock = new Object();
+
+    private final AtomicReference<String> cachedNoSessionTicket = new AtomicReference<>();
+    private final AtomicLong noSessionTicketExpiry = new AtomicLong(0);
+    private final Object noSessionTicketLock = new Object();
 
     @Bean("remoteAuthenticationFilter")
     WebClientAuthenticationProvider authenticationFilter (){
@@ -82,20 +98,37 @@ public class BasicAuthConfiguration {
 			public ExchangeFilterFunction authenticationFilter() {
 				return (request, next) -> {
 					if (activeSessionCount.get() <= 0) {
-						return executeWithBasicAuth(request, next);
+						return executeWithNoSessionTicket(request, next);
 					}
 					return executeWithTicket(request, next);
 				};
 			}
 
-			private Mono<ClientResponse> executeWithBasicAuth(ClientRequest request, ExchangeFunction next) {
-				if (logger.isDebugEnabled()) {
-					logger.debug("Executing request with direct Basic authentication outside doInSession scope");
-				}
-				ClientRequest basicRequest = ClientRequest.from(request)
-						.headers(headers -> headers.setBasicAuth(basicAuthUsername, basicAuthPassword))
+			/**
+			 * Execute a request outside of a {@code doInSession} scope using a TTL-cached alf_ticket instead of sending the Basic credentials (and thus
+			 * triggering a Keycloak password validation) on every request.
+			 */
+			private Mono<ClientResponse> executeWithNoSessionTicket(ClientRequest request, ExchangeFunction next) {
+				String ticket = getOrCreateNoSessionTicket();
+				ClientRequest ticketRequest = ClientRequest.from(request)
+						.url(addAlfTicket(request.url(), ticket))
 						.build();
-				return next.exchange(basicRequest);
+
+				return next.exchange(ticketRequest).flatMap(response -> {
+					if (response.statusCode().value() == 401) {
+						return retryWithRefreshedNoSessionTicket(request, next);
+					}
+					return Mono.just(response);
+				});
+			}
+
+			private Mono<ClientResponse> retryWithRefreshedNoSessionTicket(ClientRequest request, ExchangeFunction next) {
+				logger.warn("Received HTTP 401 with current alf_ticket outside session scope, refreshing ticket and retrying request");
+				String refreshedTicket = refreshNoSessionTicket();
+				ClientRequest retryRequest = ClientRequest.from(request)
+						.url(addAlfTicket(request.url(), refreshedTicket))
+						.build();
+				return next.exchange(retryRequest);
 			}
 
 			private Mono<ClientResponse> executeWithTicket(ClientRequest request, ExchangeFunction next) {
@@ -159,6 +192,44 @@ public class BasicAuthConfiguration {
 	}
 
 	/**
+	 * Return the alf_ticket cached for out-of-session requests or retrieve a fresh one when missing or expired.
+	 *
+	 * @return alfresco ticket reused across out-of-session requests within the configured TTL
+	 */
+	private String getOrCreateNoSessionTicket() {
+		String ticket = cachedNoSessionTicket.get();
+		if (ticket != null && !ticket.isBlank() && System.currentTimeMillis() < noSessionTicketExpiry.get()) {
+			return ticket;
+		}
+
+		synchronized (noSessionTicketLock) {
+			String lockedTicket = cachedNoSessionTicket.get();
+			if (lockedTicket != null && !lockedTicket.isBlank() && System.currentTimeMillis() < noSessionTicketExpiry.get()) {
+				return lockedTicket;
+			}
+			return retrieveAndCacheNoSessionTicket();
+		}
+	}
+
+	/**
+	 * Force a refresh of the out-of-session cached ticket, typically after a 401 response.
+	 *
+	 * @return refreshed alfresco ticket
+	 */
+	private String refreshNoSessionTicket() {
+		synchronized (noSessionTicketLock) {
+			return retrieveAndCacheNoSessionTicket();
+		}
+	}
+
+	private String retrieveAndCacheNoSessionTicket() {
+		String retrievedTicket = retrieveAlfTicket();
+		cachedNoSessionTicket.set(retrievedTicket);
+		noSessionTicketExpiry.set(System.currentTimeMillis() + ticketTtl);
+		return retrievedTicket;
+	}
+
+	/**
 	 * Retrieve an Alfresco ticket using the configured Basic credentials.
 	 *
 	 * @return the retrieved alf_ticket value
@@ -168,7 +239,7 @@ public class BasicAuthConfiguration {
 		HttpRequest request = HttpRequest.newBuilder(URI.create(loginUrl)).GET().build();
 
 		try {
-			HttpResponse<byte[]> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofByteArray());
+			HttpResponse<byte[]> response = LOGIN_HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofByteArray());
 			if (response.statusCode() >= 400) {
 				throw new IllegalStateException("Cannot retrieve alf_ticket. Status: " + response.statusCode());
 			}

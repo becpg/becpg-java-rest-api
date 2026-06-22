@@ -35,21 +35,83 @@ class BasicAuthConfigurationTest {
     }
 
     @Test
-    void shouldUseBasicAuthOutsideSessionScope() throws InterruptedException {
+    void shouldUseCachedTicketOutsideSessionScope() throws InterruptedException {
         BasicAuthConfiguration configuration = createConfiguration();
         WebClientAuthenticationProvider provider = configuration.authenticationFilter();
         WebClient webClient = createWebClient(provider);
 
+        mockBackEnd.enqueue(new MockResponse().setBody("<ticket>NO-SESSION-TICKET</ticket>").setResponseCode(HttpStatus.OK.value()));
         mockBackEnd.enqueue(new MockResponse().setBody("ok").setResponseCode(HttpStatus.OK.value()));
 
         String responseBody = webClient.get().uri("/entity").retrieve().bodyToMono(String.class).block();
 
         Assertions.assertEquals("ok", responseBody);
 
-        RecordedRequest request = mockBackEnd.takeRequest(1, TimeUnit.SECONDS);
-        Assertions.assertNotNull(request);
-        Assertions.assertEquals("Basic dXNlcjpwd2Q=", request.getHeader("Authorization"));
-        Assertions.assertNull(request.getRequestUrl().queryParameter("alf_ticket"));
+        RecordedRequest loginRequest = mockBackEnd.takeRequest(1, TimeUnit.SECONDS);
+        RecordedRequest apiRequest = mockBackEnd.takeRequest(1, TimeUnit.SECONDS);
+
+        Assertions.assertNotNull(loginRequest);
+        Assertions.assertNotNull(apiRequest);
+        Assertions.assertTrue(loginRequest.getPath().startsWith("/alfresco/service/api/login?"));
+        Assertions.assertEquals("NO-SESSION-TICKET", apiRequest.getRequestUrl().queryParameter("alf_ticket"));
+        Assertions.assertNull(apiRequest.getHeader("Authorization"));
+    }
+
+    @Test
+    void shouldReuseNoSessionTicketWithinTtl() throws InterruptedException {
+        BasicAuthConfiguration configuration = createConfiguration();
+        WebClientAuthenticationProvider provider = configuration.authenticationFilter();
+        WebClient webClient = createWebClient(provider);
+
+        mockBackEnd.enqueue(new MockResponse().setBody("<ticket>TICKET-TTL</ticket>").setResponseCode(HttpStatus.OK.value()));
+        mockBackEnd.enqueue(new MockResponse().setBody("first").setResponseCode(HttpStatus.OK.value()));
+        mockBackEnd.enqueue(new MockResponse().setBody("second").setResponseCode(HttpStatus.OK.value()));
+
+        webClient.get().uri("/entity").retrieve().bodyToMono(String.class).block();
+        webClient.get().uri("/channel/list").retrieve().bodyToMono(String.class).block();
+
+        RecordedRequest loginRequest = mockBackEnd.takeRequest(1, TimeUnit.SECONDS);
+        RecordedRequest firstApiRequest = mockBackEnd.takeRequest(1, TimeUnit.SECONDS);
+        RecordedRequest secondApiRequest = mockBackEnd.takeRequest(1, TimeUnit.SECONDS);
+
+        Assertions.assertNotNull(loginRequest);
+        Assertions.assertNotNull(firstApiRequest);
+        Assertions.assertNotNull(secondApiRequest);
+
+        Assertions.assertTrue(loginRequest.getPath().startsWith("/alfresco/service/api/login?"));
+        Assertions.assertEquals("TICKET-TTL", firstApiRequest.getRequestUrl().queryParameter("alf_ticket"));
+        Assertions.assertEquals("TICKET-TTL", secondApiRequest.getRequestUrl().queryParameter("alf_ticket"));
+        Assertions.assertNull(firstApiRequest.getHeader("Authorization"));
+        Assertions.assertNull(secondApiRequest.getHeader("Authorization"));
+    }
+
+    @Test
+    void shouldRefreshNoSessionTicketOnUnauthorized() throws InterruptedException {
+        BasicAuthConfiguration configuration = createConfiguration();
+        WebClientAuthenticationProvider provider = configuration.authenticationFilter();
+        WebClient webClient = createWebClient(provider);
+
+        mockBackEnd.enqueue(new MockResponse().setBody("<ticket>OLD-TICKET</ticket>").setResponseCode(HttpStatus.OK.value()));
+        mockBackEnd.enqueue(new MockResponse().setBody("unauthorized").setResponseCode(HttpStatus.UNAUTHORIZED.value()));
+        mockBackEnd.enqueue(new MockResponse().setBody("<ticket>NEW-TICKET</ticket>").setResponseCode(HttpStatus.OK.value()));
+        mockBackEnd.enqueue(new MockResponse().setBody("ok").setResponseCode(HttpStatus.OK.value()));
+
+        String responseBody = webClient.get().uri("/entity").retrieve().bodyToMono(String.class).block();
+
+        Assertions.assertEquals("ok", responseBody);
+
+        RecordedRequest firstLoginRequest = mockBackEnd.takeRequest(1, TimeUnit.SECONDS);
+        RecordedRequest firstApiRequest = mockBackEnd.takeRequest(1, TimeUnit.SECONDS);
+        RecordedRequest secondLoginRequest = mockBackEnd.takeRequest(1, TimeUnit.SECONDS);
+        RecordedRequest secondApiRequest = mockBackEnd.takeRequest(1, TimeUnit.SECONDS);
+
+        Assertions.assertNotNull(firstLoginRequest);
+        Assertions.assertNotNull(firstApiRequest);
+        Assertions.assertNotNull(secondLoginRequest);
+        Assertions.assertNotNull(secondApiRequest);
+
+        Assertions.assertEquals("OLD-TICKET", firstApiRequest.getRequestUrl().queryParameter("alf_ticket"));
+        Assertions.assertEquals("NEW-TICKET", secondApiRequest.getRequestUrl().queryParameter("alf_ticket"));
     }
 
     @Test
@@ -154,6 +216,7 @@ class BasicAuthConfigurationTest {
         ReflectionTestUtils.setField(configuration, "basicAuthUsername", "user");
         ReflectionTestUtils.setField(configuration, "basicAuthPassword", "pwd");
         ReflectionTestUtils.setField(configuration, "contentServiceUrl", "http://localhost:" + mockBackEnd.getPort());
+        ReflectionTestUtils.setField(configuration, "ticketTtl", 1800000L);
         return configuration;
     }
 
