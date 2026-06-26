@@ -62,6 +62,10 @@ class EntityApiTest extends AbstractRemoteApiTest {
 	@DynamicPropertySource
 	static void properties(DynamicPropertyRegistry r)  {
 		r.add("content.service.url", () -> "http://localhost:" + mockBackEnd.getPort());
+		// These tests cover the EntityAPI request building / response parsing, not authentication.
+		// Disable Basic auth so the WebClient hits the mock directly (no alf_ticket login round-trip).
+		// The Basic-auth ticket flow is covered by BasicAuthConfigurationTest.
+		r.add("content.service.security.basicAuth.username", () -> "");
 	}
 
 	@Test
