@@ -112,3 +112,13 @@
 * [skip ci][Release]: Update CHANGELOG.md for 1.1.14 release
 * [skip ci] Prepare for next development iteration
 
+## [ 1.1.16 ] - ven. 26 juin 2026 15:30:36 CEST
+
+* [Release] prepare release 1.1.16
+* [Bug] Fix EntityApi/ChannelApi tests broken by Basic-auth ticket login
+* [Feature] Add configurable HTTP connect/response timeouts
+* [Bug] Fix OAuth2 auto-config conditional activation
+* Reduce Keycloak load: cache out-of-session alf_ticket and enable refresh tokens
+* [skip ci][Release]: Update CHANGELOG.md for 1.1.15 release
+* [skip ci] Prepare for next development iteration
+
