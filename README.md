@@ -15,6 +15,7 @@ This SDK provides functionality to consume beCPG REST Remote API.
 
 | Version | beCPG Version | Version API | Version JAVA | Changes |
 | --- | --- | --- | --- | -- |
+| 1.1.16 | >= 23.4.2 | >= 3.5 | JAVA 17 | Add configurable HTTP connect/response timeouts; reduce Keycloak load (cache out-of-session alf_ticket, refresh tokens); fix OAuth2 conditional activation |
 | 1.1.15 | >= 23.4.2 | >= 3.5 | JAVA 17 | Add ProjectAPIModel, person properties and validation constraints |
 | 1.1.14 | >= 23.4.2 | >= 3.5 | JAVA 17 | Add secure batch endpoints in ChannelAPI |
 | 1.1.13 | >= 23.4.2 | >= 3.5 | JAVA 17 | Add bcpg:allergenListQtyPerc field constant |
@@ -78,7 +79,7 @@ Then, add the dependency on the desired starter(s)
    <dependency>
        <groupId>fr.becpg</groupId>
 	    <artifactId>becpg-java-rest-api</artifactId>
-		<version>1.1.15</version>
+		<version>1.1.16</version>
     </dependency>  
         
 </dependencies>
@@ -173,6 +174,21 @@ If fields param reach the connector max request size limit its possible to compr
 
 ```
 remote.compress.param=true
+```
+
+#### Timeouts
+
+The underlying reactive HTTP client (reactor-netty) is bounded by two timeouts so that a dropped
+or half-open connection (e.g. an unstable WAN/satellite link) makes the call fail fast instead of
+blocking the caller indefinitely — all API methods block on the response:
+
+```
+# Max time (ms) to establish the TCP connection. 0 disables the bound. Default: 30000
+remote.connect.timeout=30000
+
+# Max time (s) to fully receive a response once the request is sent. A timeout raises a
+# ReadTimeoutException instead of hanging forever. 0 disables the bound. Default: 300
+remote.response.timeout=300
 ```
 
 

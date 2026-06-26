@@ -1,5 +1,6 @@
 package fr.becpg.api;
 
+import java.time.Duration;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -16,6 +17,7 @@ import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import fr.becpg.api.security.WebClientAuthenticationProvider;
+import io.netty.channel.ChannelOption;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
@@ -54,6 +56,18 @@ public class BecpgRestApiConfiguration {
 
 	@Value("${remote.force.tls12:false}")
 	private Boolean forceTls12;
+
+	/** Max time (ms) to establish the TCP connection. 0 disables the bound. */
+	@Value("${remote.connect.timeout:30000}")
+	private Integer connectTimeoutMs;
+
+	/**
+	 * Max time (s) to fully receive a response once the request is sent. Guards against a
+	 * half-open socket (e.g. a satellite link dropping mid-request) deadlocking the caller,
+	 * since every API call blocks on the resulting Mono. 0 disables the bound.
+	 */
+	@Value("${remote.response.timeout:300}")
+	private Integer responseTimeoutSeconds;
 
 	/**
 	 * <p>Getter for the field <code>contentServiceUrl</code>.</p>
@@ -165,6 +179,15 @@ public class BecpgRestApiConfiguration {
 
 	private HttpClient configureHttpClient(ConnectionProvider connectionProvider) {
 		HttpClient httpClient = connectionProvider != null ? HttpClient.create(connectionProvider) : HttpClient.create();
+
+		if (connectTimeoutMs != null && connectTimeoutMs > 0) {
+			httpClient = httpClient.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, connectTimeoutMs);
+		}
+		if (responseTimeoutSeconds != null && responseTimeoutSeconds > 0) {
+			httpClient = httpClient.responseTimeout(Duration.ofSeconds(responseTimeoutSeconds));
+			logger.info("Remote WebClient response timeout set to " + responseTimeoutSeconds + "s, connect timeout " + connectTimeoutMs + "ms");
+		}
+
 		if (shouldForceHttp1()) {
 			httpClient = httpClient.protocol(HttpProtocol.HTTP11);
 			logger.info("HTTP/1.1 forced for remote WebClient");
