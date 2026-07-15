@@ -641,6 +641,12 @@ public final class BeCPGAPIModel {
 	public static final String ASSOC_INGLIST_GEO_ORIGIN = "bcpg:ingListGeoOrigin";
 	/** Constant <code>ASSOC_INGLIST_BIO_ORIGIN="bcpg:ingListBioOrigin"</code> */
 	public static final String ASSOC_INGLIST_BIO_ORIGIN = "bcpg:ingListBioOrigin";
+	/** Constant <code>PROP_ING_LIST_QTY_FOR_PRODUCT="bcpg:ingListQtyForProduct"</code> */
+	public static final String PROP_ING_LIST_QTY_FOR_PRODUCT = "bcpg:ingListQtyForProduct";
+	/** Constant <code>PROP_ING_LIST_QTY_MINI="bcpg:ingListQtyMini"</code> */
+	public static final String PROP_ING_LIST_QTY_MINI = "bcpg:ingListQtyMini";
+	/** Constant <code>PROP_ING_LIST_QTY_MAXI="bcpg:ingListQtyMaxi"</code> */
+	public static final String PROP_ING_LIST_QTY_MAXI = "bcpg:ingListQtyMaxi";
 	
 	// Nutrition List Extended
 	/** Constant <code>PROP_NUTLIST_VALUE_PER_SERVING="bcpg:nutListValuePerServing"</code> */
