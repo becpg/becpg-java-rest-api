@@ -1,8 +1,15 @@
 package fr.becpg.api.security;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
+import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientPropertiesMapper;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +17,8 @@ import org.springframework.security.oauth2.client.AuthorizedClientServiceReactiv
 import org.springframework.security.oauth2.client.InMemoryReactiveOAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.ReactiveOAuth2AuthorizedClientProvider;
 import org.springframework.security.oauth2.client.ReactiveOAuth2AuthorizedClientProviderBuilder;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
+import org.springframework.security.oauth2.client.registration.InMemoryReactiveClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.reactive.function.client.ServerOAuth2AuthorizedClientExchangeFilterFunction;
 
@@ -25,6 +34,23 @@ public class OAuth2Configuration {
 
     private static final String OAUTH2_CLIENT_REGISTRATION_ID = "becpg-java-rest-api";
 
+    /**
+     * The beCPG REST API authenticates through a {@link org.springframework.web.reactive.function.client.WebClient}, hence it always needs the
+     * <b>reactive</b> client registration repository. Spring Boot only auto-configures that one for non-servlet applications
+     * ({@code ReactiveOAuth2ClientAutoConfiguration} backs off as soon as the application is a servlet web application), so an integrator embedding
+     * the SDK in a servlet application would otherwise fail to start on a missing
+     * {@link org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository} bean.
+     *
+     * @param properties the {@code spring.security.oauth2.client} properties
+     * @return a {@link org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository} object
+     */
+    @Bean
+    @ConditionalOnWebApplication(type = Type.SERVLET)
+    @ConditionalOnMissingBean(ReactiveClientRegistrationRepository.class)
+    ReactiveClientRegistrationRepository reactiveClientRegistrationRepository(OAuth2ClientProperties properties) {
+        List<ClientRegistration> registrations = new ArrayList<>(new OAuth2ClientPropertiesMapper(properties).asClientRegistrations().values());
+        return new InMemoryReactiveClientRegistrationRepository(registrations);
+    }
 
     @Bean("authenticationFilter")
     WebClientAuthenticationProvider authenticationFilter(ReactiveClientRegistrationRepository clientRegistrations) {

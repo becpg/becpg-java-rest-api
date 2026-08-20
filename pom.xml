@@ -99,6 +99,13 @@
 			<scope>test</scope>
 		</dependency>
 
+		<!-- WebApplicationContextRunner only: lets the tests assert the servlet behaviour of the SDK, which itself stays reactive -->
+		<dependency>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
+			<scope>test</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-oauth2-client</artifactId>
