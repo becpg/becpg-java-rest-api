@@ -3,7 +3,9 @@ package fr.becpg.api.helper;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
@@ -21,6 +23,9 @@ import java.util.regex.Pattern;
 public class DateExtractorHelper {
 
 	private static final Pattern ISO_DATE_PATTERN = Pattern.compile("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$");
+
+	/** A calendar day, the form beCPG publishes a d:date in since 26.1. */
+	private static final Pattern ISO_DAY_PATTERN = Pattern.compile("^\\d{4}-\\d{2}-\\d{2}$");
 
 
 	private DateExtractorHelper() {
@@ -75,6 +80,10 @@ public class DateExtractorHelper {
 			}
 		}
 
+		if (ISO_DAY_PATTERN.matcher(isoDate).matches()) {
+			return parseDay(isoDate);
+		}
+
 		try {
 			if (isoDate.endsWith("Z")) {
 				return Date.from(Instant.parse(isoDate));
@@ -85,6 +94,19 @@ public class DateExtractorHelper {
 			// Fallback or keep current logic if needed for specific formats not handled by java.time
 			return parseManual(isoDate);
 		}
+	}
+
+	/**
+	 * Anchors a calendar day at midnight in the time zone of this process.
+	 * <p>
+	 * The day carries no zone, so anchoring it locally is what makes it come back out as the
+	 * same day once a consumer formats it again, whatever zone that consumer runs in.
+	 *
+	 * @param isoDay the day to anchor
+	 * @return the date
+	 */
+	private static Date parseDay(String isoDay) {
+		return Date.from(LocalDate.parse(isoDay, DateTimeFormatter.ISO_LOCAL_DATE).atStartOfDay(ZoneId.systemDefault()).toInstant());
 	}
 
 	private static Date parseManual(String isoDate) {
@@ -200,13 +222,21 @@ public class DateExtractorHelper {
 	}
 
 	/**
-	 * <p>isDate.</p>
+	 * States whether a value read from a beCPG payload holds a date.
+	 * <p>
+	 * Both forms are accepted: the UTC instant a d:datetime is published in, and the calendar
+	 * day a d:date is published in since 26.1. A value this method rejects is carried through
+	 * as plain text, which for a date would skip the date format configured on the channel.
 	 *
 	 * @param isoDate a {@link java.lang.String} object
 	 * @return a boolean
 	 */
 	public static boolean isDate(String isoDate) {
-		return ISO_DATE_PATTERN.matcher(isoDate).matches();
+		if (isoDate == null) {
+			return false;
+		}
+
+		return ISO_DATE_PATTERN.matcher(isoDate).matches() || ISO_DAY_PATTERN.matcher(isoDate).matches();
 	}
 
 }
