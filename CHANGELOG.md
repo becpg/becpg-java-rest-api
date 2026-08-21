@@ -139,3 +139,15 @@
 * Reduce Keycloak load: cache out-of-session alf_ticket and enable refresh tokens
 * Reduce Keycloak load: cache out-of-session alf_ticket and enable refresh tokens
 
+## [ 1.1.18 ] - ven. 21 août 2026 11:00:37 CEST
+
+* [Release] prepare release 1.1.18
+* [Setup] Update documentation for 1.1.18
+* Fix #36148 - [Bug] Read a d:date published as a calendar day, keeping the legacy instant form
+* InProgress #35457 - [Bug] Provide the reactive OAuth2 client registration repository in servlet applications
+* [Setup] Declare the sonar-maven-plugin so the CI sonar step resolves
+* [Setup] Track the Maven wrapper files so mvnw works on a fresh clone
+* Fix #35955 - [Security] Bump Spring Boot to 3.5.16 for Spring Security 6.5.11 (CVE-2026-22732)
+* [skip ci][Release]: Update CHANGELOG.md for 1.1.17 release
+* [skip ci] Prepare for next development iteration
+
