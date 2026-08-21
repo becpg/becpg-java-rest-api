@@ -15,6 +15,8 @@ This SDK provides functionality to consume beCPG REST Remote API.
 
 | Version | beCPG Version | Version API | Version JAVA | Changes |
 | --- | --- | --- | --- | -- |
+| 1.1.18 | >= 23.4.2 | >= 3.5 | JAVA 17 | Read a `d:date` published as a calendar day, keeping the instant form of earlier repositories; provide the reactive OAuth2 client registration repository in servlet applications; bump Spring Boot to 3.5.16 (CVE-2026-22732) |
+| 1.1.17 | >= 23.4.2 | >= 3.5 | JAVA 17 | Add ingList field definitions |
 | 1.1.16 | >= 23.4.2 | >= 3.5 | JAVA 17 | Add configurable HTTP connect/response timeouts; reduce Keycloak load (cache out-of-session alf_ticket, refresh tokens); fix OAuth2 conditional activation |
 | 1.1.15 | >= 23.4.2 | >= 3.5 | JAVA 17 | Add ProjectAPIModel, person properties and validation constraints |
 | 1.1.14 | >= 23.4.2 | >= 3.5 | JAVA 17 | Add secure batch endpoints in ChannelAPI |
@@ -79,7 +81,7 @@ Then, add the dependency on the desired starter(s)
    <dependency>
        <groupId>fr.becpg</groupId>
 	    <artifactId>becpg-java-rest-api</artifactId>
-		<version>1.1.16</version>
+		<version>1.1.18</version>
     </dependency>  
         
 </dependencies>
@@ -190,6 +192,24 @@ remote.connect.timeout=30000
 # ReadTimeoutException instead of hanging forever. 0 disables the bound. Default: 300
 remote.response.timeout=300
 ```
+
+#### Dates
+
+A property carries a date in one of two shapes, and `RemoteNodeInfo.getDateProp(...)` reads both, so
+one build of your application works against the whole range of supported repositories:
+
+* a `d:datetime` is a point in time, published as a UTC instant — `2026-02-27T18:23:25.906Z`;
+* a `d:date` is a calendar day. beCPG 26.1 and above publish it as a plain day — `2027-07-01`.
+  Earlier versions published the instant that day happens to be stored at, which reads as the
+  previous day whenever the repository runs ahead of UTC.
+
+A plain day is anchored at midnight in the time zone of the JVM that reads it, so formatting it back
+out yields the same day whatever that time zone is. An instant keeps its own meaning: rendering it
+is still subject to the time zone you render it in.
+
+`DateExtractorHelper.isDate(...)` tells both shapes apart from anything else, and
+`DateExtractorHelper.parse(...)` turns either into a `java.util.Date`. A value `isDate` rejects is
+left as text, which is what you want for a property that merely looks like a date.
 
 
 #### 5. Consume the REST API
