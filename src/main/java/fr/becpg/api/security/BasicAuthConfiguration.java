@@ -2,17 +2,27 @@ package fr.becpg.api.security;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.net.Socket;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
+import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
+import java.time.Duration;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
+import javax.net.ssl.SSLParameters;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509ExtendedTrustManager;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -49,10 +59,7 @@ public class BasicAuthConfiguration {
     private static final String ALF_TICKET_PARAMETER = "alf_ticket";
     private static final String ALF_LOGIN_ENDPOINT = "/alfresco/service/api/login";
 
-    /**
-     * Shared HTTP client used to retrieve Alfresco tickets, avoiding the creation of a new client on every login call.
-     */
-    private static final HttpClient LOGIN_HTTP_CLIENT = HttpClient.newHttpClient();
+    private static final String TLS12_PROTOCOL = "TLSv1.2";
 
     @Value("${content.service.security.basicAuth.username:#{null}}")
     private String basicAuthUsername;
@@ -66,6 +73,29 @@ public class BasicAuthConfiguration {
      */
     @Value("${content.service.security.basicAuth.ticketTtl:1800000}")
     private long ticketTtl;
+
+    /**
+     * The login call does not go through the {@code remoteWebClient}, so it has to honour the same {@code remote.*} client settings on its own,
+     * otherwise a repository published behind a self-signed or company-signed certificate fails the login handshake even with
+     * {@code remote.ssl.trustAll=true}.
+     */
+    @Value("${remote.ssl.trustAll:false}")
+    private Boolean sslTrustAll;
+    @Value("${remote.force.http1:false}")
+    private Boolean forceHttp1;
+    @Value("${remote.force.tls12:false}")
+    private Boolean forceTls12;
+    @Value("${remote.connect.timeout:30000}")
+    private Integer connectTimeoutMs;
+    @Value("${remote.response.timeout:300}")
+    private Integer responseTimeoutSeconds;
+
+    /**
+     * HTTP client used to retrieve Alfresco tickets, built once on first login so that it picks up the injected {@code remote.*} properties, and then
+     * shared to avoid creating a client on every login call.
+     */
+    private final AtomicReference<HttpClient> loginHttpClient = new AtomicReference<>();
+    private final Object loginHttpClientLock = new Object();
 
     private final AtomicInteger activeSessionCount = new AtomicInteger(0);
     private final AtomicReference<String> cachedSessionAlfTicket = new AtomicReference<>();
@@ -230,16 +260,131 @@ public class BasicAuthConfiguration {
 	}
 
 	/**
+	 * Return the shared login client, building it on first use from the {@code remote.*} properties.
+	 *
+	 * @return HTTP client used for the Alfresco login call
+	 */
+	private HttpClient getLoginHttpClient() {
+		HttpClient client = loginHttpClient.get();
+		if (client != null) {
+			return client;
+		}
+
+		synchronized (loginHttpClientLock) {
+			HttpClient lockedClient = loginHttpClient.get();
+			if (lockedClient != null) {
+				return lockedClient;
+			}
+			HttpClient builtClient = buildLoginHttpClient();
+			loginHttpClient.set(builtClient);
+			return builtClient;
+		}
+	}
+
+	/**
+	 * Build the login client with the same SSL, protocol and timeout settings as the remote {@link org.springframework.web.reactive.function.client.WebClient}.
+	 *
+	 * @return configured HTTP client
+	 */
+	private HttpClient buildLoginHttpClient() {
+		HttpClient.Builder builder = HttpClient.newBuilder();
+
+		if (connectTimeoutMs != null && connectTimeoutMs > 0) {
+			builder = builder.connectTimeout(Duration.ofMillis(connectTimeoutMs));
+		}
+
+		if (Boolean.TRUE.equals(forceHttp1)) {
+			builder = builder.version(HttpClient.Version.HTTP_1_1);
+			logger.info("HTTP/1.1 forced for Alfresco login client");
+		}
+
+		if (Boolean.TRUE.equals(forceTls12)) {
+			SSLParameters sslParameters = new SSLParameters();
+			sslParameters.setProtocols(new String[] { TLS12_PROTOCOL });
+			builder = builder.sslParameters(sslParameters);
+			logger.info("TLSv1.2 forced for Alfresco login client");
+		}
+
+		if (Boolean.TRUE.equals(sslTrustAll)) {
+			builder = builder.sslContext(createTrustAllSslContext());
+			logger.warn("SSL verification disabled for Alfresco login client");
+		}
+
+		return builder.build();
+	}
+
+	/**
+	 * Build an SSL context trusting every certificate, so that {@code remote.ssl.trustAll=true} also applies to the login call. The trust manager is an
+	 * {@link javax.net.ssl.X509ExtendedTrustManager} on purpose: the JDK HTTP client always sets the {@code HTTPS} endpoint identification algorithm,
+	 * and only an extended trust manager skips both the certificate path validation and the hostname check.
+	 *
+	 * @return SSL context accepting any server certificate
+	 */
+	private SSLContext createTrustAllSslContext() {
+		try {
+			SSLContext sslContext = SSLContext.getInstance(Boolean.TRUE.equals(forceTls12) ? TLS12_PROTOCOL : "TLS");
+			sslContext.init(null, new TrustManager[] { trustAllManager() }, new SecureRandom());
+			return sslContext;
+		} catch (GeneralSecurityException e) {
+			throw new IllegalStateException("Cannot disable SSL verification for Alfresco login client", e);
+		}
+	}
+
+	private X509ExtendedTrustManager trustAllManager() {
+		return new X509ExtendedTrustManager() {
+
+			@Override
+			public void checkClientTrusted(X509Certificate[] chain, String authType) {
+				// trust all
+			}
+
+			@Override
+			public void checkClientTrusted(X509Certificate[] chain, String authType, Socket socket) {
+				// trust all
+			}
+
+			@Override
+			public void checkClientTrusted(X509Certificate[] chain, String authType, SSLEngine engine) {
+				// trust all
+			}
+
+			@Override
+			public void checkServerTrusted(X509Certificate[] chain, String authType) {
+				// trust all
+			}
+
+			@Override
+			public void checkServerTrusted(X509Certificate[] chain, String authType, Socket socket) {
+				// trust all
+			}
+
+			@Override
+			public void checkServerTrusted(X509Certificate[] chain, String authType, SSLEngine engine) {
+				// trust all
+			}
+
+			@Override
+			public X509Certificate[] getAcceptedIssuers() {
+				return new X509Certificate[0];
+			}
+		};
+	}
+
+	/**
 	 * Retrieve an Alfresco ticket using the configured Basic credentials.
 	 *
 	 * @return the retrieved alf_ticket value
 	 */
 	private String retrieveAlfTicket() {
 		String loginUrl = buildLoginUrl();
-		HttpRequest request = HttpRequest.newBuilder(URI.create(loginUrl)).GET().build();
+		HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(URI.create(loginUrl)).GET();
+		if (responseTimeoutSeconds != null && responseTimeoutSeconds > 0) {
+			requestBuilder = requestBuilder.timeout(Duration.ofSeconds(responseTimeoutSeconds));
+		}
+		HttpRequest request = requestBuilder.build();
 
 		try {
-			HttpResponse<byte[]> response = LOGIN_HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofByteArray());
+			HttpResponse<byte[]> response = getLoginHttpClient().send(request, HttpResponse.BodyHandlers.ofByteArray());
 			if (response.statusCode() >= 400) {
 				throw new IllegalStateException("Cannot retrieve alf_ticket. Status: " + response.statusCode());
 			}

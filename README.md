@@ -170,6 +170,11 @@ remote.force.http1=true
 remote.force.tls12=true
 ```
 
+These three options apply to every call made by the SDK, including the Alfresco login call
+(`/alfresco/service/api/login`) used by Basic authentication, which runs on its own JDK HTTP client
+rather than on the reactive one. With `remote.ssl.trustAll=true` that login client accepts any
+server certificate, whatever its issuer and whatever the hostname it was issued for.
+
 #### Compress params
 
 If fields param reach the connector max request size limit its possible to compress header:
