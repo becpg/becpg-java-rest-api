@@ -151,3 +151,16 @@
 * [skip ci][Release]: Update CHANGELOG.md for 1.1.17 release
 * [skip ci] Prepare for next development iteration
 
+## [ 1.1.19 ] - jeu. 27 août 2026 17:05:48 CEST
+
+* [Release] prepare release 1.1.19
+* Fix #36271 - [Setup] Make @EnableAuthConfiguration provide the remote client factory it now needs
+* Fix #36271 - [Bug] Apply the wiretap option to the client instead of discarding it
+* Fix #36271 - [Bug] Cover the SDK auto-configuration wiring with a test
+* [Setup] Update documentation for 1.1.19
+* Fix #36271 - [Cleanup] Drop the password grant from the SDK documentation
+* Fix #36271 - [Bug] Apply the remote client settings to the OAuth2 token client as well
+* Fix #36271 - [Bug] Apply remote.ssl.trustAll and the remote client settings to the Alfresco login client
+* [skip ci][Release]: Update CHANGELOG.md for 1.1.18 release
+* [skip ci] Prepare for next development iteration
+
