@@ -7,6 +7,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import org.springframework.context.annotation.Import;
 
+import fr.becpg.api.RemoteHttpClientFactory;
+
 /**
  * <p>EnableAuthConfiguration class.</p>
  *
@@ -14,7 +16,7 @@ import org.springframework.context.annotation.Import;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
-@Import({BasicAuthConfiguration.class, OAuth2Configuration.class, DelegatedAuthenticationConfiguration.class})
+@Import({RemoteHttpClientFactory.class, BasicAuthConfiguration.class, OAuth2Configuration.class, DelegatedAuthenticationConfiguration.class})
 public @interface EnableAuthConfiguration {
 
 }
