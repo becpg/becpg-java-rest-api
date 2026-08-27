@@ -8,6 +8,8 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository;
 
+import fr.becpg.api.RemoteHttpClientFactory;
+
 /**
  * The SDK authenticates through a reactive WebClient, so the OAuth2 client_credentials flow must work whatever the web application type of the
  * integrator: Spring Boot only auto-configures the reactive client registration repository for non-servlet applications.
@@ -25,7 +27,7 @@ class OAuth2ConfigurationTest {
     void shouldProvideReactiveRepositoryInServletApplication() {
         new WebApplicationContextRunner()
                 .withConfiguration(AutoConfigurations.of(ReactiveOAuth2ClientAutoConfiguration.class))
-                .withUserConfiguration(OAuth2Configuration.class)
+                .withUserConfiguration(OAuth2Configuration.class, RemoteHttpClientFactory.class)
                 .withPropertyValues(CLIENT_PROPERTIES)
                 .run(context -> {
                     Assertions.assertThat(context).hasNotFailed();
@@ -38,7 +40,7 @@ class OAuth2ConfigurationTest {
     void shouldRelyOnAutoConfiguredReactiveRepositoryInNonWebApplication() {
         new ApplicationContextRunner()
                 .withConfiguration(AutoConfigurations.of(ReactiveOAuth2ClientAutoConfiguration.class))
-                .withUserConfiguration(OAuth2Configuration.class)
+                .withUserConfiguration(OAuth2Configuration.class, RemoteHttpClientFactory.class)
                 .withPropertyValues(CLIENT_PROPERTIES)
                 .run(context -> {
                     Assertions.assertThat(context).hasNotFailed();
@@ -51,7 +53,7 @@ class OAuth2ConfigurationTest {
     @Test
     void shouldBackOffWhenNoRegistrationConfigured() {
         new WebApplicationContextRunner()
-                .withUserConfiguration(OAuth2Configuration.class)
+                .withUserConfiguration(OAuth2Configuration.class, RemoteHttpClientFactory.class)
                 .run(context -> {
                     Assertions.assertThat(context).hasNotFailed();
                     Assertions.assertThat(context).doesNotHaveBean(ReactiveClientRegistrationRepository.class);

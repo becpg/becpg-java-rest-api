@@ -13,14 +13,20 @@ import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2Clien
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.security.oauth2.client.AuthorizedClientServiceReactiveOAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.InMemoryReactiveOAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.ReactiveOAuth2AuthorizedClientProvider;
 import org.springframework.security.oauth2.client.ReactiveOAuth2AuthorizedClientProviderBuilder;
+import org.springframework.security.oauth2.client.endpoint.WebClientReactiveClientCredentialsTokenResponseClient;
+import org.springframework.security.oauth2.client.endpoint.WebClientReactiveRefreshTokenTokenResponseClient;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.InMemoryReactiveClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.reactive.function.client.ServerOAuth2AuthorizedClientExchangeFilterFunction;
+import org.springframework.web.reactive.function.client.WebClient;
+
+import fr.becpg.api.RemoteHttpClientFactory;
 
 /**
  * <p>OAuth2Configuration class.</p>
@@ -53,15 +59,27 @@ public class OAuth2Configuration {
     }
 
     @Bean("authenticationFilter")
-    WebClientAuthenticationProvider authenticationFilter(ReactiveClientRegistrationRepository clientRegistrations) {
+    WebClientAuthenticationProvider authenticationFilter(ReactiveClientRegistrationRepository clientRegistrations,
+            RemoteHttpClientFactory httpClientFactory) {
         InMemoryReactiveOAuth2AuthorizedClientService clientService = new InMemoryReactiveOAuth2AuthorizedClientService(clientRegistrations);
         AuthorizedClientServiceReactiveOAuth2AuthorizedClientManager authorizedClientManager = new AuthorizedClientServiceReactiveOAuth2AuthorizedClientManager(clientRegistrations, clientService);
+
+        // The token endpoint is called by its own WebClient, which Spring Security builds with a default connector: without this it would ignore the
+        // remote.* settings, and an identity provider published behind a self-signed or company-signed certificate would fail the handshake even with
+        // remote.ssl.trustAll=true.
+        WebClient tokenWebClient = createTokenWebClient(httpClientFactory);
+
+        WebClientReactiveClientCredentialsTokenResponseClient clientCredentialsTokenClient = new WebClientReactiveClientCredentialsTokenResponseClient();
+        clientCredentialsTokenClient.setWebClient(tokenWebClient);
+
+        WebClientReactiveRefreshTokenTokenResponseClient refreshTokenTokenClient = new WebClientReactiveRefreshTokenTokenResponseClient();
+        refreshTokenTokenClient.setWebClient(tokenWebClient);
 
         // client_credentials is the recommended technical flow (token cached in memory and only re-fetched on expiry).
         // refreshToken is added so that any flow issuing a refresh_token reuses it instead of re-authenticating fully, further reducing Keycloak load.
         ReactiveOAuth2AuthorizedClientProvider authorizedClientProvider = ReactiveOAuth2AuthorizedClientProviderBuilder.builder()
-                .clientCredentials()
-                .refreshToken()
+                .clientCredentials(clientCredentials -> clientCredentials.accessTokenResponseClient(clientCredentialsTokenClient))
+                .refreshToken(refreshToken -> refreshToken.accessTokenResponseClient(refreshTokenTokenClient))
                 .build();
         authorizedClientManager.setAuthorizedClientProvider(authorizedClientProvider);
 
@@ -70,5 +88,11 @@ public class OAuth2Configuration {
         return () -> oauth;
 
     }
-    
+
+    private WebClient createTokenWebClient(RemoteHttpClientFactory httpClientFactory) {
+        return WebClient.builder()
+                .clientConnector(new ReactorClientHttpConnector(httpClientFactory.createReactorHttpClient(null, "OAuth2 token client")))
+                .build();
+    }
+
 }

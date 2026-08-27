@@ -1,10 +1,7 @@
 package fr.becpg.api;
 
-import java.time.Duration;
 import java.util.Map;
 import java.util.function.Supplier;
-
-import javax.net.ssl.SSLException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -17,16 +14,9 @@ import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import fr.becpg.api.security.WebClientAuthenticationProvider;
-import io.netty.channel.ChannelOption;
-import io.netty.handler.logging.LogLevel;
-import io.netty.handler.ssl.SslContext;
-import io.netty.handler.ssl.SslContextBuilder;
-import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import reactor.core.publisher.Mono;
-import reactor.netty.http.HttpProtocol;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.resources.ConnectionProvider;
-import reactor.netty.transport.logging.AdvancedByteBufFormat;
 
 /**
  * <p>BecpgRestApiConfiguration class.</p>
@@ -48,26 +38,8 @@ public class BecpgRestApiConfiguration {
 	@Value("${remote.compress.param:false}")
 	private Boolean compressParam;
 
-	@Value("${remote.ssl.trustAll:false}")
-	private Boolean sslTrustAll;
-
-	@Value("${remote.force.http1:false}")
-	private Boolean forceHttp1;
-
-	@Value("${remote.force.tls12:false}")
-	private Boolean forceTls12;
-
-	/** Max time (ms) to establish the TCP connection. 0 disables the bound. */
-	@Value("${remote.connect.timeout:30000}")
-	private Integer connectTimeoutMs;
-
-	/**
-	 * Max time (s) to fully receive a response once the request is sent. Guards against a
-	 * half-open socket (e.g. a satellite link dropping mid-request) deadlocking the caller,
-	 * since every API call blocks on the resulting Mono. 0 disables the bound.
-	 */
-	@Value("${remote.response.timeout:300}")
-	private Integer responseTimeoutSeconds;
+	@Autowired
+	private RemoteHttpClientFactory httpClientFactory;
 
 	/**
 	 * <p>Getter for the field <code>contentServiceUrl</code>.</p>
@@ -102,7 +74,7 @@ public class BecpgRestApiConfiguration {
 	 * @return a boolean
 	 */
 	public boolean shouldDisableSSLVerification() {
-		return Boolean.TRUE.equals(sslTrustAll);
+		return httpClientFactory.shouldDisableSSLVerification();
 	}
 
 	/**
@@ -111,7 +83,7 @@ public class BecpgRestApiConfiguration {
 	 * @return a {@link java.lang.Boolean} object
 	 */
 	public boolean shouldForceHttp1() {
-		return Boolean.TRUE.equals(forceHttp1);
+		return httpClientFactory.shouldForceHttp1();
 	}
 
 	/**
@@ -120,7 +92,7 @@ public class BecpgRestApiConfiguration {
 	 * @return a {@link java.lang.Boolean} object
 	 */
 	public boolean shouldForceTls12() {
-		return Boolean.TRUE.equals(forceTls12);
+		return httpClientFactory.shouldForceTls12();
 	}
 
 	@Autowired(required = false)
@@ -152,7 +124,7 @@ public class BecpgRestApiConfiguration {
 
 		String baseUrl = getContentServiceUrl() + "/alfresco/service/becpg/remote";
 
-		HttpClient httpClient = configureHttpClient(connectionProvider);
+		HttpClient httpClient = httpClientFactory.createReactorHttpClient(connectionProvider, "remote WebClient");
 
 		ReactorClientHttpConnector clientConnector = new ReactorClientHttpConnector(httpClient);
 
@@ -177,63 +149,6 @@ public class BecpgRestApiConfiguration {
 				.build();
 	}
 
-	private HttpClient configureHttpClient(ConnectionProvider connectionProvider) {
-		HttpClient httpClient = connectionProvider != null ? HttpClient.create(connectionProvider) : HttpClient.create();
-
-		if (connectTimeoutMs != null && connectTimeoutMs > 0) {
-			httpClient = httpClient.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, connectTimeoutMs);
-		}
-		if (responseTimeoutSeconds != null && responseTimeoutSeconds > 0) {
-			httpClient = httpClient.responseTimeout(Duration.ofSeconds(responseTimeoutSeconds));
-			logger.info("Remote WebClient response timeout set to " + responseTimeoutSeconds + "s, connect timeout " + connectTimeoutMs + "ms");
-		}
-
-		if (shouldForceHttp1()) {
-			httpClient = httpClient.protocol(HttpProtocol.HTTP11);
-			logger.info("HTTP/1.1 forced for remote WebClient");
-		}
-
-		if (logger.isDebugEnabled()) {
-			httpClient.wiretap("reactor.netty.http.client.HttpClient", LogLevel.DEBUG, AdvancedByteBufFormat.TEXTUAL);
-		}
-
-		if (shouldDisableSSLVerification()) {
-			httpClient = disableSSLVerification(httpClient);
-		} else if (shouldForceTls12()) {
-			httpClient = forceTls12(httpClient);
-		} else {
-			logger.debug("SSL verification is enabled");
-		}
-		return httpClient;
-	}
-
-	private HttpClient disableSSLVerification(HttpClient httpClient) {
-		try {
-			SslContextBuilder sslContextBuilder = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE);
-			if (shouldForceTls12()) {
-				sslContextBuilder = sslContextBuilder.protocols("TLSv1.2");
-				logger.info("TLSv1.2 forced for remote WebClient");
-			}
-			SslContext sslContext = sslContextBuilder.build();
-			logger.debug("SSL verification disabled successfully");
-			return httpClient.secure(t -> t.sslContext(sslContext));
-		} catch (SSLException e) {
-			logger.error("Cannot disable SSL for connection", e);
-		}
-		return httpClient;
-	}
-
-	private HttpClient forceTls12(HttpClient httpClient) {
-		try {
-			SslContext sslContext = SslContextBuilder.forClient().protocols("TLSv1.2").build();
-			logger.info("TLSv1.2 forced for remote WebClient");
-			return httpClient.secure(t -> t.sslContext(sslContext));
-		} catch (SSLException e) {
-			logger.error("Cannot force TLSv1.2 for connection", e);
-		}
-		return httpClient;
-	}
-	
 	 private static ExchangeFilterFunction logRequest() {
 	        return ExchangeFilterFunction.ofRequestProcessor(clientRequest -> {
 	        	logger.debug("Request: " + clientRequest.method() + " " +  clientRequest.url());

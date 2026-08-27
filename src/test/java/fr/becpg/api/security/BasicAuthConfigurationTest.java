@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import fr.becpg.api.RemoteHttpClientFactory;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
@@ -217,6 +218,7 @@ class BasicAuthConfigurationTest {
         ReflectionTestUtils.setField(configuration, "basicAuthPassword", "pwd");
         ReflectionTestUtils.setField(configuration, "contentServiceUrl", "http://localhost:" + mockBackEnd.getPort());
         ReflectionTestUtils.setField(configuration, "ticketTtl", 1800000L);
+        ReflectionTestUtils.setField(configuration, "httpClientFactory", new RemoteHttpClientFactory());
         return configuration;
     }
 

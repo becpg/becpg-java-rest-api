@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import fr.becpg.api.RemoteHttpClientFactory;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.tls.HandshakeCertificates;
@@ -77,11 +78,17 @@ class BasicAuthConfigurationSslTest {
         ReflectionTestUtils.setField(configuration, "basicAuthPassword", "pwd");
         ReflectionTestUtils.setField(configuration, "contentServiceUrl", "https://localhost:" + mockBackEnd.getPort());
         ReflectionTestUtils.setField(configuration, "ticketTtl", 1800000L);
-        ReflectionTestUtils.setField(configuration, "sslTrustAll", sslTrustAll);
-        ReflectionTestUtils.setField(configuration, "forceHttp1", Boolean.FALSE);
-        ReflectionTestUtils.setField(configuration, "forceTls12", Boolean.FALSE);
-        ReflectionTestUtils.setField(configuration, "connectTimeoutMs", 30000);
-        ReflectionTestUtils.setField(configuration, "responseTimeoutSeconds", 30);
+        ReflectionTestUtils.setField(configuration, "httpClientFactory", createHttpClientFactory(sslTrustAll));
         return configuration;
+    }
+
+    private RemoteHttpClientFactory createHttpClientFactory(boolean sslTrustAll) {
+        RemoteHttpClientFactory httpClientFactory = new RemoteHttpClientFactory();
+        ReflectionTestUtils.setField(httpClientFactory, "sslTrustAll", sslTrustAll);
+        ReflectionTestUtils.setField(httpClientFactory, "forceHttp1", Boolean.FALSE);
+        ReflectionTestUtils.setField(httpClientFactory, "forceTls12", Boolean.FALSE);
+        ReflectionTestUtils.setField(httpClientFactory, "connectTimeoutMs", 30000);
+        ReflectionTestUtils.setField(httpClientFactory, "responseTimeoutSeconds", 30);
+        return httpClientFactory;
     }
 }

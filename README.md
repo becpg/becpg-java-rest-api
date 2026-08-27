@@ -170,10 +170,17 @@ remote.force.http1=true
 remote.force.tls12=true
 ```
 
-These three options apply to every call made by the SDK, including the Alfresco login call
-(`/alfresco/service/api/login`) used by Basic authentication, which runs on its own JDK HTTP client
-rather than on the reactive one. With `remote.ssl.trustAll=true` that login client accepts any
-server certificate, whatever its issuer and whatever the hostname it was issued for.
+These options apply to every call made by the SDK, not only the API calls. Three clients are
+involved and they are all built from the same settings by `RemoteHttpClientFactory`:
+
+* the API calls, through the remote `WebClient` (reactor-netty),
+* the Alfresco login call (`/alfresco/service/api/login`) of Basic authentication, which runs on a
+  JDK HTTP client because it is made synchronously from within the authentication filter,
+* the OAuth2 token call, which Spring Security makes with a `WebClient` of its own.
+
+With `remote.ssl.trustAll=true` these clients accept any server certificate, whatever its issuer and
+whatever the hostname it was issued for — so a repository or an identity provider published behind a
+self-signed or company-signed certificate is reachable with either authentication mode.
 
 #### Compress params
 
@@ -185,9 +192,9 @@ remote.compress.param=true
 
 #### Timeouts
 
-The underlying reactive HTTP client (reactor-netty) is bounded by two timeouts so that a dropped
-or half-open connection (e.g. an unstable WAN/satellite link) makes the call fail fast instead of
-blocking the caller indefinitely — all API methods block on the response:
+The HTTP clients are bounded by two timeouts so that a dropped or half-open connection (e.g. an
+unstable WAN/satellite link) makes the call fail fast instead of blocking the caller indefinitely —
+all API methods block on the response, and so do the login and token calls:
 
 ```
 # Max time (ms) to establish the TCP connection. 0 disables the bound. Default: 30000

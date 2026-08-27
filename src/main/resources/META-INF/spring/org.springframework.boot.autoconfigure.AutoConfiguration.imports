@@ -1,3 +1,4 @@
+fr.becpg.api.RemoteHttpClientFactory
 fr.becpg.api.BecpgRestApiConfiguration
 fr.becpg.api.handler.EntityAPIClient
 fr.becpg.api.handler.ContentAPIClient
