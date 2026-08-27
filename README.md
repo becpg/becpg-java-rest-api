@@ -110,17 +110,9 @@ spring.security.oauth2.client.registration.becpg-java-rest-api.authorization-gra
 spring.security.oauth2.client.provider.becpg-ids.token-uri=${keycloak.auth-server-url}/auth/realms/${keycloak.realm}/protocol/openid-connect/token
 ```
 
-Or OAuth2 password based authentication:
-
-```
-spring.security.oauth2.client.registration.becpg-java-rest-api.provider=becpg-ids
-spring.security.oauth2.client.registration.becpg-java-rest-api.client-id=clientId
-spring.security.oauth2.client.registration.becpg-java-rest-api.client-secret=clientSecret
-spring.security.oauth2.client.registration.becpg-java-rest-api.username=username
-spring.security.oauth2.client.registration.becpg-java-rest-api.password=pwd
-spring.security.oauth2.client.registration.becpg-java-rest-api.authorization-grant-type=password
-spring.security.oauth2.client.provider.becpg-ids.token-uri=${keycloak.auth-server-url}/auth/realms/${keycloak.realm}/protocol/openid-connect/token
-```
+The `password` grant is no longer supported: Spring Security deprecated it (it is dropped by OAuth
+2.1 and removed in Spring Security 7). Use `client_credentials` for a technical account, or Basic
+authentication if you need to act as a named user.
 
 You can also use or combine with custom header authentication
 
@@ -144,7 +136,7 @@ Behavior:
 
 * Avoids token acquisition on every request inside a connector job/session.
 * Automatically retries authentication when the token is expired or rejected (HTTP 401).
-* Applies to OAuth2 modes (`client_credentials` and `password`).
+* Applies to the `client_credentials` and `refresh_token` grants.
 
 #### Basic Auth Alfresco ticket reuse
 
