@@ -112,10 +112,11 @@ public class RemoteHttpClientFactory {
 
 		if (connectTimeoutMs != null && connectTimeoutMs > 0) {
 			httpClient = httpClient.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, connectTimeoutMs);
+			logger.info(clientName + " connect timeout set to " + connectTimeoutMs + "ms");
 		}
 		if (responseTimeoutSeconds != null && responseTimeoutSeconds > 0) {
 			httpClient = httpClient.responseTimeout(Duration.ofSeconds(responseTimeoutSeconds));
-			logger.info(clientName + " response timeout set to " + responseTimeoutSeconds + "s, connect timeout " + connectTimeoutMs + "ms");
+			logger.info(clientName + " response timeout set to " + responseTimeoutSeconds + "s");
 		}
 
 		if (shouldForceHttp1()) {
@@ -123,8 +124,9 @@ public class RemoteHttpClientFactory {
 			logger.info("HTTP/1.1 forced for " + clientName);
 		}
 
+		// Dumps the request and response frames, alf_ticket and bearer token included: only ever enable it on a throw-away environment.
 		if (logger.isDebugEnabled()) {
-			httpClient.wiretap("reactor.netty.http.client.HttpClient", LogLevel.DEBUG, AdvancedByteBufFormat.TEXTUAL);
+			httpClient = httpClient.wiretap("reactor.netty.http.client.HttpClient", LogLevel.DEBUG, AdvancedByteBufFormat.TEXTUAL);
 		}
 
 		if (shouldDisableSSLVerification()) {
