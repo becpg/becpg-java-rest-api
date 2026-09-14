@@ -172,3 +172,11 @@
 * [skip ci][Release]: Update CHANGELOG.md for 1.1.19 release
 * [skip ci] Prepare for next development iteration
 
+## [ 1.1.21 ] - lun. 14 sept 2026 16:30:52 CEST
+
+* [Release] prepare release 1.1.21
+* Merge branch 'main' of https://github.com/becpg/becpg-java-rest-api.git into main
+* Fix #36516 - [Feature] Expose the types an association accepts from its assoc:targetTypes schema
+* [skip ci][Release]: Update CHANGELOG.md for 1.1.20 release
+* [skip ci] Prepare for next development iteration
+
