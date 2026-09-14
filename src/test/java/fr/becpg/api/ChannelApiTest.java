@@ -16,6 +16,7 @@ import org.springframework.test.context.DynamicPropertySource;
 
 import fr.becpg.api.handler.ChannelAPI;
 import fr.becpg.api.model.ChannelAPIModel;
+import fr.becpg.api.model.RemoteAPIException;
 import fr.becpg.api.model.RemoteEntity;
 import fr.becpg.api.model.RemoteEntityRef;
 import okhttp3.mockwebserver.MockResponse;
@@ -69,6 +70,34 @@ class ChannelApiTest extends AbstractRemoteApiTest {
 
 		}
 
+	}
+
+	@Test
+	void testBatchApiOnRepositoryWithoutTheWebscript() {
+
+		// What an Alfresco repository answers for a webscript it does not know
+		mockBackEnd.enqueue(new MockResponse().setResponseCode(404)
+				.setBody("<html><head><title>Web Script Status 404 - Not Found</title></head><body>Not Found</body></html>")
+				.addHeader("Content-Type", "text/html;charset=UTF-8"));
+
+		RemoteAPIException exception = Assert.assertThrows(RemoteAPIException.class, () -> channelAPI.batchStart("sample-channel", "1"));
+
+		// The status has to survive, callers rely on it to know the API is not there rather than failing on the unparsable body
+		Assert.assertNotNull(exception.getError().getStatus());
+		Assert.assertEquals("404", exception.getError().getStatus().getCode());
+	}
+
+	@Test
+	void testBatchApiReportsTheRepositoryError() {
+
+		mockBackEnd.enqueue(new MockResponse().setResponseCode(403)
+				.setBody("{\"status\":{\"code\":403,\"name\":\"Forbidden\",\"description\":\"Forbidden\"},\"message\":\"Access denied\"}")
+				.addHeader("Content-Type", "application/json"));
+
+		RemoteAPIException exception = Assert.assertThrows(RemoteAPIException.class, () -> channelAPI.batchStart("sample-channel", "1"));
+
+		Assert.assertEquals("403", exception.getError().getStatus().getCode());
+		Assert.assertEquals("Access denied", exception.getError().getMessage());
 	}
 
 }

@@ -164,3 +164,11 @@
 * [skip ci][Release]: Update CHANGELOG.md for 1.1.18 release
 * [skip ci] Prepare for next development iteration
 
+## [ 1.1.20 ] - ven. 28 août 2026 13:49:06 CEST
+
+* [Release] prepare release 1.1.20
+* Fix #36271 - [Bug] Keep the HTTP status when the remote error body is not JSON
+* [Security] Keep the sample application.properties free of real credentials
+* [skip ci][Release]: Update CHANGELOG.md for 1.1.19 release
+* [skip ci] Prepare for next development iteration
+
