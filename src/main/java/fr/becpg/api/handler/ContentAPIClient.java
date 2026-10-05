@@ -56,7 +56,9 @@ public class ContentAPIClient extends AbstractAPIClient implements ContentAPI {
 			}
 
 		}
-		return apiConfiguration.getContentServiceUrl() + "/alfresco/service/api/internal/shared/node/" + sharedId + "/content";
+		
+		String contentServiceUrl = apiConfiguration.getContentServiceUrl().replaceAll("/+$", "");
+		return contentServiceUrl + "/alfresco/service/api/internal/shared/node/" + sharedId + "/content";
 	}
 
 	/** {@inheritDoc} */
