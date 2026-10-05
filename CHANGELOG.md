@@ -180,3 +180,10 @@
 * [skip ci][Release]: Update CHANGELOG.md for 1.1.20 release
 * [skip ci] Prepare for next development iteration
 
+## [ 1.1.22 ] - lun. 05 oct. 2026 16:11:45 CEST
+
+* [Release] prepare release 1.1.22
+* Fix #37236 - [Bug] Remove unnecessary '/' in getOrCreateSharedUrl
+* [skip ci][Release]: Update CHANGELOG.md for 1.1.21 release
+* [skip ci] Prepare for next development iteration
+
