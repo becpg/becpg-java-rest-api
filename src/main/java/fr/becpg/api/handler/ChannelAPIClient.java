@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
-import org.springframework.lang.NonNull;
+import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
 

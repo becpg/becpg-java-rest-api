@@ -3,7 +3,7 @@ package fr.becpg.api.handler;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.lang.NonNull;
+import org.jspecify.annotations.NonNull;
 
 import fr.becpg.api.model.RemoteAPIResponse;
 import fr.becpg.api.model.RemoteEntity;
