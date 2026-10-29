@@ -187,3 +187,5 @@
 * [skip ci][Release]: Update CHANGELOG.md for 1.1.21 release
 * [skip ci] Prepare for next development iteration
 
+## [ 2.0.0 ] - jeu. 29 oct 2026 14:50:13 CET
+
