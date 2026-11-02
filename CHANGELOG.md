@@ -203,3 +203,11 @@
 * [skip ci][Release]: Update CHANGELOG.md for 2.0.0 release
 * [skip ci] Prepare for next development iteration
 
+## [ 2.0.2 ] - lun. 02 nov 2026 14:33:20 CET
+
+* [Release] prepare release 2.0.2
+* [Setup] Update README and MIGRATION for 2.0.2
+* [Bug] - Find the previous tag with git describe in release.sh so x.y.0 releases get their changelog
+* [skip ci][Release]: Update CHANGELOG.md for 2.0.1 release
+* [skip ci] Prepare for next development iteration
+
