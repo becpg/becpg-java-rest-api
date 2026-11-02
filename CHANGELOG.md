@@ -189,3 +189,11 @@
 
 ## [ 2.0.0 ] - jeu. 29 oct 2026 14:50:13 CET
 
+## [ 2.0.1 ] - lun. 02 nov 2026 10:53:32 CET
+
+* [Release] prepare release 2.0.1
+* [Cleanup] - Update dependencies of week 44 in becpg-java-rest-api
+* [Setup] - Give the project its technical name and a description for SonarQube
+* [skip ci][Release]: Update CHANGELOG.md for 2.0.0 release
+* [skip ci] Prepare for next development iteration
+
