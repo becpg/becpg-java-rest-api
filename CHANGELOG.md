@@ -189,6 +189,12 @@
 
 ## [ 2.0.0 ] - jeu. 29 oct 2026 14:50:13 CET
 
+* [Release] prepare release 2.0.0
+* InProgress #37477 - [Security] - Move to Spring Boot 4.0.9 / Spring Framework 7.0.10 and Jackson 3 for CVE-2026-47890, version 2.0.0
+* [Setup] - Publish the full LGPL v3 text as LICENSE and keep the beCPG copyright notice in NOTICE
+* [skip ci][Release]: Update CHANGELOG.md for 1.1.22 release
+* [skip ci] Prepare for next development iteration
+
 ## [ 2.0.1 ] - lun. 02 nov 2026 10:53:32 CET
 
 * [Release] prepare release 2.0.1
