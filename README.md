@@ -15,6 +15,7 @@ This SDK provides functionality to consume beCPG REST Remote API.
 
 | Version | beCPG Version | Version API | Version JAVA | Changes |
 | --- | --- | --- | --- | -- |
+| 2.0.1 | >= 23.4.2 | >= 3.5 | JAVA 17 | Bump Spring Boot to 4.1.2 and the test and Sonar plugins |
 | 2.0.0 | >= 23.4.2 | >= 3.5 | JAVA 17 | Move to Spring Boot 4.0.9 / Spring Framework 7.0.10 (CVE-2026-47890) and Jackson 3; integrating applications must run Spring Boot 4 |
 | 1.1.19 | >= 23.4.2 | >= 3.5 | JAVA 17 | Apply the `remote.*` client settings (trust-all SSL, HTTP/1.1, TLSv1.2, timeouts) to the Alfresco login call and to the OAuth2 token call, not only to the API calls; drop the deprecated `password` grant from the documentation |
 | 1.1.18 | >= 23.4.2 | >= 3.5 | JAVA 17 | Read a `d:date` published as a calendar day, keeping the instant form of earlier repositories; provide the reactive OAuth2 client registration repository in servlet applications; bump Spring Boot to 3.5.16 (CVE-2026-22732) |
@@ -49,6 +50,7 @@ beCPG REST API SDK  consist of the following  libraries:
 ### Pre-Requisites
 
 * Java version 17 or higher
+* Spring Boot 4 (from version 2.0.0)
 * Maven version 3.3 or higher
 
 ### Quick start
@@ -83,7 +85,7 @@ Then, add the dependency on the desired starter(s)
    <dependency>
        <groupId>fr.becpg</groupId>
 	    <artifactId>becpg-java-rest-api</artifactId>
-		<version>1.1.19</version>
+		<version>2.0.1</version>
     </dependency>  
         
 </dependencies>
