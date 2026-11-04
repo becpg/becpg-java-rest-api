@@ -15,22 +15,23 @@ This SDK provides functionality to consume beCPG REST Remote API.
 
 | Version | beCPG Version | Version API | Version JAVA | Changes |
 | --- | --- | --- | --- | -- |
-| 2.0.1 | >= 23.4.2 | >= 3.5 | JAVA 17 | Bump Spring Boot to 4.1.2 and the test and Sonar plugins |
-| 2.0.0 | >= 23.4.2 | >= 3.5 | JAVA 17 | Move to Spring Boot 4.0.9 / Spring Framework 7.0.10 (CVE-2026-47890) and Jackson 3; integrating applications must run Spring Boot 4 |
-| 1.1.19 | >= 23.4.2 | >= 3.5 | JAVA 17 | Apply the `remote.*` client settings (trust-all SSL, HTTP/1.1, TLSv1.2, timeouts) to the Alfresco login call and to the OAuth2 token call, not only to the API calls; drop the deprecated `password` grant from the documentation |
-| 1.1.18 | >= 23.4.2 | >= 3.5 | JAVA 17 | Read a `d:date` published as a calendar day, keeping the instant form of earlier repositories; provide the reactive OAuth2 client registration repository in servlet applications; bump Spring Boot to 3.5.16 (CVE-2026-22732) |
-| 1.1.17 | >= 23.4.2 | >= 3.5 | JAVA 17 | Add ingList field definitions |
-| 1.1.16 | >= 23.4.2 | >= 3.5 | JAVA 17 | Add configurable HTTP connect/response timeouts; reduce Keycloak load (cache out-of-session alf_ticket, refresh tokens); fix OAuth2 conditional activation |
-| 1.1.15 | >= 23.4.2 | >= 3.5 | JAVA 17 | Add ProjectAPIModel, person properties and validation constraints |
-| 1.1.14 | >= 23.4.2 | >= 3.5 | JAVA 17 | Add secure batch endpoints in ChannelAPI |
-| 1.1.13 | >= 23.4.2 | >= 3.5 | JAVA 17 | Add bcpg:allergenListQtyPerc field constant |
-| 1.1.12 | >= 23.4.2 | >= 3.5 | JAVA 17 | Fix alf ticket encoding |
-| 1.1.11 | >= 23.4.2 | >= 3.5 | JAVA 17 | Bug fix oauth |
-| 1.1.10 | >= 23.4.2 | >= 3.5 | JAVA 17 | Add alfTocken session in basic Auth |
-| 1.1.9 | >= 23.4.2 | >= 3.5 | JAVA 17 | Add common helper functions |
-| 1.1.8 | >= 23.4.2 | >= 3.5 | JAVA 17 | Add BecpgAPIModel, setAssociations helpers, HTTP/1.1 and TLSv1.2 forcing options |
-| 1.1.7 | >= 23.4.2 | >= 3.5 (Partial support on >=3.3) | JAVA 17 | Bug fixes |
-| 1.1.6 | >= 23.4.2 | >= 3.5 (Partial support on >=3.3) | JAVA 17 | Add advanced search support |
+| 2.0.2 | >= 23.4.2 | >= 4.3 | JAVA 17 | Minor fix |
+| 2.0.1 | >= 23.4.2 | >= 4.3 | JAVA 17 | Bump Spring Boot to 4.1.2 and the test and Sonar plugins |
+| 2.0.0 | >= 23.4.2 | >= 4.3 | JAVA 17 | Move to Spring Boot 4.0.9 / Spring Framework 7.0.10 (CVE-2026-47890) and Jackson 3; integrating applications must run Spring Boot 4 |
+| 1.1.19 | >= 23.4.2 | >= 4.3 | JAVA 17 | Apply the `remote.*` client settings (trust-all SSL, HTTP/1.1, TLSv1.2, timeouts) to the Alfresco login call and to the OAuth2 token call, not only to the API calls; drop the deprecated `password` grant from the documentation |
+| 1.1.18 | >= 23.4.2 | >= 4.3 | JAVA 17 | Read a `d:date` published as a calendar day, keeping the instant form of earlier repositories; provide the reactive OAuth2 client registration repository in servlet applications; bump Spring Boot to 3.5.16 (CVE-2026-22732) |
+| 1.1.17 | >= 23.4.2 | >= 4.3 | JAVA 17 | Add ingList field definitions |
+| 1.1.16 | >= 23.4.2 | >= 4.3 | JAVA 17 | Add configurable HTTP connect/response timeouts; reduce Keycloak load (cache out-of-session alf_ticket, refresh tokens); fix OAuth2 conditional activation |
+| 1.1.15 | >= 23.4.2 | >= 4.3 | JAVA 17 | Add ProjectAPIModel, person properties and validation constraints |
+| 1.1.14 | >= 23.4.2 | >= 4.3 | JAVA 17 | Add secure batch endpoints in ChannelAPI |
+| 1.1.13 | >= 23.4.2 | >= 4.3 | JAVA 17 | Add bcpg:allergenListQtyPerc field constant |
+| 1.1.12 | >= 23.4.2 | >= 4.3 | JAVA 17 | Fix alf ticket encoding |
+| 1.1.11 | >= 23.4.2 | >= 4.3 | JAVA 17 | Bug fix oauth |
+| 1.1.10 | >= 23.4.2 | >= 4.3 | JAVA 17 | Add alfTocken session in basic Auth |
+| 1.1.9 | >= 23.4.2 | >= 4.3 | JAVA 17 | Add common helper functions |
+| 1.1.8 | >= 23.4.2 | >= 4.3 | JAVA 17 | Add BecpgAPIModel, setAssociations helpers, HTTP/1.1 and TLSv1.2 forcing options |
+| 1.1.7 | >= 23.4.2 | >= 4.3 (Partial support on >=3.3) | JAVA 17 | Bug fixes |
+| 1.1.6 | >= 23.4.2 | >= 4.3 (Partial support on >=3.3) | JAVA 17 | Add advanced search support |
 | 1.1.5 | >= 4.2.3 | >= 3.5 (Partial support on >=3.3) | JAVA 17 | Fix cm:person charact and single assoc |
 | 1.1.4 | >= 4.2.3 | >= 3.5 (Partial support on >=3.3) | JAVA 17 | Fix Memory issue |
 | 1.1.3 | >= 4.2.3 | >= 3.5 (Partial support on >=3.3) | JAVA 17 | Bugfix in compressParam |
