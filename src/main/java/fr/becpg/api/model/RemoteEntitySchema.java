@@ -63,6 +63,18 @@ public class RemoteEntitySchema {
         @JsonProperty("maximum")
         private Double maximum;
 
+        @JsonProperty("definedBy")
+        private DefinedBy definedBy;
+
+        /**
+         * The model class that declares a field: a type or an aspect, with its prefixed name.
+         *
+         * @param kind <code>type</code> or <code>aspect</code>
+         * @param name the prefixed name of the declaring class, e.g. <code>bcpg:productGeoOriginAspect</code>
+         */
+        public record DefinedBy(@JsonProperty("kind") String kind, @JsonProperty("name") String name) {
+        }
+
         /**
          * <p>getAttributeSchema.</p>
          *
@@ -349,10 +361,28 @@ public class RemoteEntitySchema {
                 this.maximum = maximum;
         }
 
+        /**
+         * <p>Getter for the field <code>definedBy</code>.</p>
+         *
+         * @return the type or the aspect that declares the field, null when the repository does not publish it (remote API &lt; 4.5)
+         */
+        public DefinedBy getDefinedBy() {
+                return definedBy;
+        }
+
+        /**
+         * <p>Setter for the field <code>definedBy</code>.</p>
+         *
+         * @param definedBy the type or the aspect that declares the field
+         */
+        public void setDefinedBy(DefinedBy definedBy) {
+                this.definedBy = definedBy;
+        }
+
         /** {@inheritDoc} */
         @Override
         public int hashCode() {
-                return Objects.hash(description, format, items, locale, properties, required, schemaId, schemaVersion, supportedLocales, title, type, maxLength, minLength, minimum, maximum);
+                return Objects.hash(description, format, items, locale, properties, required, schemaId, schemaVersion, supportedLocales, title, type, maxLength, minLength, minimum, maximum, definedBy);
         }
 
 
@@ -371,7 +401,8 @@ public class RemoteEntitySchema {
                                 && Objects.equals(schemaId, other.schemaId) && Objects.equals(schemaVersion, other.schemaVersion)
                                 && Objects.equals(supportedLocales, other.supportedLocales) && Objects.equals(title, other.title) && Objects.equals(type, other.type)
                                 && Objects.equals(maxLength, other.maxLength) && Objects.equals(minLength, other.minLength)
-                                && Objects.equals(minimum, other.minimum) && Objects.equals(maximum, other.maximum);
+                                && Objects.equals(minimum, other.minimum) && Objects.equals(maximum, other.maximum)
+                                && Objects.equals(definedBy, other.definedBy);
         }
 
 }

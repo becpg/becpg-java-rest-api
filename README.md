@@ -15,6 +15,7 @@ This SDK provides functionality to consume beCPG REST Remote API.
 
 | Version | beCPG Version | Version API | Version JAVA | Changes |
 | --- | --- | --- | --- | -- |
+| 2.0.3 | >= 23.4.2 | >= 4.3 | JAVA 17 | Read `definedBy`, the type or aspect declaring each field, in `RemoteEntitySchema` (published from beCPG 26.1.0, API 4.5) |
 | 2.0.2 | >= 23.4.2 | >= 4.3 | JAVA 17 | Minor fix |
 | 2.0.1 | >= 23.4.2 | >= 4.3 | JAVA 17 | Bump Spring Boot to 4.1.2 and the test and Sonar plugins |
 | 2.0.0 | >= 23.4.2 | >= 4.3 | JAVA 17 | Move to Spring Boot 4.0.9 / Spring Framework 7.0.10 (CVE-2026-47890) and Jackson 3; integrating applications must run Spring Boot 4 |
