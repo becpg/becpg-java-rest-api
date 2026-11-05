@@ -211,3 +211,13 @@
 * [skip ci][Release]: Update CHANGELOG.md for 2.0.1 release
 * [skip ci] Prepare for next development iteration
 
+## [ 2.0.3 ] - jeu. 05 nov 2026 09:55:43 CET
+
+* [Release] prepare release 2.0.3
+* [Merge] Merge feature/#38128 into main
+* [Setup] Add AGENTS.md with the README update at each release
+* Fix #38128 - [Feature] Read definedBy in RemoteEntitySchema
+* [Setup] Update README.md
+* [skip ci][Release]: Update CHANGELOG.md for 2.0.2 release
+* [skip ci] Prepare for next development iteration
+
