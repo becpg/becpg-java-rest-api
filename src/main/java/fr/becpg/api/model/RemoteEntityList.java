@@ -2,6 +2,7 @@ package fr.becpg.api.model;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -48,8 +49,10 @@ public class RemoteEntityList {
 	/**
 	 * <p>getTotalItems.</p>
 	 *
-	 * @return a int
+	 * @return the number of entities of this page (<code>pagination.count</code>), never serialized; the total of
+	 *         matching entities is {@link Pagination#getTotalItems()}
 	 */
+	@JsonIgnore
 	public int getTotalItems() {
 		return pagination == null ? 0 : pagination.getCount();
 	}

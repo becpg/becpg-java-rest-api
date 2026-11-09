@@ -3,6 +3,7 @@ package fr.becpg.api.model;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -380,17 +381,20 @@ public class RemoteNodeInfo {
 	/**
 	 * <p>getSort.</p>
 	 *
-	 * @return a {@link java.lang.Integer} object
+	 * @return the <code>bcpg:sort</code> attribute, derived from the attributes and never serialized
 	 */
 	@Nullable
+	@JsonIgnore
 	public Integer getSort() {
 		return getIntValue("bcpg:sort");
 	}
 
 	/**
-	 * <p>Getter for the field <code>optionalIdentifiers</code>.</p>
+	 * <p>Getter for the field <code>optionalIdentifiers</code>: the top-level keys that are not declared by the
+	 * model (identifiers such as <code>bcpg:channelId</code>, or keys like <code>version</code> and
+	 * <code>metadata</code> sent by the repository). They are written back as top-level keys.</p>
 	 *
-	 * @return a {@link java.util.Map} object
+	 * @return a {@link java.util.Map} object, null when there is no such key
 	 */
 	@JsonAnyGetter
 	public Map<String, Object> getOptionalIdentifiers() {
@@ -398,13 +402,29 @@ public class RemoteNodeInfo {
 	}
 
 	/**
-	 * <p>Setter for the field <code>optionalIdentifiers</code>.</p>
+	 * Replaces the optional identifiers by the given map. The map is kept by reference, not copied,
+	 * so later changes made to it by the caller are visible here. JSON reading does not call this
+	 * method: unknown keys are added one by one through {@link #setOptionalIdentifier(String, Object)}.
 	 *
-	 * @param identifiers a {@link java.util.Map} object
+	 * @param identifiers the map of optional identifiers that replaces the current one
 	 */
-	@JsonAnySetter
+	@JsonIgnore
 	public void setOptionalIdentifiers(Map<String, Object> identifiers) {
 		this.optionalIdentifiers = identifiers;
+	}
+
+	/**
+	 * Keeps a top-level key that is not declared by the model, so that it is written back unchanged.
+	 *
+	 * @param key the key, e.g. <code>version</code>
+	 * @param value its value, as read from the JSON
+	 */
+	@JsonAnySetter
+	public void setOptionalIdentifier(String key, Object value) {
+		if (optionalIdentifiers == null) {
+			optionalIdentifiers = new LinkedHashMap<>();
+		}
+		optionalIdentifiers.put(key, value);
 	}
 
 	/**

@@ -1,5 +1,6 @@
 package fr.becpg.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -30,8 +31,10 @@ public class RemoteAPIResponse {
 	/**
 	 * <p>getId.</p>
 	 *
-	 * @return a {@link java.lang.String} object
+	 * @return the id of the node, derived from the <code>nodeRef</code> and never serialized
+	 * @throws IllegalStateException when the <code>nodeRef</code> holds no forward slash
 	 */
+	@JsonIgnore
 	public String getId() {
 		if (nodeRef != null) {
 			int lastForwardSlash = nodeRef.lastIndexOf('/');

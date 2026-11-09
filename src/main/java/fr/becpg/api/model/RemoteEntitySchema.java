@@ -1,9 +1,12 @@
 package fr.becpg.api.model;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -65,6 +68,17 @@ public class RemoteEntitySchema {
 
         @JsonProperty("definedBy")
         private DefinedBy definedBy;
+
+        @JsonProperty("enum")
+        private List<String> enumValues;
+
+        @JsonProperty("default")
+        private String defaultValue;
+
+        @JsonProperty("contentEncoding")
+        private String contentEncoding;
+
+        private Map<String, Object> additionalKeywords;
 
         /**
          * The model class that declares a field: a type or an aspect, with its prefixed name.
@@ -379,10 +393,90 @@ public class RemoteEntitySchema {
                 this.definedBy = definedBy;
         }
 
+        /**
+         * <p>Getter for the field <code>enumValues</code>.</p>
+         *
+         * @return the values allowed by a list of values constraint (<code>enum</code>), null when the field has none
+         */
+        public List<String> getEnumValues() {
+                return enumValues;
+        }
+
+        /**
+         * <p>Setter for the field <code>enumValues</code>.</p>
+         *
+         * @param enumValues the values allowed by a list of values constraint
+         */
+        public void setEnumValues(List<String> enumValues) {
+                this.enumValues = enumValues;
+        }
+
+        /**
+         * <p>Getter for the field <code>defaultValue</code>.</p>
+         *
+         * @return the default value of the property (<code>default</code>), as the repository writes it, null when it has none
+         */
+        public String getDefaultValue() {
+                return defaultValue;
+        }
+
+        /**
+         * <p>Setter for the field <code>defaultValue</code>.</p>
+         *
+         * @param defaultValue the default value of the property
+         */
+        public void setDefaultValue(String defaultValue) {
+                this.defaultValue = defaultValue;
+        }
+
+        /**
+         * <p>Getter for the field <code>contentEncoding</code>.</p>
+         *
+         * @return the encoding of a string value (<code>base64</code> for the <code>content</code> field), null when it has none
+         */
+        public String getContentEncoding() {
+                return contentEncoding;
+        }
+
+        /**
+         * <p>Setter for the field <code>contentEncoding</code>.</p>
+         *
+         * @param contentEncoding the encoding of a string value
+         */
+        public void setContentEncoding(String contentEncoding) {
+                this.contentEncoding = contentEncoding;
+        }
+
+        /**
+         * <p>Getter for the field <code>additionalKeywords</code>: the keywords that are not declared by this class,
+         * written back unchanged.</p>
+         *
+         * @return a {@link java.util.Map} object, null when there is no such keyword
+         */
+        @JsonAnyGetter
+        public Map<String, Object> getAdditionalKeywords() {
+                return additionalKeywords;
+        }
+
+        /**
+         * Keeps a keyword that is not declared by this class, so that it is written back unchanged.
+         *
+         * @param keyword the keyword
+         * @param value its value, as read from the JSON
+         */
+        @JsonAnySetter
+        public void setAdditionalKeyword(String keyword, Object value) {
+                if (additionalKeywords == null) {
+                        additionalKeywords = new LinkedHashMap<>();
+                }
+                additionalKeywords.put(keyword, value);
+        }
+
         /** {@inheritDoc} */
         @Override
         public int hashCode() {
-                return Objects.hash(description, format, items, locale, properties, required, schemaId, schemaVersion, supportedLocales, title, type, maxLength, minLength, minimum, maximum, definedBy);
+                return Objects.hash(description, format, items, locale, properties, required, schemaId, schemaVersion, supportedLocales, title, type, maxLength, minLength, minimum, maximum, definedBy,
+                                enumValues, defaultValue, contentEncoding, additionalKeywords);
         }
 
 
@@ -402,7 +496,9 @@ public class RemoteEntitySchema {
                                 && Objects.equals(supportedLocales, other.supportedLocales) && Objects.equals(title, other.title) && Objects.equals(type, other.type)
                                 && Objects.equals(maxLength, other.maxLength) && Objects.equals(minLength, other.minLength)
                                 && Objects.equals(minimum, other.minimum) && Objects.equals(maximum, other.maximum)
-                                && Objects.equals(definedBy, other.definedBy);
+                                && Objects.equals(definedBy, other.definedBy) && Objects.equals(enumValues, other.enumValues)
+                                && Objects.equals(defaultValue, other.defaultValue) && Objects.equals(contentEncoding, other.contentEncoding)
+                                && Objects.equals(additionalKeywords, other.additionalKeywords);
         }
 
 }

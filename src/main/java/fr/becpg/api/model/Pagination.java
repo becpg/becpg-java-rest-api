@@ -1,14 +1,19 @@
 package fr.becpg.api.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 /**
  * <p>Pagination class.</p>
  *
  * @author matthieu
  */
+@JsonInclude(Include.NON_NULL)
 public class Pagination {
 
 	private boolean hasMoreItems;
 	private int count;
+	private Integer totalItems;
 
 	/**
 	 * <p>isHasMoreItems.</p>
@@ -46,10 +51,29 @@ public class Pagination {
 		this.count = count;
 	}
 
+	/**
+	 * <p>Getter for the field <code>totalItems</code>.</p>
+	 *
+	 * @return the number of entities matching the request as a whole, null when the repository does not know it
+	 *         or does not publish it (remote API &lt; 4.4)
+	 */
+	public Integer getTotalItems() {
+		return totalItems;
+	}
+
+	/**
+	 * <p>Setter for the field <code>totalItems</code>.</p>
+	 *
+	 * @param totalItems the number of entities matching the request as a whole, null when unknown
+	 */
+	public void setTotalItems(Integer totalItems) {
+		this.totalItems = totalItems;
+	}
+
 	/** {@inheritDoc} */
 	@Override
 	public String toString() {
-		return "Pagination{" + "hasMoreItems=" + hasMoreItems + ", count=" + count + '}';
+		return "Pagination{" + "hasMoreItems=" + hasMoreItems + ", count=" + count + ", totalItems=" + totalItems + '}';
 	}
 
 }
