@@ -221,3 +221,10 @@
 * [skip ci][Release]: Update CHANGELOG.md for 2.0.2 release
 * [skip ci] Prepare for next development iteration
 
+## [ 2.0.4 ] - mar. 10 nov 2026 09:56:08 CET
+
+* [Release] prepare release 2.0.4
+* [Bug] Keep the remote JSON unchanged through the client model
+* [skip ci][Release]: Update CHANGELOG.md for 2.0.3 release
+* [skip ci] Prepare for next development iteration
+
