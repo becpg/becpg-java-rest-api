@@ -7,10 +7,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import tools.jackson.core.StreamReadFeature;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * Unit tests for the keywords of {@link RemoteEntitySchema} and its round trip.
@@ -52,6 +55,18 @@ class RemoteEntitySchemaTest {
 			}
 			""";
 
+	private static final String STATE_FIELD_SCHEMA = """
+			{
+			  "type": "string",
+			  "title": "State",
+			  "enum": [ "Simulation", "Valid" ],
+			  "default": "Simulation",
+			  "contentEncoding": "base64",
+			  "definedBy": { "kind": "aspect", "name": "bcpg:productGeoOriginAspect" },
+			  "$comment": "A keyword the client model does not declare"
+			}
+			""";
+
 	private final JsonMapper mapper = JsonMapper.builder().build();
 
 	// Fails when a key is written twice, which a tree comparison alone would merge
@@ -64,16 +79,6 @@ class RemoteEntitySchemaTest {
 		assertNotNull(schema.getDefinedBy(), "definedBy not read");
 		assertEquals("aspect", schema.getDefinedBy().kind());
 		assertEquals("bcpg:productGeoOriginAspect", schema.getDefinedBy().name());
-	}
-
-	@Test
-	void distinguishesFieldsDeclaredByDifferentClasses() {
-		RemoteEntitySchema aspectField = mapper.readValue(FIELD_SCHEMA, RemoteEntitySchema.class);
-		RemoteEntitySchema typeField = mapper.readValue(FIELD_SCHEMA, RemoteEntitySchema.class);
-		typeField.setDefinedBy(new RemoteEntitySchema.DefinedBy("type", "bcpg:ingList"));
-
-		assertEquals("array", typeField.getType());
-		assertNotEquals(aspectField, typeField);
 	}
 
 	@Test
@@ -102,5 +107,33 @@ class RemoteEntitySchemaTest {
 		RemoteEntitySchema schema = mapper.readValue(ENTITY_SCHEMA, RemoteEntitySchema.class);
 
 		assertEquals("base64", schema.getAttributeSchema("content").getContentEncoding());
+	}
+
+	@Test
+	void equalsTheSameSchemaReadTwice() {
+		RemoteEntitySchema schema = mapper.readValue(STATE_FIELD_SCHEMA, RemoteEntitySchema.class);
+		RemoteEntitySchema sameSchema = mapper.readValue(STATE_FIELD_SCHEMA, RemoteEntitySchema.class);
+
+		assertEquals(schema, sameSchema);
+		assertEquals(schema.hashCode(), sameSchema.hashCode());
+	}
+
+	@ParameterizedTest
+	@CsvSource(delimiter = '|', textBlock = """
+			enum            | [ "Valid" ]
+			default         | "Valid"
+			contentEncoding | "7bit"
+			definedBy       | { "kind": "type", "name": "bcpg:ingList" }
+			$comment        | "Another comment"
+			""")
+	void distinguishesSchemasDifferingByOneKeyword(String keyword, String otherValue) {
+		ObjectNode json = (ObjectNode) mapper.readTree(STATE_FIELD_SCHEMA);
+		ObjectNode changedJson = json.deepCopy();
+		changedJson.set(keyword, mapper.readTree(otherValue));
+
+		RemoteEntitySchema schema = mapper.treeToValue(json, RemoteEntitySchema.class);
+		RemoteEntitySchema changedSchema = mapper.treeToValue(changedJson, RemoteEntitySchema.class);
+
+		assertNotEquals(schema, changedSchema);
 	}
 }
