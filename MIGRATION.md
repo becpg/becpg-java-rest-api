@@ -1,5 +1,12 @@
 # Migration guide
 
+## 2.1
+
+### Breaking changes
+
+- `EntityAPI` gets `formulate`, `branch`, `merge` and `delete` and their reactive variants (#38440): an application that implements
+  `EntityAPI` itself, rather than injecting it or mocking it, must implement them. Nothing changes for the applications that only call it.
+
 ## 2.0
 
 ### Breaking changes

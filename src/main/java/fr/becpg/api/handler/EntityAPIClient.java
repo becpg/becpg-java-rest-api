@@ -3,6 +3,7 @@ package fr.becpg.api.handler;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -40,6 +41,20 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 	private static final String REMOTE_ENTITY_URL = "/entity";
 
 	private static final String REMOTE_ENTITY_LIST_URL = REMOTE_ENTITY_URL + "/list";
+
+	private static final String REMOTE_FORMULATE_URL = "/formulate";
+
+	private static final String REMOTE_BRANCH_URL = "/branch";
+
+	private static final String REMOTE_MERGE_URL = "/merge";
+
+	private static final String PARAM_DEST_NODEREF = "destNodeRef";
+
+	private static final String PARAM_BRANCH_TO_NODEREF = "branchToNodeRef";
+
+	private static final String PARAM_IMPACT_WUSED = "impactWused";
+
+	private static final String PARAM_DESCRIPTION = "description";
 
 
 	/** {@inheritDoc} */
@@ -382,6 +397,82 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 				.accept(MediaType.APPLICATION_JSON).retrieve()
 				.onStatus(HttpStatusCode::isError, response -> handleErrorResponse(response))
 				.bodyToMono(RemoteEntitySchema.class).block();
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public RemoteAPIResponse formulate(String id) {
+		return formulateEntity(id).block();
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public Mono<RemoteAPIResponse> formulateEntity(String id) {
+		return webClient().get()
+				.uri(uriBuilder -> uriBuilder.path(REMOTE_FORMULATE_URL).queryParam(PARAM_FORMAT, FORMAT_JSON)
+						.queryParam(PARAM_NODEREF, buildNodeRefParam(id)).build())
+				.accept(MediaType.APPLICATION_JSON).retrieve()
+				.onStatus(HttpStatusCode::isError, response -> handleErrorResponse(response))
+				.bodyToMono(RemoteAPIResponse.class);
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public RemoteAPIResponse branch(String id, String destFolderId) {
+		return branchEntity(id, destFolderId).block();
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public Mono<RemoteAPIResponse> branchEntity(String id, String destFolderId) {
+		return webClient().post()
+				.uri(uriBuilder -> uriBuilder.path(REMOTE_BRANCH_URL).queryParam(PARAM_FORMAT, FORMAT_JSON)
+						.queryParam(PARAM_NODEREF, buildNodeRefParam(id))
+						.queryParamIfPresent(PARAM_DEST_NODEREF, Optional.ofNullable(buildNodeRefParam(destFolderId))).build())
+				.accept(MediaType.APPLICATION_JSON).retrieve()
+				.onStatus(HttpStatusCode::isError, response -> handleErrorResponse(response))
+				.bodyToMono(RemoteAPIResponse.class);
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public RemoteAPIResponse merge(String id, String branchToId, boolean majorVersion, String description, boolean impactWused) {
+		return mergeEntity(id, branchToId, majorVersion, description, impactWused).block();
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public Mono<RemoteAPIResponse> mergeEntity(String id, String branchToId, boolean majorVersion, String description, boolean impactWused) {
+		Objects.requireNonNull(branchToId, "branchToId is mandatory");
+		// The description goes in the body: the repository reads it there without any query string encoding issue
+		Map<String, String> body = Map.of(PARAM_DESCRIPTION, description != null ? description : "");
+
+		return webClient().post()
+				.uri(uriBuilder -> uriBuilder.path(REMOTE_MERGE_URL).queryParam(PARAM_FORMAT, FORMAT_JSON)
+						.queryParam(PARAM_NODEREF, buildNodeRefParam(id))
+						.queryParam(PARAM_BRANCH_TO_NODEREF, buildNodeRefParam(branchToId))
+						.queryParam(PARAM_MAJOR_VERSION, majorVersion).queryParam(PARAM_IMPACT_WUSED, impactWused).build())
+				.contentType(MediaType.APPLICATION_JSON).body(BodyInserters.fromValue(body))
+				.accept(MediaType.APPLICATION_JSON).retrieve()
+				.onStatus(HttpStatusCode::isError, response -> handleErrorResponse(response))
+				.bodyToMono(RemoteAPIResponse.class);
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public RemoteAPIResponse delete(String id) {
+		return deleteEntity(id).block();
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public Mono<RemoteAPIResponse> deleteEntity(String id) {
+		return webClient().delete()
+				.uri(uriBuilder -> uriBuilder.path(REMOTE_ENTITY_URL).queryParam(PARAM_FORMAT, FORMAT_JSON)
+						.queryParam(PARAM_NODEREF, buildNodeRefParam(id)).build())
+				.accept(MediaType.APPLICATION_JSON).retrieve()
+				.onStatus(HttpStatusCode::isError, response -> handleErrorResponse(response))
+				.bodyToMono(RemoteAPIResponse.class);
 	}
 
 }

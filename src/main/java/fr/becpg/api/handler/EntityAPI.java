@@ -344,4 +344,86 @@ public interface EntityAPI {
 	 */
 	Mono<RemoteAPIResponse> updateEntity(RemoteEntity entity, boolean createversion, boolean majorVersion, String versionDescription);
 
+	/**
+	 * <p>formulate.</p>
+	 * Formulates the entity. Available from remote API version 2.1.
+	 *
+	 * @param id the entity id or nodeRef
+	 * @return the response of the repository, or <code>null</code> when the formulation did not complete
+	 */
+	RemoteAPIResponse formulate(String id);
+
+	/**
+	 * <p>formulateEntity.</p>
+	 * Formulates the entity. Available from remote API version 2.1.
+	 *
+	 * @param id the entity id or nodeRef
+	 * @return the response of the repository, empty when the formulation did not complete
+	 */
+	Mono<RemoteAPIResponse> formulateEntity(String id);
+
+	/**
+	 * <p>branch.</p>
+	 * Creates a branch of the entity. Available from remote API version 2.1.
+	 *
+	 * @param id the entity id or nodeRef
+	 * @param destFolderId the id or nodeRef of the folder of the branch, <code>null</code> to create it next to the entity
+	 * @return the response of the repository, whose id is the one of the branch
+	 */
+	RemoteAPIResponse branch(String id, String destFolderId);
+
+	/**
+	 * <p>branchEntity.</p>
+	 * Creates a branch of the entity. Available from remote API version 2.1.
+	 *
+	 * @param id the entity id or nodeRef
+	 * @param destFolderId the id or nodeRef of the folder of the branch, <code>null</code> to create it next to the entity
+	 * @return the response of the repository, whose id is the one of the branch
+	 */
+	Mono<RemoteAPIResponse> branchEntity(String id, String destFolderId);
+
+	/**
+	 * <p>merge.</p>
+	 * Merges a branch into the entity it was created from. Available from remote API version 2.1.
+	 *
+	 * @param id the branch id or nodeRef
+	 * @param branchToId the id or nodeRef of the entity the branch is merged into, mandatory
+	 * @param majorVersion <code>true</code> to create a major version, <code>false</code> for a minor one
+	 * @param description the description of the new version, may be <code>null</code>
+	 * @param impactWused <code>true</code> to also create a version of the entities using the merged one
+	 * @return the response of the repository, whose id is the one of the merged entity
+	 */
+	RemoteAPIResponse merge(String id, String branchToId, boolean majorVersion, String description, boolean impactWused);
+
+	/**
+	 * <p>mergeEntity.</p>
+	 * Merges a branch into the entity it was created from. Available from remote API version 2.1.
+	 *
+	 * @param id the branch id or nodeRef
+	 * @param branchToId the id or nodeRef of the entity the branch is merged into, mandatory
+	 * @param majorVersion <code>true</code> to create a major version, <code>false</code> for a minor one
+	 * @param description the description of the new version, may be <code>null</code>
+	 * @param impactWused <code>true</code> to also create a version of the entities using the merged one
+	 * @return the response of the repository, whose id is the one of the merged entity
+	 */
+	Mono<RemoteAPIResponse> mergeEntity(String id, String branchToId, boolean majorVersion, String description, boolean impactWused);
+
+	/**
+	 * <p>delete.</p>
+	 * Deletes the entity. Available from remote API version 1.0.
+	 *
+	 * @param id the entity id or nodeRef
+	 * @return the response of the repository
+	 */
+	RemoteAPIResponse delete(String id);
+
+	/**
+	 * <p>deleteEntity.</p>
+	 * Deletes the entity. Available from remote API version 1.0.
+	 *
+	 * @param id the entity id or nodeRef
+	 * @return the response of the repository
+	 */
+	Mono<RemoteAPIResponse> deleteEntity(String id);
+
 }

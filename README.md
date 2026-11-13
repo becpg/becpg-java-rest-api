@@ -384,6 +384,72 @@ Updates the specified entity.
 
 A `RemoteEntity` object representing the updated entity.
 
+---
+
+### `RemoteAPIResponse formulate(String id)`
+
+Formulates the entity (remote API >= 2.1). `formulateEntity(String id)` is the reactive variant.
+
+#### Parameters
+
+- `id`: the ID or nodeRef of the entity.
+
+#### Returns
+
+A `RemoteAPIResponse` with the status `SUCCESS` and the nodeRef of the entity, or `null` when the formulation did not complete.
+
+---
+
+### `RemoteAPIResponse branch(String id, String destFolderId)`
+
+Creates a branch of the entity (remote API >= 2.1). `branchEntity(String id, String destFolderId)` is the reactive variant.
+
+#### Parameters
+
+- `id`: the ID or nodeRef of the entity.
+- `destFolderId`: the ID or nodeRef of the folder of the branch, `null` to create it next to the entity.
+
+#### Returns
+
+A `RemoteAPIResponse` whose `getId()` is the ID of the branch.
+
+---
+
+### `RemoteAPIResponse merge(String id, String branchToId, boolean majorVersion, String description, boolean impactWused)`
+
+Merges a branch into the entity it was created from (remote API >= 2.1). `mergeEntity(...)` is the reactive variant.
+
+#### Parameters
+
+- `id`: the ID or nodeRef of the branch.
+- `branchToId`: the ID or nodeRef of the entity the branch is merged into, mandatory.
+- `majorVersion`: `true` for a major version, `false` for a minor one.
+- `description`: the description of the new version, may be `null`.
+- `impactWused`: `true` to also create a version of the entities using the merged one.
+
+#### Returns
+
+A `RemoteAPIResponse` whose `getId()` is the ID of the merged entity.
+
+---
+
+### `RemoteAPIResponse delete(String id)`
+
+Deletes the entity. `deleteEntity(String id)` is the reactive variant.
+
+#### Parameters
+
+- `id`: the ID or nodeRef of the entity.
+
+#### Returns
+
+A `RemoteAPIResponse` with the status `SUCCESS` and the nodeRef of the deleted entity.
+
+---
+
+Every method raises a `RemoteAPIException` carrying the HTTP status when the repository refuses the call. From remote API 4.5, the status is
+`403` when the user cannot read the entity and `429` when the rate limit is reached (retry after the `Retry-After` header).
+
 
 # ChannelAPI
 
@@ -500,3 +566,4 @@ Writes the content of the given node to the specified file.
 #### Throws
 
 - `IOException`: if there is an error while writing the content.
+
