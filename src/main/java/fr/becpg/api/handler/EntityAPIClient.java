@@ -3,7 +3,6 @@ package fr.becpg.api.handler;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -443,7 +442,10 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 	/** {@inheritDoc} */
 	@Override
 	public Mono<RemoteAPIResponse> mergeEntity(String id, String branchToId, boolean majorVersion, String description, boolean impactWused) {
-		Objects.requireNonNull(branchToId, "branchToId is mandatory");
+		if (branchToId == null) {
+			// Reported through the Mono, so that a reactive caller handles it like any other error
+			return Mono.error(new NullPointerException("branchToId is mandatory"));
+		}
 		// The description goes in the body: the repository reads it there without any query string encoding issue
 		Map<String, String> body = Map.of(PARAM_DESCRIPTION, description != null ? description : "");
 

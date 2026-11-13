@@ -346,7 +346,7 @@ public interface EntityAPI {
 
 	/**
 	 * <p>formulate.</p>
-	 * Formulates the entity. Available from remote API version 2.1.
+	 * Formulates the entity. Available from remote API version 3.0 (JSON response).
 	 *
 	 * @param id the entity id or nodeRef
 	 * @return the response of the repository, or <code>null</code> when the formulation did not complete
@@ -355,7 +355,7 @@ public interface EntityAPI {
 
 	/**
 	 * <p>formulateEntity.</p>
-	 * Formulates the entity. Available from remote API version 2.1.
+	 * Formulates the entity. Available from remote API version 3.0 (JSON response).
 	 *
 	 * @param id the entity id or nodeRef
 	 * @return the response of the repository, empty when the formulation did not complete
@@ -364,7 +364,7 @@ public interface EntityAPI {
 
 	/**
 	 * <p>branch.</p>
-	 * Creates a branch of the entity. Available from remote API version 2.1.
+	 * Creates a branch of the entity. Available from remote API version 3.0 (JSON response).
 	 *
 	 * @param id the entity id or nodeRef
 	 * @param destFolderId the id or nodeRef of the folder of the branch, <code>null</code> to create it next to the entity
@@ -374,7 +374,7 @@ public interface EntityAPI {
 
 	/**
 	 * <p>branchEntity.</p>
-	 * Creates a branch of the entity. Available from remote API version 2.1.
+	 * Creates a branch of the entity. Available from remote API version 3.0 (JSON response).
 	 *
 	 * @param id the entity id or nodeRef
 	 * @param destFolderId the id or nodeRef of the folder of the branch, <code>null</code> to create it next to the entity
@@ -384,7 +384,7 @@ public interface EntityAPI {
 
 	/**
 	 * <p>merge.</p>
-	 * Merges a branch into the entity it was created from. Available from remote API version 2.1.
+	 * Merges a branch into the entity it was created from. Available from remote API version 3.0 (JSON response).
 	 *
 	 * @param id the branch id or nodeRef
 	 * @param branchToId the id or nodeRef of the entity the branch is merged into, mandatory
@@ -397,7 +397,7 @@ public interface EntityAPI {
 
 	/**
 	 * <p>mergeEntity.</p>
-	 * Merges a branch into the entity it was created from. Available from remote API version 2.1.
+	 * Merges a branch into the entity it was created from. Available from remote API version 3.0 (JSON response).
 	 *
 	 * @param id the branch id or nodeRef
 	 * @param branchToId the id or nodeRef of the entity the branch is merged into, mandatory
@@ -410,7 +410,7 @@ public interface EntityAPI {
 
 	/**
 	 * <p>delete.</p>
-	 * Deletes the entity. Available from remote API version 1.0.
+	 * Deletes the entity. Available from remote API version 3.0 (JSON response).
 	 *
 	 * @param id the entity id or nodeRef
 	 * @return the response of the repository
@@ -419,7 +419,7 @@ public interface EntityAPI {
 
 	/**
 	 * <p>deleteEntity.</p>
-	 * Deletes the entity. Available from remote API version 1.0.
+	 * Deletes the entity. Available from remote API version 3.0 (JSON response).
 	 *
 	 * @param id the entity id or nodeRef
 	 * @return the response of the repository

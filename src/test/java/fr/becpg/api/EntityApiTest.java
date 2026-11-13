@@ -36,6 +36,7 @@ import fr.becpg.api.model.RemoteNodeInfo;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
+import reactor.core.publisher.Mono;
 
 class EntityApiTest extends AbstractRemoteApiTest {
 
@@ -257,6 +258,14 @@ class EntityApiTest extends AbstractRemoteApiTest {
 	@Test
 	void testMergeRequiresTheTargetEntity() {
 		Assert.assertThrows(NullPointerException.class, () -> entityApi.merge(BRANCH_ID, null, false, null, false));
+	}
+
+	@Test
+	void testMergeEntityReportsTheMissingTargetThroughTheMono() {
+		// Building the Mono must not throw: the error reaches the operators of a reactive caller
+		Mono<RemoteAPIResponse> merge = entityApi.mergeEntity(BRANCH_ID, null, false, null, false);
+
+		Assert.assertEquals("recovered", merge.map(RemoteAPIResponse::getStatus).onErrorResume(NullPointerException.class, e -> Mono.just("recovered")).block());
 	}
 
 	@Test

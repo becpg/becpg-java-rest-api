@@ -388,7 +388,7 @@ A `RemoteEntity` object representing the updated entity.
 
 ### `RemoteAPIResponse formulate(String id)`
 
-Formulates the entity (remote API >= 2.1). `formulateEntity(String id)` is the reactive variant.
+Formulates the entity (remote API >= 3.0). `formulateEntity(String id)` is the reactive variant.
 
 #### Parameters
 
@@ -402,7 +402,7 @@ A `RemoteAPIResponse` with the status `SUCCESS` and the nodeRef of the entity, o
 
 ### `RemoteAPIResponse branch(String id, String destFolderId)`
 
-Creates a branch of the entity (remote API >= 2.1). `branchEntity(String id, String destFolderId)` is the reactive variant.
+Creates a branch of the entity (remote API >= 3.0). `branchEntity(String id, String destFolderId)` is the reactive variant.
 
 #### Parameters
 
@@ -417,7 +417,7 @@ A `RemoteAPIResponse` whose `getId()` is the ID of the branch.
 
 ### `RemoteAPIResponse merge(String id, String branchToId, boolean majorVersion, String description, boolean impactWused)`
 
-Merges a branch into the entity it was created from (remote API >= 2.1). `mergeEntity(...)` is the reactive variant.
+Merges a branch into the entity it was created from (remote API >= 3.0). `mergeEntity(...)` is the reactive variant.
 
 #### Parameters
 
@@ -435,7 +435,7 @@ A `RemoteAPIResponse` whose `getId()` is the ID of the merged entity.
 
 ### `RemoteAPIResponse delete(String id)`
 
-Deletes the entity. `deleteEntity(String id)` is the reactive variant.
+Deletes the entity (remote API >= 3.0). `deleteEntity(String id)` is the reactive variant.
 
 #### Parameters
 
@@ -448,7 +448,7 @@ A `RemoteAPIResponse` with the status `SUCCESS` and the nodeRef of the deleted e
 ---
 
 Every method raises a `RemoteAPIException` carrying the HTTP status when the repository refuses the call. From remote API 4.5, the status is
-`403` when the user cannot read the entity and `429` when the rate limit is reached (retry after the `Retry-After` header).
+`403` when the user cannot read the entity and `429` when the rate limit is reached.
 
 
 # ChannelAPI
