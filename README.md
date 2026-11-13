@@ -15,6 +15,8 @@ This SDK provides functionality to consume beCPG REST Remote API.
 
 | Version | beCPG Version | Version API | Version JAVA | Changes |
 | --- | --- | --- | --- | -- |
+| 2.1.0 | >= 23.4.2 | >= 4.3 | JAVA 17 | Add `formulate`, `branch`, `merge` and `delete` to `EntityAPI` |
+| 2.0.4 | >= 23.4.2 | >= 4.3 | JAVA 17 | Keep the remote JSON unchanged through the client model |
 | 2.0.3 | >= 23.4.2 | >= 4.3 | JAVA 17 | Read `definedBy`, the type or aspect declaring each field, in `RemoteEntitySchema` (published from beCPG 26.1.0, API 4.5) |
 | 2.0.2 | >= 23.4.2 | >= 4.3 | JAVA 17 | Minor fix |
 | 2.0.1 | >= 23.4.2 | >= 4.3 | JAVA 17 | Bump Spring Boot to 4.1.2 and the test and Sonar plugins |
@@ -87,7 +89,7 @@ Then, add the dependency on the desired starter(s)
    <dependency>
        <groupId>fr.becpg</groupId>
 	    <artifactId>becpg-java-rest-api</artifactId>
-		<version>2.0.1</version>
+		<version>2.1.0</version>
     </dependency>  
         
 </dependencies>
