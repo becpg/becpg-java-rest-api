@@ -228,3 +228,14 @@
 * [skip ci][Release]: Update CHANGELOG.md for 2.0.3 release
 * [skip ci] Prepare for next development iteration
 
+## [ 2.1.0 ] - ven. 13 nov 2026 13:27:32 CET
+
+* [Release] prepare release 2.1.0
+* [Setup] Update README and MIGRATION for 2.1.0
+* Fix #38440 - [Feature] Report a missing merge target through the Mono and require remote API 3.0
+* Fix #38440 - [Feature] Add formulate, branch, merge and delete methods to EntityAPI
+* [Cleanup] Cover the equality of RemoteEntitySchema on its new keywords
+* [Setup] Import the JaCoCo coverage into SonarQube in becpg-java-rest-api
+* [skip ci][Release]: Update CHANGELOG.md for 2.0.4 release
+* [skip ci] Prepare for next development iteration
+
