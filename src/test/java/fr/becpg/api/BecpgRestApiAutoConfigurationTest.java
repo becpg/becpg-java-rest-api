@@ -14,6 +14,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import fr.becpg.api.handler.ChannelAPIClient;
 import fr.becpg.api.handler.ContentAPIClient;
 import fr.becpg.api.handler.EntityAPIClient;
+import fr.becpg.api.handler.ReportAPIClient;
 
 /**
  * An integrator only gets the SDK beans through the auto-configuration imports: its own application scans its own package, not {@code fr.becpg.api}.
@@ -38,6 +39,7 @@ class BecpgRestApiAutoConfigurationTest {
         List<String> imports = new ArrayList<>();
         ImportCandidates.load(AutoConfiguration.class, getClass().getClassLoader()).forEach(imports::add);
 
-        Assertions.assertThat(imports).contains(EntityAPIClient.class.getName(), ContentAPIClient.class.getName(), ChannelAPIClient.class.getName());
+        Assertions.assertThat(imports).contains(EntityAPIClient.class.getName(), ContentAPIClient.class.getName(), ChannelAPIClient.class.getName(),
+                ReportAPIClient.class.getName());
     }
 }
