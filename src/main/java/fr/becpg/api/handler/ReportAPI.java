@@ -72,6 +72,9 @@ public interface ReportAPI {
 
 	/**
 	 * <p>generateEntityReport.</p>
+	 * Chains several remote calls: each one after the first starts on the thread that completed the previous one. With an authentication
+	 * bound to the calling thread (a delegated authentication read from the Spring security context), use
+	 * {@link #generateReport(String, String, String)}, which makes every call from the calling thread.
 	 *
 	 * @param id the entity id or nodeRef
 	 * @param template the id or nodeRef of the report template, or its name, with or without <code>.rptdesign</code>, ignoring the case

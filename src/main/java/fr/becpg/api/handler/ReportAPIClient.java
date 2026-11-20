@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.core.ParameterizedTypeReference;
@@ -113,10 +114,25 @@ public class ReportAPIClient extends AbstractAPIClient implements ReportAPI {
 				.defaultIfEmpty(List.of());
 	}
 
-	/** {@inheritDoc} */
+	/**
+	 * {@inheritDoc}
+	 * <p>
+	 * Each remote call is made and awaited from the calling thread. Chained in one reactive pipeline, as {@link #generateEntityReport} does, a call
+	 * starts on the thread that completed the previous one, where an authentication bound to the calling thread (a delegated authentication read
+	 * from the Spring security context) is missing: the repository would refuse it.
+	 */
 	@Override
 	public RemoteReport generateReport(String id, String template, String locale) {
-		return generateEntityReport(id, template, locale).block();
+		Objects.requireNonNull(id, "id is mandatory");
+		Objects.requireNonNull(template, "template is mandatory");
+		List<RemoteReport> reports = listReports(id);
+		if (reports.isEmpty()) {
+			generateReports(id, false);
+			reports = listReports(id);
+		}
+		RemoteReport report = selectReport(reports, template, locale);
+		Long size = generateContent(report).block();
+		return report.withGeneratedSize(size);
 	}
 
 	/** {@inheritDoc} */
