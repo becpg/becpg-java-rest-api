@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -82,7 +82,7 @@ class EntityApiTest extends AbstractRemoteApiTest {
 		List<RemoteEntityRef> entities = entityApi.list("+TYPE:\"bcpg:finishedProduct\" AND +bcpg\\:erpCode:\"PERF-PF1\"");
 		for (RemoteEntityRef entityRef : entities) {
 
-			Assert.assertNotNull(entityRef.getEntity());
+			Assertions.assertNotNull(entityRef.getEntity());
 
 			logger.info("Entity ref: " + entityRef.getEntity().toString());
 
@@ -101,25 +101,25 @@ class EntityApiTest extends AbstractRemoteApiTest {
 
 			RemoteEntity entity = entityApi.get(entityRef.getEntity().getId(), new ArrayList<>(), new ArrayList<>(), params);
 
-			Assert.assertNotNull(entity);
-			Assert.assertNotNull(entity.getName());
-			Assert.assertEquals("Tarte coco tradition", entity.getName());
-			Assert.assertNotNull(entity.getAttributes());
-			Assert.assertNotNull(entity.getDatalists());
-			Assert.assertEquals(14, entity.getDatalistItems(BeCPGAPIModel.TYPE_ORGANOLIST).size());
+			Assertions.assertNotNull(entity);
+			Assertions.assertNotNull(entity.getName());
+			Assertions.assertEquals("Tarte coco tradition", entity.getName());
+			Assertions.assertNotNull(entity.getAttributes());
+			Assertions.assertNotNull(entity.getDatalists());
+			Assertions.assertEquals(14, entity.getDatalistItems(BeCPGAPIModel.TYPE_ORGANOLIST).size());
 			
 			List<RemoteNodeInfo> geoOrigins = entity.getAssociations("bcpg:productGeoOrigin");
-			Assert.assertNotNull(geoOrigins);
-			Assert.assertEquals(1, geoOrigins.size());
+			Assertions.assertNotNull(geoOrigins);
+			Assertions.assertEquals(1, geoOrigins.size());
 
 			RemoteNodeInfo entityTpl = entity.getAssociation("bcpg:entityTplRef");
-			Assert.assertNotNull(entityTpl);
-			Assert.assertNotNull(entityTpl.getName());
+			Assertions.assertNotNull(entityTpl);
+			Assertions.assertNotNull(entityTpl.getName());
 
 
 			logger.info(entityTpl.toString());
 			
-			Assert.assertEquals("Produit fini", entityTpl.getName());
+			Assertions.assertEquals("Produit fini", entityTpl.getName());
 			logger.info(entityTpl.getName());
 
 			break;
@@ -147,7 +147,7 @@ class EntityApiTest extends AbstractRemoteApiTest {
 
         entityApi.list("+TYPE:\"bcpg:finishedProduct\" AND +bcpg\\:erpCode:\"PERF-PF1\"", List.of("cm:name","bcpg:legalName"), 10);
 
-        Assert.assertEquals("http://localhost:" + mockBackEnd.getPort() + "/alfresco/service/becpg/remote/entity/list?format=json&query=%2BTYPE%3A%22bcpg%3AfinishedProduct%22%20AND%20%2Bbcpg%5C%3AerpCode%3A%22PERF-PF1%22&maxResults=10&fields=cm%3Aname%2Cbcpg%3AlegalName", mockBackEnd.takeRequest().getRequestUrl().toString());
+        Assertions.assertEquals("http://localhost:" + mockBackEnd.getPort() + "/alfresco/service/becpg/remote/entity/list?format=json&query=%2BTYPE%3A%22bcpg%3AfinishedProduct%22%20AND%20%2Bbcpg%5C%3AerpCode%3A%22PERF-PF1%22&maxResults=10&fields=cm%3Aname%2Cbcpg%3AlegalName", mockBackEnd.takeRequest().getRequestUrl().toString());
     
     }
 
@@ -159,7 +159,7 @@ class EntityApiTest extends AbstractRemoteApiTest {
 		entityApi.list("+TYPE:\"bcpg:finishedProduct\"", List.of("cm:name"), 10, params);
 
 		String requestedUrl = mockBackEnd.takeRequest().getRequestUrl().toString();
-		Assert.assertTrue(requestedUrl.contains("jsonParamappendContent=true"));
+		Assertions.assertTrue(requestedUrl.contains("jsonParamappendContent=true"));
 	}
 
 	@Test
@@ -168,20 +168,20 @@ class EntityApiTest extends AbstractRemoteApiTest {
 
 		RemoteAPIResponse response = entityApi.formulate(ENTITY_ID);
 
-		Assert.assertEquals("SUCCESS", response.getStatus());
-		Assert.assertEquals(ENTITY_ID, response.getId());
+		Assertions.assertEquals("SUCCESS", response.getStatus());
+		Assertions.assertEquals(ENTITY_ID, response.getId());
 
 		RecordedRequest request = mockBackEnd.takeRequest();
-		Assert.assertEquals("GET", request.getMethod());
-		Assert.assertEquals(remoteUrl() + "/formulate?format=json&nodeRef=" + ENTITY_NODEREF, request.getRequestUrl().toString());
+		Assertions.assertEquals("GET", request.getMethod());
+		Assertions.assertEquals(remoteUrl() + "/formulate?format=json&nodeRef=" + ENTITY_NODEREF, request.getRequestUrl().toString());
 	}
 
 	@Test
-	void testFormulateNotCompleted() throws InterruptedException {
+	void testFormulateNotCompleted() {
 		// The repository answers 200 without a body when the formulation did not complete
 		mockBackEnd.enqueue(new MockResponse());
 
-		Assert.assertNull(entityApi.formulate(ENTITY_ID));
+		Assertions.assertNull(entityApi.formulate(ENTITY_ID));
 	}
 
 	@Test
@@ -190,19 +190,19 @@ class EntityApiTest extends AbstractRemoteApiTest {
 				.setBody("{\"status\":{\"code\":403,\"name\":\"Forbidden\",\"description\":\"Forbidden\"},\"message\":\"Access denied\"}")
 				.addHeader("Content-Type", "application/json"));
 
-		RemoteAPIException exception = Assert.assertThrows(RemoteAPIException.class, () -> entityApi.formulate(ENTITY_ID));
+		RemoteAPIException exception = Assertions.assertThrows(RemoteAPIException.class, () -> entityApi.formulate(ENTITY_ID));
 
-		Assert.assertEquals("403", exception.getError().getStatus().getCode());
-		Assert.assertEquals("Access denied", exception.getError().getMessage());
+		Assertions.assertEquals("403", exception.getError().getStatus().getCode());
+		Assertions.assertEquals("Access denied", exception.getError().getMessage());
 	}
 
 	@Test
 	void testRateLimitIsReported() {
 		mockBackEnd.enqueue(new MockResponse().setResponseCode(429).addHeader("Retry-After", "1"));
 
-		RemoteAPIException exception = Assert.assertThrows(RemoteAPIException.class, () -> entityApi.delete(ENTITY_ID));
+		RemoteAPIException exception = Assertions.assertThrows(RemoteAPIException.class, () -> entityApi.delete(ENTITY_ID));
 
-		Assert.assertEquals("429", exception.getError().getStatus().getCode());
+		Assertions.assertEquals("429", exception.getError().getStatus().getCode());
 	}
 
 	@Test
@@ -211,11 +211,11 @@ class EntityApiTest extends AbstractRemoteApiTest {
 
 		RemoteAPIResponse response = entityApi.branch(ENTITY_ID, FOLDER_ID);
 
-		Assert.assertEquals(BRANCH_ID, response.getId());
+		Assertions.assertEquals(BRANCH_ID, response.getId());
 
 		RecordedRequest request = mockBackEnd.takeRequest();
-		Assert.assertEquals("POST", request.getMethod());
-		Assert.assertEquals(remoteUrl() + "/branch?format=json&nodeRef=" + ENTITY_NODEREF + "&destNodeRef=workspace://SpacesStore/" + FOLDER_ID,
+		Assertions.assertEquals("POST", request.getMethod());
+		Assertions.assertEquals(remoteUrl() + "/branch?format=json&nodeRef=" + ENTITY_NODEREF + "&destNodeRef=workspace://SpacesStore/" + FOLDER_ID,
 				request.getRequestUrl().toString());
 	}
 
@@ -225,7 +225,7 @@ class EntityApiTest extends AbstractRemoteApiTest {
 
 		entityApi.branch(ENTITY_ID, null);
 
-		Assert.assertEquals(remoteUrl() + "/branch?format=json&nodeRef=" + ENTITY_NODEREF, mockBackEnd.takeRequest().getRequestUrl().toString());
+		Assertions.assertEquals(remoteUrl() + "/branch?format=json&nodeRef=" + ENTITY_NODEREF, mockBackEnd.takeRequest().getRequestUrl().toString());
 	}
 
 	@Test
@@ -234,14 +234,14 @@ class EntityApiTest extends AbstractRemoteApiTest {
 
 		RemoteAPIResponse response = entityApi.merge(BRANCH_ID, ENTITY_NODEREF, true, "New recipe & packaging", false);
 
-		Assert.assertEquals(ENTITY_ID, response.getId());
+		Assertions.assertEquals(ENTITY_ID, response.getId());
 
 		RecordedRequest request = mockBackEnd.takeRequest();
-		Assert.assertEquals("POST", request.getMethod());
-		Assert.assertEquals(remoteUrl() + "/merge?format=json&nodeRef=workspace://SpacesStore/" + BRANCH_ID + "&branchToNodeRef="
+		Assertions.assertEquals("POST", request.getMethod());
+		Assertions.assertEquals(remoteUrl() + "/merge?format=json&nodeRef=workspace://SpacesStore/" + BRANCH_ID + "&branchToNodeRef="
 				+ ENTITY_NODEREF + "&majorVersion=true&impactWused=false", request.getRequestUrl().toString());
-		Assert.assertTrue(request.getHeader("Content-Type").startsWith("application/json"));
-		Assert.assertEquals("New recipe & packaging", new JSONObject(request.getBody().readUtf8()).getString("description"));
+		Assertions.assertTrue(request.getHeader("Content-Type").startsWith("application/json"));
+		Assertions.assertEquals("New recipe & packaging", new JSONObject(request.getBody().readUtf8()).getString("description"));
 	}
 
 	@Test
@@ -251,13 +251,13 @@ class EntityApiTest extends AbstractRemoteApiTest {
 		entityApi.merge(BRANCH_ID, ENTITY_ID, false, null, true);
 
 		RecordedRequest request = mockBackEnd.takeRequest();
-		Assert.assertTrue(request.getRequestUrl().toString().endsWith("&majorVersion=false&impactWused=true"));
-		Assert.assertEquals("", new JSONObject(request.getBody().readUtf8()).getString("description"));
+		Assertions.assertTrue(request.getRequestUrl().toString().endsWith("&majorVersion=false&impactWused=true"));
+		Assertions.assertEquals("", new JSONObject(request.getBody().readUtf8()).getString("description"));
 	}
 
 	@Test
 	void testMergeRequiresTheTargetEntity() {
-		Assert.assertThrows(NullPointerException.class, () -> entityApi.merge(BRANCH_ID, null, false, null, false));
+		Assertions.assertThrows(NullPointerException.class, () -> entityApi.merge(BRANCH_ID, null, false, null, false));
 	}
 
 	@Test
@@ -265,7 +265,7 @@ class EntityApiTest extends AbstractRemoteApiTest {
 		// Building the Mono must not throw: the error reaches the operators of a reactive caller
 		Mono<RemoteAPIResponse> merge = entityApi.mergeEntity(BRANCH_ID, null, false, null, false);
 
-		Assert.assertEquals("recovered", merge.map(RemoteAPIResponse::getStatus).onErrorResume(NullPointerException.class, e -> Mono.just("recovered")).block());
+		Assertions.assertEquals("recovered", merge.map(RemoteAPIResponse::getStatus).onErrorResume(NullPointerException.class, e -> Mono.just("recovered")).block());
 	}
 
 	@Test
@@ -274,11 +274,11 @@ class EntityApiTest extends AbstractRemoteApiTest {
 
 		RemoteAPIResponse response = entityApi.delete(ENTITY_NODEREF);
 
-		Assert.assertEquals(ENTITY_ID, response.getId());
+		Assertions.assertEquals(ENTITY_ID, response.getId());
 
 		RecordedRequest request = mockBackEnd.takeRequest();
-		Assert.assertEquals("DELETE", request.getMethod());
-		Assert.assertEquals(remoteUrl() + "/entity?format=json&nodeRef=" + ENTITY_NODEREF, request.getRequestUrl().toString());
+		Assertions.assertEquals("DELETE", request.getMethod());
+		Assertions.assertEquals(remoteUrl() + "/entity?format=json&nodeRef=" + ENTITY_NODEREF, request.getRequestUrl().toString());
 	}
 
 	@Test
@@ -287,9 +287,9 @@ class EntityApiTest extends AbstractRemoteApiTest {
 				.setBody("<html><head><title>Web Script Status 404 - Not Found</title></head><body>Not Found</body></html>")
 				.addHeader("Content-Type", "text/html;charset=UTF-8"));
 
-		RemoteAPIException exception = Assert.assertThrows(RemoteAPIException.class, () -> entityApi.delete(ENTITY_ID));
+		RemoteAPIException exception = Assertions.assertThrows(RemoteAPIException.class, () -> entityApi.delete(ENTITY_ID));
 
-		Assert.assertEquals("404", exception.getError().getStatus().getCode());
+		Assertions.assertEquals("404", exception.getError().getStatus().getCode());
 	}
 
 	private static final String ENTITY_ID = "9b4dd09a-afaa-41ec-84eb-db062146975c";
