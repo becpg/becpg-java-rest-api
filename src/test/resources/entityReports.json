@@ -1,0 +1,119 @@
+{
+  "entity": {
+    "path": "/app:company_home/st:sites/cm:simulation/cm:documentLibrary/cm:finishedProduct",
+    "parent": "df0c6c8d-537c-439f-8c6c-8d537cb39fc6",
+    "site": {
+      "name": "Produits en développement",
+      "id": "simulation"
+    },
+    "datalists": {},
+    "cm:name": "PF 35808",
+    "attributes": {
+      "rep:reports": [
+        {
+          "path": "~/cm:Documents",
+          "cm:name": "PF 35808 - Fiche Coûts.pdf",
+          "attributes": {
+            "rep:reportLocales": [
+              "fr"
+            ],
+            "rep:reportTplAssoc": {
+              "path": "/app:company_home/cm:System/cm:Reports/cm:ProductReportTemplates/cm:Produit_x0020_fini",
+              "cm:name": "Fiche Coûts.rptdesign",
+              "id": "638c1af0-6bad-4fad-8c1a-f06bad3fadc7",
+              "type": "rep:reportTpl"
+            },
+            "cm:name": "PF 35808 - Fiche Coûts.pdf",
+            "rep:reportIsDefault": false,
+            "rep:reportIsDirty": false
+          },
+          "id": "e254d0b8-aa8b-45fc-94d0-b8aa8b75fcf2",
+          "type": "rep:report"
+        },
+        {
+          "path": "~/cm:Documents",
+          "cm:name": "PF 35808 - report PF 2.pdf",
+          "attributes": {
+            "rep:reportLocales": [
+              "fr"
+            ],
+            "rep:reportTplAssoc": {
+              "path": "/app:company_home/cm:System/cm:Reports/cm:ProductReportTemplates",
+              "cm:name": "report PF 2.rptdesign",
+              "id": "aa7b1329-0bb6-48ab-bb13-290bb678abb4",
+              "type": "rep:reportTpl"
+            },
+            "cm:name": "PF 35808 - report PF 2.pdf",
+            "rep:reportIsDefault": false,
+            "rep:reportIsDirty": true
+          },
+          "id": "2d229ee1-083c-416e-a29e-e1083c016ec9",
+          "type": "rep:report"
+        },
+        {
+          "path": "~/cm:Documents",
+          "cm:name": "PF 35808 - Fiche Technique Client.pdf",
+          "attributes": {
+            "rep:reportLocales": [
+              "fr"
+            ],
+            "rep:reportTplAssoc": {
+              "path": "/app:company_home/cm:System/cm:Reports/cm:ProductReportTemplates/cm:Produit_x0020_fini",
+              "cm:name": "Fiche Technique Client.rptdesign",
+              "id": "22b5791e-c891-4dca-b579-1ec891bdcaa6",
+              "type": "rep:reportTpl"
+            },
+            "cm:name": "PF 35808 - Fiche Technique Client.pdf",
+            "rep:reportIsDefault": true,
+            "rep:reportIsDirty": false
+          },
+          "id": "beb1fdc4-8777-41b3-b1fd-c4877701b3d9",
+          "type": "rep:report"
+        },
+        {
+          "path": "~/cm:Documents",
+          "cm:name": "PF 35808 - Fiche Technique Production.pdf",
+          "attributes": {
+            "rep:reportLocales": [
+              "fr"
+            ],
+            "rep:reportTplAssoc": {
+              "path": "/app:company_home/cm:System/cm:Reports/cm:ProductReportTemplates/cm:Produit_x0020_fini",
+              "cm:name": "Fiche Technique Production.rptdesign",
+              "id": "d067b577-a052-415c-a7b5-77a052615c8a",
+              "type": "rep:reportTpl"
+            },
+            "cm:name": "PF 35808 - Fiche Technique Production.pdf",
+            "rep:reportIsDefault": false,
+            "rep:reportIsDirty": true
+          },
+          "id": "36d302db-c3d1-466f-9302-dbc3d1c66fc2",
+          "type": "rep:report"
+        },
+        {
+          "path": "~/cm:Documents",
+          "cm:name": "PF 35808 - Fiche R&D.pdf",
+          "attributes": {
+            "rep:reportLocales": [
+              "fr"
+            ],
+            "rep:reportTplAssoc": {
+              "path": "/app:company_home/cm:System/cm:Reports/cm:ProductReportTemplates/cm:Produit_x0020_fini",
+              "cm:name": "Fiche R&D.rptdesign",
+              "id": "5898ee1b-f492-4f58-98ee-1bf4927f5831",
+              "type": "rep:reportTpl"
+            },
+            "cm:name": "PF 35808 - Fiche R&D.pdf",
+            "rep:reportIsDefault": false,
+            "rep:reportIsDirty": true
+          },
+          "id": "e8b3b96f-14fa-46ed-b3b9-6f14fad6ed96",
+          "type": "rep:report"
+        }
+      ]
+    },
+    "id": "86a4c132-5fb4-4542-a4c1-325fb45542da",
+    "type": "bcpg:finishedProduct",
+    "bcpg:code": "PF17"
+  }
+}
