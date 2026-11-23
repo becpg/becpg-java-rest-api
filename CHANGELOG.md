@@ -239,3 +239,14 @@
 * [skip ci][Release]: Update CHANGELOG.md for 2.0.4 release
 * [skip ci] Prepare for next development iteration
 
+## [ 2.1.1 ] - lun. 23 nov 2026 10:35:17 CET
+
+* [Release] prepare release 2.1.1
+* InProgress #38476 - [Bug] Make every remote call of generateReport from the calling thread
+* [Merge] Merge feature/#38476 into main
+* [Cleanup] Update dependencies of week 47 in becpg-java-rest-api
+* [Cleanup] Fix SonarQube issues of week 47 in becpg-java-rest-api
+* InProgress #38476 - [Feature] Add ReportAPI to generate one report of an entity by template and language
+* [skip ci][Release]: Update CHANGELOG.md for 2.1.0 release
+* [skip ci] Prepare for next development iteration
+
