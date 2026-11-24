@@ -38,6 +38,7 @@ import fr.becpg.api.model.RemoteAPIResponse;
 import fr.becpg.api.model.RemoteEntity;
 import fr.becpg.api.model.RemoteEntityRef;
 import fr.becpg.api.model.RemoteNodeActionResult;
+import fr.becpg.api.model.RemoteNodeRelocation;
 import fr.becpg.api.model.RemoteNodeInfo;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -330,7 +331,7 @@ class EntityApiTest extends AbstractRemoteApiTest {
 				 "results":[{"action":"copyFile","id":"Copy of Pizza","nodeRef":"%s","type":"document","success":true}]}
 				""".formatted(COPY_NODEREF)));
 
-		RemoteNodeActionResult result = entityApi.copy(ENTITY_ID, FOLDER_NODEREF, null);
+		RemoteNodeActionResult result = entityApi.copy(new RemoteNodeRelocation(ENTITY_ID, FOLDER_NODEREF, null));
 
 		Assertions.assertEquals(COPY_NODEREF, result.nodeRef());
 		Assertions.assertEquals("Copy of Pizza", result.name());
@@ -344,7 +345,7 @@ class EntityApiTest extends AbstractRemoteApiTest {
 				 "results":[{"action":"moveFile","id":"Pizza","nodeRef":"%s","type":"document","success":true}]}
 				""".formatted(ENTITY_NODEREF)));
 
-		RemoteNodeActionResult result = entityApi.move(ENTITY_NODEREF, FOLDER_ID, PARENT_ID);
+		RemoteNodeActionResult result = entityApi.move(new RemoteNodeRelocation(ENTITY_NODEREF, FOLDER_ID, PARENT_ID));
 
 		Assertions.assertEquals(ENTITY_NODEREF, result.nodeRef());
 		Assertions.assertEquals("Pizza", result.name());
@@ -358,21 +359,45 @@ class EntityApiTest extends AbstractRemoteApiTest {
 	@ParameterizedTest
 	@CsvSource({ "move-to, ',\"fileExist\":true', 409", "copy-to, '', 422" })
 	void testRefusedDoclibActionBecomesARemoteError(String action, String fileExist, String expectedCode) {
+		String webscriptAction = COPY_TO.equals(action) ? "copyFile" : "moveFile";
 		mockBackEnd.enqueue(doclibAnswer("""
 				{"totalResults":1,"overallSuccess":false,"successCount":0,"failureCount":1,
-				 "results":[{"action":"moveFile","id":"Pizza","nodeRef":"%s","type":"document","success":false%s}]}
-				""".formatted(ENTITY_NODEREF, fileExist)));
+				 "results":[{"action":"%s","id":"Pizza","nodeRef":"%s","type":"document","success":false%s}]}
+				""".formatted(webscriptAction, ENTITY_NODEREF, fileExist)));
 
 		RemoteAPIException exception = Assertions.assertThrows(RemoteAPIException.class, () -> runDoclibAction(action));
 
 		Assertions.assertEquals(expectedCode, exception.getError().getStatus().getCode());
 	}
 
+	/**
+	 * The destination goes into the request path: anything but a plain node of the workspace store is refused before any call
+	 */
+	@ParameterizedTest
+	@ValueSource(strings = { "workspace://SpacesStore/", "workspace://SpacesStore/..", "workspace://SpacesStore/{uuid}",
+			"workspace://SpacesStore/a/b", "archive://SpacesStore/5c6d7e8f", "workspace://other/5c6d7e8f" })
+	void testRefusedDestinationIsNotSent(String destFolderId) {
+		RemoteAPIException exception = Assertions.assertThrows(RemoteAPIException.class,
+				() -> entityApi.copy(new RemoteNodeRelocation(ENTITY_ID, destFolderId, null)));
+
+		Assertions.assertEquals("400", exception.getError().getStatus().getCode());
+	}
+
+	@Test
+	void testEmptyDoclibAnswerBecomesARemoteError() {
+		mockBackEnd.enqueue(new MockResponse().setResponseCode(200));
+
+		RemoteAPIException exception = Assertions.assertThrows(RemoteAPIException.class,
+				() -> entityApi.copy(new RemoteNodeRelocation(ENTITY_ID, FOLDER_ID, null)));
+
+		Assertions.assertEquals("422", exception.getError().getStatus().getCode());
+	}
+
 	private RemoteNodeActionResult runDoclibAction(String action) {
 		if (COPY_TO.equals(action)) {
-			return entityApi.copy(ENTITY_ID, FOLDER_ID, PARENT_ID);
+			return entityApi.copy(new RemoteNodeRelocation(ENTITY_ID, FOLDER_ID, PARENT_ID));
 		}
-		return entityApi.move(ENTITY_ID, FOLDER_ID, PARENT_ID);
+		return entityApi.move(new RemoteNodeRelocation(ENTITY_ID, FOLDER_ID, PARENT_ID));
 	}
 
 	private MockResponse doclibAnswer(String body) {

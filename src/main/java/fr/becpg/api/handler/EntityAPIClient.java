@@ -1,12 +1,12 @@
 package fr.becpg.api.handler;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.jspecify.annotations.NonNull;
@@ -16,10 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.function.BodyInserters;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import fr.becpg.api.model.RemoteAPIError;
-import fr.becpg.api.model.RemoteAPIError.RemoteAPIErrorStatus;
 import fr.becpg.api.model.RemoteAPIException;
 import fr.becpg.api.model.RemoteAPIResponse;
 import fr.becpg.api.model.RemoteEntity;
@@ -27,6 +24,7 @@ import fr.becpg.api.model.RemoteEntityList;
 import fr.becpg.api.model.RemoteEntityRef;
 import fr.becpg.api.model.RemoteEntitySchema;
 import fr.becpg.api.model.RemoteNodeActionResult;
+import fr.becpg.api.model.RemoteNodeRelocation;
 import fr.becpg.api.security.EnableAuthConfiguration;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -63,28 +61,8 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 
 	private static final String PARAM_CHAIN_ID = "chainId";
 
-	private static final String DOCLIB_ACTION_PATH = "/alfresco/service/slingshot/doclib/action/%s/node/workspace/SpacesStore/%s";
-
-	private static final String DOCLIB_COPY_TO = "copy-to";
-
-	private static final String DOCLIB_MOVE_TO = "move-to";
-
-	private static final String BODY_NODE_REFS = "nodeRefs";
-
-	private static final String BODY_PARENT_ID = "parentId";
-
-	private static final String STATUS_CONFLICT = "409";
-
-	private static final String STATUS_UNPROCESSABLE = "422";
-
-	@JsonIgnoreProperties(ignoreUnknown = true)
-	private record DoclibActionAnswer(Boolean overallSuccess, List<DoclibActionResult> results) {
-	}
-
-	@JsonIgnoreProperties(ignoreUnknown = true)
-	private record DoclibActionResult(String id, String nodeRef, Boolean success, Boolean fileExist) {
-	}
-
+	@Autowired
+	private DoclibActionClient doclibActionClient;
 
 	/** {@inheritDoc} */
 	@Override
@@ -522,62 +500,26 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 
 	/** {@inheritDoc} */
 	@Override
-	public RemoteNodeActionResult copy(String id, String destFolderId, String parentId) {
-		return copyEntity(id, destFolderId, parentId).block();
+	public RemoteNodeActionResult copy(RemoteNodeRelocation relocation) {
+		return copyEntity(relocation).block();
 	}
 
 	/** {@inheritDoc} */
 	@Override
-	public Mono<RemoteNodeActionResult> copyEntity(String id, String destFolderId, String parentId) {
-		return runDoclibAction(DOCLIB_COPY_TO, id, destFolderId, parentId);
+	public Mono<RemoteNodeActionResult> copyEntity(RemoteNodeRelocation relocation) {
+		return doclibActionClient.copy(relocation);
 	}
 
 	/** {@inheritDoc} */
 	@Override
-	public RemoteNodeActionResult move(String id, String destFolderId, String parentId) {
-		return moveEntity(id, destFolderId, parentId).block();
+	public RemoteNodeActionResult move(RemoteNodeRelocation relocation) {
+		return moveEntity(relocation).block();
 	}
 
 	/** {@inheritDoc} */
 	@Override
-	public Mono<RemoteNodeActionResult> moveEntity(String id, String destFolderId, String parentId) {
-		return runDoclibAction(DOCLIB_MOVE_TO, id, destFolderId, parentId);
-	}
-
-	private Mono<RemoteNodeActionResult> runDoclibAction(String action, String id, String destFolderId, String parentId) {
-		String destNodeRef = buildNodeRefParam(destFolderId);
-		String destUuid = destNodeRef.substring(destNodeRef.lastIndexOf('/') + 1);
-
-		Map<String, Object> body = new LinkedHashMap<>();
-		body.put(BODY_NODE_REFS, List.of(buildNodeRefParam(id)));
-		if (parentId != null) {
-			body.put(BODY_PARENT_ID, buildNodeRefParam(parentId));
-		}
-
-		// The doclib webscripts are not under the remote API base path of the web client
-		return webClient().post().uri(uriBuilder -> uriBuilder.replacePath(String.format(DOCLIB_ACTION_PATH, action, destUuid)).build())
-				.contentType(MediaType.APPLICATION_JSON).body(BodyInserters.fromValue(body))
-				.accept(MediaType.APPLICATION_JSON).retrieve()
-				.onStatus(HttpStatusCode::isError, response -> handleErrorResponse(response))
-				.bodyToMono(DoclibActionAnswer.class)
-				.flatMap(answer -> toNodeActionResult(answer, action, buildNodeRefParam(id), destNodeRef));
-	}
-
-	private Mono<RemoteNodeActionResult> toNodeActionResult(DoclibActionAnswer answer, String action, String nodeRef, String destNodeRef) {
-		DoclibActionResult first = answer.results() != null && !answer.results().isEmpty() ? answer.results().get(0) : null;
-		if (Boolean.TRUE.equals(answer.overallSuccess()) && first != null) {
-			return Mono.just(new RemoteNodeActionResult(first.nodeRef(), first.id()));
-		}
-
-		boolean nameClash = first != null && Boolean.TRUE.equals(first.fileExist());
-		RemoteAPIErrorStatus status = new RemoteAPIErrorStatus();
-		status.setCode(nameClash ? STATUS_CONFLICT : STATUS_UNPROCESSABLE);
-
-		RemoteAPIError error = new RemoteAPIError();
-		error.setStatus(status);
-		error.setMessage(nameClash ? "a node with this name already exists in the target folder"
-				: String.format("beCPG refused the %s of %s into %s without giving a reason", action.replace("-to", ""), nodeRef, destNodeRef));
-		return Mono.error(new RemoteAPIException(error));
+	public Mono<RemoteNodeActionResult> moveEntity(RemoteNodeRelocation relocation) {
+		return doclibActionClient.move(relocation);
 	}
 
 }

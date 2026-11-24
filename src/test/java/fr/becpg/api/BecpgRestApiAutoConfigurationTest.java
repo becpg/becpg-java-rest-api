@@ -22,6 +22,9 @@ import fr.becpg.api.handler.ReportAPIClient;
  */
 class BecpgRestApiAutoConfigurationTest {
 
+    /** Package-private, hence referenced by name */
+    private static final String DOCLIB_ACTION_CLIENT = "fr.becpg.api.handler.DoclibActionClient";
+
     @Test
     void shouldProvideRemoteWebClientToAnApplicationThatDoesNotScanTheSdkPackage() {
         new ApplicationContextRunner()
@@ -41,6 +44,6 @@ class BecpgRestApiAutoConfigurationTest {
         ImportCandidates.load(AutoConfiguration.class, getClass().getClassLoader()).forEach(imports::add);
 
         Assertions.assertThat(imports).contains(EntityAPIClient.class.getName(), ContentAPIClient.class.getName(), ChannelAPIClient.class.getName(),
-                ReportAPIClient.class.getName(), AuditAPIClient.class.getName());
+                ReportAPIClient.class.getName(), DOCLIB_ACTION_CLIENT, AuditAPIClient.class.getName());
     }
 }
