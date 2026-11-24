@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.context.annotation.ImportCandidates;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import fr.becpg.api.handler.AuditAPIClient;
 import fr.becpg.api.handler.ChannelAPIClient;
 import fr.becpg.api.handler.ContentAPIClient;
 import fr.becpg.api.handler.EntityAPIClient;
@@ -40,6 +41,6 @@ class BecpgRestApiAutoConfigurationTest {
         ImportCandidates.load(AutoConfiguration.class, getClass().getClassLoader()).forEach(imports::add);
 
         Assertions.assertThat(imports).contains(EntityAPIClient.class.getName(), ContentAPIClient.class.getName(), ChannelAPIClient.class.getName(),
-                ReportAPIClient.class.getName());
+                ReportAPIClient.class.getName(), AuditAPIClient.class.getName());
     }
 }

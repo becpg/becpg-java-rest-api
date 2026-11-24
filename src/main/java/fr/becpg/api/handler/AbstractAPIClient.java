@@ -151,6 +151,23 @@ public abstract class AbstractAPIClient {
 	}
 
 	/**
+	 * Builds the exception of an error synthesized by the client, as if the repository had answered it.
+	 *
+	 * @param code the HTTP status code of the error
+	 * @param message the error message
+	 * @return the exception to signal
+	 */
+	protected RemoteAPIException buildRemoteError(String code, String message) {
+		RemoteAPIErrorStatus status = new RemoteAPIErrorStatus();
+		status.setCode(code);
+
+		RemoteAPIError error = new RemoteAPIError();
+		error.setStatus(status);
+		error.setMessage(message);
+		return new RemoteAPIException(error);
+	}
+
+	/**
 	 * <p>buildNodeRefParam.</p>
 	 *
 	 * @param id a {@link java.lang.String} object

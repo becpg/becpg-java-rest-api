@@ -4,3 +4,4 @@ fr.becpg.api.handler.EntityAPIClient
 fr.becpg.api.handler.ContentAPIClient
 fr.becpg.api.handler.ChannelAPIClient
 fr.becpg.api.handler.ReportAPIClient
+fr.becpg.api.handler.AuditAPIClient
