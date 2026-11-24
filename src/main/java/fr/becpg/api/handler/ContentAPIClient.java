@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.core.io.InputStreamResource;
@@ -20,6 +21,7 @@ import org.springframework.web.reactive.function.BodyInserters;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import fr.becpg.api.model.RemoteAPIError;
+import fr.becpg.api.model.RemoteAPIError.RemoteAPIErrorStatus;
 import fr.becpg.api.model.RemoteAPIException;
 import fr.becpg.api.model.RemoteDocumentUpload;
 import fr.becpg.api.model.RemoteNodeInfo;
@@ -45,17 +47,17 @@ public class ContentAPIClient extends AbstractAPIClient implements ContentAPI {
 	private static final String PART_FILEDATA = "filedata";
 	private static final String PART_FILENAME = "filename";
 	private static final String PART_DESTINATION = "destination";
-	private static final String PART_CONTENT_TYPE = "contenttype";
 	private static final String PART_UPDATE_NODE_REF = "updatenoderef";
 	private static final String PART_MAJOR_VERSION = "majorversion";
 	private static final String PART_DESCRIPTION = "description";
+	private static final String STATUS_UNAUTHORIZED = "401";
+	private static final String STATUS_BAD_GATEWAY = "502";
+	private static final String CONSUMED_STREAM_MARKER = "already been read";
+	private static final String MSG_EMPTY_ANSWER = "the upload webscript answered without any content";
+	private static final String MSG_STREAM_CONSUMED = "the upload was refused with 401 and cannot be retried: its content stream was already read";
 
 	@JsonIgnoreProperties(ignoreUnknown = true)
-	private record UploadAnswer(String nodeRef, String fileName, UploadStatus status) {
-	}
-
-	@JsonIgnoreProperties(ignoreUnknown = true)
-	private record UploadStatus(Integer code) {
+	private record UploadAnswer(String nodeRef, String fileName) {
 	}
 
 	/** {@inheritDoc} */
@@ -120,17 +122,18 @@ public class ContentAPIClient extends AbstractAPIClient implements ContentAPI {
 	/** {@inheritDoc} */
 	@Override
 	public RemoteUploadResult uploadDocument(RemoteDocumentUpload upload, InputStream content) {
+		Objects.requireNonNull(upload, "upload is required");
+		Objects.requireNonNull(upload.folderId(), "folderId is required");
 		MultipartBodyBuilder body = newUploadBody(upload.fileName(), content);
 		body.part(PART_DESTINATION, buildNodeRefParam(upload.folderId()));
-		if (upload.nodeType() != null) {
-			body.part(PART_CONTENT_TYPE, upload.nodeType());
-		}
 		return postUpload(body);
 	}
 
 	/** {@inheritDoc} */
 	@Override
 	public RemoteUploadResult uploadDocumentVersion(RemoteVersionUpload upload, InputStream content) {
+		Objects.requireNonNull(upload, "upload is required");
+		Objects.requireNonNull(upload.documentId(), "documentId is required");
 		MultipartBodyBuilder body = newUploadBody(upload.fileName(), content);
 		body.part(PART_UPDATE_NODE_REF, buildNodeRefParam(upload.documentId()));
 		body.part(PART_MAJOR_VERSION, String.valueOf(upload.majorVersion()));
@@ -141,6 +144,8 @@ public class ContentAPIClient extends AbstractAPIClient implements ContentAPI {
 	}
 
 	private MultipartBodyBuilder newUploadBody(String fileName, InputStream content) {
+		Objects.requireNonNull(fileName, "fileName is required");
+		Objects.requireNonNull(content, "content is required");
 		MultipartBodyBuilder body = new MultipartBodyBuilder();
 		// The file name is mandatory: without it the webscript ignores the part
 		body.part(PART_FILEDATA, new InputStreamResource(content)).filename(fileName);
@@ -152,10 +157,19 @@ public class ContentAPIClient extends AbstractAPIClient implements ContentAPI {
 		// The upload webscript is not under the remote API base path of the web client
 		UploadAnswer answer = webClient().post().uri(uriBuilder -> uriBuilder.replacePath(UPLOAD_PATH).build())
 				.body(BodyInserters.fromMultipartData(body.build())).retrieve()
-				.onStatus(HttpStatusCode::isError, response -> handleErrorResponse(response))
-				.bodyToMono(UploadAnswer.class).block();
-		Integer code = answer.status() != null ? answer.status().code() : null;
-		return new RemoteUploadResult(answer.nodeRef(), answer.fileName(), code != null ? code : 0);
+				.onStatus(HttpStatusCode::isError, response -> handleErrorResponse(response)).bodyToMono(UploadAnswer.class)
+				.switchIfEmpty(Mono.error(() -> buildRemoteError(STATUS_BAD_GATEWAY, MSG_EMPTY_ANSWER)))
+				.onErrorMap(this::isConsumedStream, error -> buildRemoteError(STATUS_UNAUTHORIZED, MSG_STREAM_CONSUMED)).block();
+		return new RemoteUploadResult(answer.nodeRef(), answer.fileName());
+	}
+
+	private boolean isConsumedStream(Throwable error) {
+		for (Throwable cause = error; cause != null; cause = cause.getCause()) {
+			if (cause instanceof IllegalStateException && cause.getMessage() != null && cause.getMessage().contains(CONSUMED_STREAM_MARKER)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

@@ -2,6 +2,7 @@ package fr.becpg.api.handler;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -11,9 +12,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -26,6 +24,7 @@ import org.springframework.http.codec.multipart.Part;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
 
 import fr.becpg.api.AbstractRemoteApiTest;
 import fr.becpg.api.model.RemoteAPIException;
@@ -97,21 +96,21 @@ class ContentAPIClientTest extends AbstractRemoteApiTest {
 	/**
 	 * The filedata part must carry a file name: the webscript ignores a filedata part that is not a file
 	 */
-	@ParameterizedTest
-	@NullSource
-	@ValueSource(strings = "cm:content")
-	void testUploadDocumentSendsTheShareUploadRequestAndReturnsTheDocument(String nodeType) throws Exception {
+	@Test
+	void testUploadDocumentSendsTheShareUploadRequestAndReturnsTheDocument() throws Exception {
 		mockBackEnd.enqueue(uploadAnswer(DOCUMENT_NODEREF, FILE_NAME));
 
-		RemoteUploadResult result = contentApi.uploadDocument(new RemoteDocumentUpload(FOLDER_ID, FILE_NAME, nodeType),
+		RemoteUploadResult result = contentApi.uploadDocument(new RemoteDocumentUpload(FOLDER_ID, FILE_NAME),
 				new ByteArrayInputStream(CONTENT));
 
-		Assertions.assertEquals(new RemoteUploadResult(DOCUMENT_NODEREF, FILE_NAME, 200), result);
-		Map<String, Part> parts = readUploadRequest(mockBackEnd.takeRequest());
+		Assertions.assertEquals(new RemoteUploadResult(DOCUMENT_NODEREF, FILE_NAME), result);
+		RecordedRequest request = mockBackEnd.takeRequest();
+		assertUploadRequest(request);
+		Map<String, Part> parts = readParts(request);
 		assertFileData(parts);
 		Assertions.assertEquals(FILE_NAME, readText(parts.get(FILENAME)));
 		Assertions.assertEquals(FOLDER_NODEREF, readText(parts.get(DESTINATION)));
-		Assertions.assertEquals(nodeType, parts.containsKey(CONTENTTYPE) ? readText(parts.get(CONTENTTYPE)) : null);
+		Assertions.assertFalse(parts.containsKey(CONTENTTYPE));
 		Assertions.assertFalse(parts.containsKey(UPDATENODEREF));
 	}
 
@@ -122,8 +121,10 @@ class ContentAPIClientTest extends AbstractRemoteApiTest {
 		RemoteUploadResult result = contentApi.uploadDocumentVersion(new RemoteVersionUpload(DOCUMENT_ID, FILE_NAME, true, "Supplier update"),
 				new ByteArrayInputStream(CONTENT));
 
-		Assertions.assertEquals(new RemoteUploadResult(DOCUMENT_NODEREF, FILE_NAME, 200), result);
-		Map<String, Part> parts = readUploadRequest(mockBackEnd.takeRequest());
+		Assertions.assertEquals(new RemoteUploadResult(DOCUMENT_NODEREF, FILE_NAME), result);
+		RecordedRequest request = mockBackEnd.takeRequest();
+		assertUploadRequest(request);
+		Map<String, Part> parts = readParts(request);
 		assertFileData(parts);
 		Assertions.assertEquals(FILE_NAME, readText(parts.get(FILENAME)));
 		Assertions.assertEquals(DOCUMENT_NODEREF, readText(parts.get(UPDATENODEREF)));
@@ -140,9 +141,57 @@ class ContentAPIClientTest extends AbstractRemoteApiTest {
 				""".formatted(FOLDER_NODEREF)).addHeader("Content-Type", "application/json;charset=UTF-8"));
 
 		RemoteAPIException exception = Assertions.assertThrows(RemoteAPIException.class,
-				() -> contentApi.uploadDocument(new RemoteDocumentUpload(FOLDER_ID, FILE_NAME, null), new ByteArrayInputStream(CONTENT)));
+				() -> contentApi.uploadDocument(new RemoteDocumentUpload(FOLDER_ID, FILE_NAME), new ByteArrayInputStream(CONTENT)));
 
 		Assertions.assertEquals("404", exception.getError().getStatus().getCode());
+	}
+
+	@Test
+	void testEmptyUploadAnswerBecomesARemoteError() {
+		mockBackEnd.enqueue(new MockResponse().setResponseCode(200));
+
+		Assertions.assertThrows(RemoteAPIException.class,
+				() -> contentApi.uploadDocument(new RemoteDocumentUpload(FOLDER_ID, FILE_NAME), new ByteArrayInputStream(CONTENT)));
+	}
+
+	@Test
+	void testFailingContentStreamIsRethrownWithItsOriginalCause() {
+		mockBackEnd.enqueue(uploadAnswer(DOCUMENT_NODEREF, FILE_NAME));
+		IOException failure = new IOException("client disconnected");
+		InputStream failing = new InputStream() {
+			@Override
+			public int read() throws IOException {
+				throw failure;
+			}
+		};
+
+		WebClientRequestException exception = Assertions.assertThrows(WebClientRequestException.class,
+				() -> contentApi.uploadDocument(new RemoteDocumentUpload(FOLDER_ID, FILE_NAME), failing));
+
+		Assertions.assertSame(failure, findRootCause(exception));
+	}
+
+	@Test
+	void testAlreadyReadContentStreamBecomesAnUnauthorizedError() {
+		InputStream consumed = new InputStream() {
+			@Override
+			public int read() {
+				throw new IllegalStateException("InputStream has already been read - do not use InputStreamResource if a stream needs to be read multiple times");
+			}
+		};
+
+		RemoteAPIException exception = Assertions.assertThrows(RemoteAPIException.class,
+				() -> contentApi.uploadDocument(new RemoteDocumentUpload(FOLDER_ID, FILE_NAME), consumed));
+
+		Assertions.assertEquals("401", exception.getError().getStatus().getCode());
+	}
+
+	private Throwable findRootCause(Throwable error) {
+		Throwable cause = error;
+		while (cause.getCause() != null) {
+			cause = cause.getCause();
+		}
+		return cause;
 	}
 
 	/**
@@ -163,11 +212,15 @@ class ContentAPIClientTest extends AbstractRemoteApiTest {
 		return new MockResponse().setBody(body).addHeader("Content-Type", "application/json;charset=UTF-8");
 	}
 
-	private Map<String, Part> readUploadRequest(RecordedRequest request) {
+	private void assertUploadRequest(RecordedRequest request) {
 		Assertions.assertEquals("POST", request.getMethod());
 		Assertions.assertEquals(UPLOAD_PATH, request.getPath());
 		String contentType = request.getHeader("Content-Type");
 		Assertions.assertTrue(contentType.startsWith(MediaType.MULTIPART_FORM_DATA_VALUE), contentType);
+	}
+
+	private Map<String, Part> readParts(RecordedRequest request) {
+		String contentType = request.getHeader("Content-Type");
 		byte[] body = request.getBody().readByteArray();
 		DataBuffer bodyBuffer = DefaultDataBufferFactory.sharedInstance.wrap(body);
 		MockServerHttpRequest multipartRequest = MockServerHttpRequest.post(UPLOAD_PATH).contentType(MediaType.parseMediaType(contentType))
