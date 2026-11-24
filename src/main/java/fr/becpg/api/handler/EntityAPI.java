@@ -10,6 +10,7 @@ import fr.becpg.api.model.RemoteEntity;
 import fr.becpg.api.model.RemoteEntityList;
 import fr.becpg.api.model.RemoteEntityRef;
 import fr.becpg.api.model.RemoteEntitySchema;
+import fr.becpg.api.model.RemoteNodeActionResult;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -447,5 +448,57 @@ public interface EntityAPI {
 	 * @return the response of the repository
 	 */
 	Mono<RemoteAPIResponse> deleteEntity(String id);
+
+	/**
+	 * <p>copy.</p>
+	 * Copies one node into a folder through the Share document library webscript. May throw a {@link fr.becpg.api.model.RemoteAPIException}
+	 * with status 409 when the destination folder already holds a node with this name, or 422 when the repository refuses the action without
+	 * giving a reason.
+	 *
+	 * @param id the id or nodeRef of the node
+	 * @param destFolderId the id or nodeRef of the destination folder
+	 * @param parentId the id or nodeRef of the current parent of the node, <code>null</code> when unknown (accepted for a copy only)
+	 * @return the nodeRef and the name of the copy
+	 */
+	RemoteNodeActionResult copy(String id, String destFolderId, String parentId);
+
+	/**
+	 * <p>copyEntity.</p>
+	 * Copies one node into a folder through the Share document library webscript. May throw a {@link fr.becpg.api.model.RemoteAPIException}
+	 * with status 409 when the destination folder already holds a node with this name, or 422 when the repository refuses the action without
+	 * giving a reason.
+	 *
+	 * @param id the id or nodeRef of the node
+	 * @param destFolderId the id or nodeRef of the destination folder
+	 * @param parentId the id or nodeRef of the current parent of the node, <code>null</code> when unknown (accepted for a copy only)
+	 * @return the nodeRef and the name of the copy
+	 */
+	Mono<RemoteNodeActionResult> copyEntity(String id, String destFolderId, String parentId);
+
+	/**
+	 * <p>move.</p>
+	 * Moves one node into a folder through the Share document library webscript. May throw a {@link fr.becpg.api.model.RemoteAPIException}
+	 * with status 409 when the destination folder already holds a node with this name, or 422 when the repository refuses the action without
+	 * giving a reason.
+	 *
+	 * @param id the id or nodeRef of the node
+	 * @param destFolderId the id or nodeRef of the destination folder
+	 * @param parentId the id or nodeRef of the current parent of the node, <code>null</code> when unknown (accepted for a copy only)
+	 * @return the nodeRef and the name of the moved node
+	 */
+	RemoteNodeActionResult move(String id, String destFolderId, String parentId);
+
+	/**
+	 * <p>moveEntity.</p>
+	 * Moves one node into a folder through the Share document library webscript. May throw a {@link fr.becpg.api.model.RemoteAPIException}
+	 * with status 409 when the destination folder already holds a node with this name, or 422 when the repository refuses the action without
+	 * giving a reason.
+	 *
+	 * @param id the id or nodeRef of the node
+	 * @param destFolderId the id or nodeRef of the destination folder
+	 * @param parentId the id or nodeRef of the current parent of the node, <code>null</code> when unknown (accepted for a copy only)
+	 * @return the nodeRef and the name of the moved node
+	 */
+	Mono<RemoteNodeActionResult> moveEntity(String id, String destFolderId, String parentId);
 
 }

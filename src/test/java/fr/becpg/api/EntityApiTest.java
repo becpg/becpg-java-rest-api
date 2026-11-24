@@ -19,8 +19,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.skyscreamer.jsonassert.JSONAssert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +37,7 @@ import fr.becpg.api.model.RemoteAPIException;
 import fr.becpg.api.model.RemoteAPIResponse;
 import fr.becpg.api.model.RemoteEntity;
 import fr.becpg.api.model.RemoteEntityRef;
+import fr.becpg.api.model.RemoteNodeActionResult;
 import fr.becpg.api.model.RemoteNodeInfo;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -320,6 +323,69 @@ class EntityApiTest extends AbstractRemoteApiTest {
 		Assertions.assertEquals("404", exception.getError().getStatus().getCode());
 	}
 
+	@Test
+	void testCopySendsTheShareCopyToRequestAndReturnsTheCopy() throws InterruptedException, JSONException {
+		mockBackEnd.enqueue(doclibAnswer("""
+				{"totalResults":1,"overallSuccess":true,"successCount":1,"failureCount":0,
+				 "results":[{"action":"copyFile","id":"Copy of Pizza","nodeRef":"%s","type":"document","success":true}]}
+				""".formatted(COPY_NODEREF)));
+
+		RemoteNodeActionResult result = entityApi.copy(ENTITY_ID, FOLDER_NODEREF, null);
+
+		Assertions.assertEquals(COPY_NODEREF, result.nodeRef());
+		Assertions.assertEquals("Copy of Pizza", result.name());
+		assertDoclibRequest(mockBackEnd.takeRequest(), COPY_TO, "{\"nodeRefs\":[\"" + ENTITY_NODEREF + "\"]}");
+	}
+
+	@Test
+	void testMoveSendsTheShareMoveToRequestWithTheCurrentParent() throws InterruptedException, JSONException {
+		mockBackEnd.enqueue(doclibAnswer("""
+				{"totalResults":1,"overallSuccess":true,"successCount":1,"failureCount":0,
+				 "results":[{"action":"moveFile","id":"Pizza","nodeRef":"%s","type":"document","success":true}]}
+				""".formatted(ENTITY_NODEREF)));
+
+		RemoteNodeActionResult result = entityApi.move(ENTITY_NODEREF, FOLDER_ID, PARENT_ID);
+
+		Assertions.assertEquals(ENTITY_NODEREF, result.nodeRef());
+		Assertions.assertEquals("Pizza", result.name());
+		assertDoclibRequest(mockBackEnd.takeRequest(), MOVE_TO,
+				"{\"nodeRefs\":[\"" + ENTITY_NODEREF + "\"],\"parentId\":\"workspace://SpacesStore/" + PARENT_ID + "\"}");
+	}
+
+	/**
+	 * The doclib webscripts answer 200 with overallSuccess false and give no reason, only fileExist on a name clash
+	 */
+	@ParameterizedTest
+	@CsvSource({ "move-to, ',\"fileExist\":true', 409", "copy-to, '', 422" })
+	void testRefusedDoclibActionBecomesARemoteError(String action, String fileExist, String expectedCode) {
+		mockBackEnd.enqueue(doclibAnswer("""
+				{"totalResults":1,"overallSuccess":false,"successCount":0,"failureCount":1,
+				 "results":[{"action":"moveFile","id":"Pizza","nodeRef":"%s","type":"document","success":false%s}]}
+				""".formatted(ENTITY_NODEREF, fileExist)));
+
+		RemoteAPIException exception = Assertions.assertThrows(RemoteAPIException.class, () -> runDoclibAction(action));
+
+		Assertions.assertEquals(expectedCode, exception.getError().getStatus().getCode());
+	}
+
+	private RemoteNodeActionResult runDoclibAction(String action) {
+		if (COPY_TO.equals(action)) {
+			return entityApi.copy(ENTITY_ID, FOLDER_ID, PARENT_ID);
+		}
+		return entityApi.move(ENTITY_ID, FOLDER_ID, PARENT_ID);
+	}
+
+	private MockResponse doclibAnswer(String body) {
+		return new MockResponse().setBody(body).addHeader("Content-Type", "application/json");
+	}
+
+	private void assertDoclibRequest(RecordedRequest request, String action, String expectedBody) throws JSONException {
+		Assertions.assertEquals("POST", request.getMethod());
+		Assertions.assertEquals(DOCLIB_ACTION_PATH + action + "/node/workspace/SpacesStore/" + FOLDER_ID, request.getPath());
+		Assertions.assertTrue(request.getHeader("Content-Type").startsWith("application/json"));
+		JSONAssert.assertEquals(expectedBody, request.getBody().readUtf8(), true);
+	}
+
 	private static final String ENTITY_ID = "9b4dd09a-afaa-41ec-84eb-db062146975c";
 
 	private static final String ENTITY_NODEREF = "workspace://SpacesStore/" + ENTITY_ID;
@@ -329,6 +395,18 @@ class EntityApiTest extends AbstractRemoteApiTest {
 	private static final String BRANCH_NODEREF = "workspace://SpacesStore/" + BRANCH_ID;
 
 	private static final String FOLDER_ID = "5c6d7e8f-9a0b-4c1d-2e3f-4a5b6c7d8e9f";
+
+	private static final String FOLDER_NODEREF = "workspace://SpacesStore/" + FOLDER_ID;
+
+	private static final String PARENT_ID = "1e2d3c4b-5a69-4788-9a0b-c1d2e3f4a5b6";
+
+	private static final String COPY_NODEREF = "workspace://SpacesStore/7f8e9d0c-1b2a-4394-8576-a6b7c8d9e0f1";
+
+	private static final String DOCLIB_ACTION_PATH = "/alfresco/service/slingshot/doclib/action/";
+
+	private static final String COPY_TO = "copy-to";
+
+	private static final String MOVE_TO = "move-to";
 
 	private static String remoteUrl() {
 		return "http://localhost:" + mockBackEnd.getPort() + "/alfresco/service/becpg/remote";
