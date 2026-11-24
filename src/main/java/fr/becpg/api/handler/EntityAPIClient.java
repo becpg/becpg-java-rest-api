@@ -12,6 +12,7 @@ import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.function.BodyInserters;
 
 import fr.becpg.api.model.RemoteAPIError;
@@ -54,6 +55,8 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 	private static final String PARAM_IMPACT_WUSED = "impactWused";
 
 	private static final String PARAM_DESCRIPTION = "description";
+
+	private static final String PARAM_CHAIN_ID = "chainId";
 
 
 	/** {@inheritDoc} */
@@ -401,15 +404,28 @@ public class EntityAPIClient extends AbstractAPIClient implements EntityAPI {
 	/** {@inheritDoc} */
 	@Override
 	public RemoteAPIResponse formulate(String id) {
-		return formulateEntity(id).block();
+		return formulate(id, null);
 	}
 
 	/** {@inheritDoc} */
 	@Override
 	public Mono<RemoteAPIResponse> formulateEntity(String id) {
+		return formulateEntity(id, null);
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public RemoteAPIResponse formulate(String id, String chainId) {
+		return formulateEntity(id, chainId).block();
+	}
+
+	/** {@inheritDoc} */
+	@Override
+	public Mono<RemoteAPIResponse> formulateEntity(String id, String chainId) {
 		return webClient().get()
 				.uri(uriBuilder -> uriBuilder.path(REMOTE_FORMULATE_URL).queryParam(PARAM_FORMAT, FORMAT_JSON)
-						.queryParam(PARAM_NODEREF, buildNodeRefParam(id)).build())
+						.queryParam(PARAM_NODEREF, buildNodeRefParam(id))
+						.queryParamIfPresent(PARAM_CHAIN_ID, Optional.ofNullable(chainId).filter(StringUtils::hasText)).build())
 				.accept(MediaType.APPLICATION_JSON).retrieve()
 				.onStatus(HttpStatusCode::isError, response -> handleErrorResponse(response))
 				.bodyToMono(RemoteAPIResponse.class);

@@ -18,6 +18,9 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -174,6 +177,31 @@ class EntityApiTest extends AbstractRemoteApiTest {
 		RecordedRequest request = mockBackEnd.takeRequest();
 		Assertions.assertEquals("GET", request.getMethod());
 		Assertions.assertEquals(remoteUrl() + "/formulate?format=json&nodeRef=" + ENTITY_NODEREF, request.getRequestUrl().toString());
+	}
+
+	@Test
+	void testFormulateOnANamedChain() throws InterruptedException {
+		mockBackEnd.enqueue(okStatus(ENTITY_NODEREF));
+
+		RemoteAPIResponse response = entityApi.formulate(ENTITY_ID, "fast");
+
+		Assertions.assertEquals("SUCCESS", response.getStatus());
+		RecordedRequest request = mockBackEnd.takeRequest();
+		Assertions.assertEquals("GET", request.getMethod());
+		Assertions.assertEquals(remoteUrl() + "/formulate?format=json&nodeRef=" + ENTITY_NODEREF + "&chainId=fast",
+				request.getRequestUrl().toString());
+	}
+
+	@ParameterizedTest
+	@NullAndEmptySource
+	@ValueSource(strings = { "  " })
+	void testFormulateWithoutChainSendsNoChainId(String chainId) throws InterruptedException {
+		mockBackEnd.enqueue(okStatus(ENTITY_NODEREF));
+
+		entityApi.formulateEntity(ENTITY_ID, chainId).block();
+
+		Assertions.assertEquals(remoteUrl() + "/formulate?format=json&nodeRef=" + ENTITY_NODEREF,
+				mockBackEnd.takeRequest().getRequestUrl().toString());
 	}
 
 	@Test

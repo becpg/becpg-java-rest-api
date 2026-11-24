@@ -363,6 +363,28 @@ public interface EntityAPI {
 	Mono<RemoteAPIResponse> formulateEntity(String id);
 
 	/**
+	 * <p>formulate.</p>
+	 * Formulates the entity on the given formulation chain. Available from remote API version 3.0 (JSON response).
+	 *
+	 * @param id the entity id or nodeRef
+	 * @param chainId the formulation chain id; optional, when <code>null</code> or blank the default chain is used.
+	 *                An unknown chain falls back to the default chain on the repository side
+	 * @return the response of the repository, or <code>null</code> when the formulation did not complete
+	 */
+	RemoteAPIResponse formulate(String id, String chainId);
+
+	/**
+	 * <p>formulateEntity.</p>
+	 * Formulates the entity on the given formulation chain. Available from remote API version 3.0 (JSON response).
+	 *
+	 * @param id the entity id or nodeRef
+	 * @param chainId the formulation chain id; optional, when <code>null</code> or blank the default chain is used.
+	 *                An unknown chain falls back to the default chain on the repository side
+	 * @return the response of the repository, empty when the formulation did not complete
+	 */
+	Mono<RemoteAPIResponse> formulateEntity(String id, String chainId);
+
+	/**
 	 * <p>branch.</p>
 	 * Creates a branch of the entity. Available from remote API version 3.0 (JSON response).
 	 *
