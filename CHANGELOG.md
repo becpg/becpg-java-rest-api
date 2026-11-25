@@ -250,3 +250,19 @@
 * [skip ci][Release]: Update CHANGELOG.md for 2.1.0 release
 * [skip ci] Prepare for next development iteration
 
+## [ 2.1.2 ] - mer. 25 nov 2026 09:27:09 CET
+
+* [Release] prepare release 2.1.2
+* [Setup] Update README and MIGRATION for 2.1.2
+* InProgress #38476 - [Cleanup] Say that a move onto a taken name may rename the moved node instead of refusing it
+* Merge branch 'main' of https://github.com/becpg/becpg-java-rest-api.git into main
+* InProgress #38476 - [Cleanup] Trim the upload records and report empty answers and an already read content stream as remote errors
+* InProgress #38476 - [Cleanup] Take a relocation record for copy and move, check the destination folder and move the doclib protocol to its own client
+* InProgress #38476 - [Feature] Upload a document or a new version of it through the Share upload webscript, streamed
+* InProgress #38476 - [Feature] Copy and move a node through the Share document library actions
+* InProgress #38476 - [Feature] Formulate an entity on a named formulation chain
+* InProgress #37279 - [Feature] Add the audit API client reading the beCPG statistics webscript
+* InProgress #36960 - [Setup] Publish to the public europe Artifact Registry repository and read it over https
+* [skip ci][Release]: Update CHANGELOG.md for 2.1.1 release
+* [skip ci] Prepare for next development iteration
+
