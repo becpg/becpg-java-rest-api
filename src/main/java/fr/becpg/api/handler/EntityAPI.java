@@ -472,19 +472,23 @@ public interface EntityAPI {
 	/**
 	 * <p>move.</p>
 	 * Moves one node into a folder through the Share document library webscript. The parentId of the relocation is required.
+	 * When the destination folder already holds a node with the same name, the repository may rename the moved node (e.g. "name (1)")
+	 * instead of refusing the move: the name of the result is the name the node holds after the move.
 	 *
 	 * @param relocation the node, the destination folder and the current parent of the node
-	 * @return the nodeRef and the name of the moved node
-	 * @throws fr.becpg.api.model.RemoteAPIException with status 409 when the destination folder already holds a node with this name, 422 when the repository refuses the move without giving a reason, or 400 when the destination is not a node of the workspace store
+	 * @return the nodeRef and the name of the moved node, after the move
+	 * @throws fr.becpg.api.model.RemoteAPIException with status 409 when the repository refuses the move because of the name, 422 when it refuses the move without giving a reason, or 400 when the destination is not a node of the workspace store
 	 */
 	RemoteNodeActionResult move(RemoteNodeRelocation relocation);
 
 	/**
 	 * <p>moveEntity.</p>
 	 * Moves one node into a folder through the Share document library webscript. The parentId of the relocation is required.
+	 * When the destination folder already holds a node with the same name, the repository may rename the moved node (e.g. "name (1)")
+	 * instead of refusing the move: the name of the result is the name the node holds after the move.
 	 *
 	 * @param relocation the node, the destination folder and the current parent of the node
-	 * @return a Mono with the nodeRef and the name of the moved node, or signaling a {@link fr.becpg.api.model.RemoteAPIException} with status 409 when the destination folder already holds a node with this name, 422 when the repository refuses the move without giving a reason, or 400 when the destination is not a node of the workspace store
+	 * @return a Mono with the nodeRef and the name of the moved node after the move, or signaling a {@link fr.becpg.api.model.RemoteAPIException} with status 409 when the repository refuses the move because of the name, 422 when it refuses the move without giving a reason, or 400 when the destination is not a node of the workspace store
 	 */
 	Mono<RemoteNodeActionResult> moveEntity(RemoteNodeRelocation relocation);
 
