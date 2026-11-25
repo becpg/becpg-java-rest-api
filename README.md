@@ -15,6 +15,7 @@ This SDK provides functionality to consume beCPG REST Remote API.
 
 | Version | beCPG Version | Version API | Version JAVA | Changes |
 | --- | --- | --- | --- | -- |
+| 2.1.2 | >= 23.4.2 | >= 4.3 | JAVA 17 | Formulate on a named chain; copy and move a node as the Share actions do (`EntityAPI`); upload a document or a new version, streamed (`ContentAPI`); add `AuditAPI` |
 | 2.1.0 | >= 23.4.2 | >= 4.3 | JAVA 17 | Add `formulate`, `branch`, `merge` and `delete` to `EntityAPI` |
 | 2.0.4 | >= 23.4.2 | >= 4.3 | JAVA 17 | Keep the remote JSON unchanged through the client model |
 | 2.0.3 | >= 23.4.2 | >= 4.3 | JAVA 17 | Read `definedBy`, the type or aspect declaring each field, in `RemoteEntitySchema` (published from beCPG 26.1.0, API 4.5) |
@@ -452,6 +453,47 @@ A `RemoteAPIResponse` with the status `SUCCESS` and the nodeRef of the deleted e
 
 ---
 
+### `RemoteAPIResponse formulate(String id, String chainId)`
+
+Formulates the entity on the given formulation chain, e.g. `regulatory` (remote API >= 3.0). `formulateEntity(String id, String chainId)` is
+the reactive variant. A `null` or blank `chainId` runs the default chain, as `formulate(String id)` does; an unknown chain falls back to the
+default chain on the repository side.
+
+---
+
+### `RemoteNodeActionResult copy(RemoteNodeRelocation relocation)`
+
+Copies one node into a folder through the Share document library webscript `slingshot/doclib/action/copy-to`, as the Share "Copy to"
+action does: an entity is copied with its lists, documents and a new code. `copyEntity(...)` is the reactive variant.
+
+#### Parameters
+
+- `relocation`: a `RemoteNodeRelocation(id, destFolderId, parentId)`, ids or nodeRefs; `parentId`, the current parent of the node, is
+  optional for a copy. The destination must be a node of `workspace://SpacesStore`, else a `400` is raised.
+
+#### Returns
+
+A `RemoteNodeActionResult` with the nodeRef and the name of the copy. The copy is named "Copy of ..." in the language of the repository (e.g. "Copie de ..." in French).
+A refusal is a `422`, the webscript giving no reason.
+
+---
+
+### `RemoteNodeActionResult move(RemoteNodeRelocation relocation)`
+
+Moves one node into a folder through the Share document library webscript `slingshot/doclib/action/move-to`, as the Share "Move to" action
+does. `moveEntity(...)` is the reactive variant.
+
+#### Parameters
+
+- `relocation`: a `RemoteNodeRelocation(id, destFolderId, parentId)`; `parentId`, the current parent of the node, is required.
+
+#### Returns
+
+A `RemoteNodeActionResult` with the nodeRef and the name of the moved node after the move: when the folder already holds a node with the
+same name, the repository may rename the moved node (e.g. "name (1)"). A refusal is a `409` when it is due to the name, a `422` otherwise.
+
+---
+
 Every method raises a `RemoteAPIException` carrying the HTTP status when the repository refuses the call. From remote API 4.5, the status is
 `403` when the user cannot read the entity and `429` when the rate limit is reached.
 
@@ -571,6 +613,43 @@ Writes the content of the given node to the specified file.
 #### Throws
 
 - `IOException`: if there is an error while writing the content.
+
+---
+
+### `RemoteUploadResult uploadDocument(RemoteDocumentUpload upload, InputStream content)`
+
+Uploads a new document into a folder through the Share upload webscript `/alfresco/service/api/upload`. The content is streamed, never fully
+held in memory, read once and closed by the client; the call is not retried.
+
+#### Parameters
+
+- `upload`: a `RemoteDocumentUpload(folderId, fileName)`, the folder as an id or a nodeRef.
+- `content`: the content of the file.
+
+#### Returns
+
+A `RemoteUploadResult` with the nodeRef and the file name of the document.
+
+**Warning**: beCPG forces `overwrite` on this webscript. A versionable file of the same name in the folder gets a new version instead of
+a new document, and a non-versionable one makes the new document be renamed `name-1.ext`. Check the name is free before uploading.
+
+---
+
+### `RemoteUploadResult uploadDocumentVersion(RemoteVersionUpload upload, InputStream content)`
+
+Uploads a new version of an existing document through the same webscript.
+
+#### Parameters
+
+- `upload`: a `RemoteVersionUpload(documentId, fileName, majorVersion, comment)`; `comment` may be `null`.
+- `content`: the content of the new version.
+
+#### Returns
+
+A `RemoteUploadResult` with the nodeRef and the file name of the document.
+
+Both upload methods raise a `RemoteAPIException` with the status of the webscript; a failing content stream surfaces as a
+`WebClientRequestException` whose cause is the original exception.
 
 
 
